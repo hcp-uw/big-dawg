@@ -1,0 +1,1 @@
+// Types/struct definitions will go here
