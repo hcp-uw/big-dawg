@@ -1,4 +1,4 @@
 // front end
-db = new json_db();
+db: DB = new json_db();
 
 db.saveWorkout(Workout);
