@@ -1,29 +1,36 @@
 import {DB, Workout, Exercise_List, Exercise_Hist, Muscle_Group} from './Types'
 // implements interface for json
 export class json_db implements DB {
-    // add local vars for cache
+    
     saveWorkout = (w: Workout) => {
        
     }
-    getWorkout = (date: String) => {
+
+    getWorkout = (date: Date) => {
         
     }
-    deleteWorkout = (date: String) => {
+
+    deleteWorkout = (date: Date) => {
 
     }
+
     getExerciseList = () => {
 
-    };
+    }
+
     getExerciseHistory = (ex_name: string) => {
 
     }
-    AddExercise = () => {
+
+    saveExercise = () => {
 
     }
+
     deleteExercise = (ex_name: string) => {
 
     }
-    getCalendarView = (month) => {
+
+    getCalendarView = (month: bigint) => {
 
     }
 }
