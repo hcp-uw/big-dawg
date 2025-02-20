@@ -9,23 +9,23 @@ or GetCalendarView is called we will simply store the entire month in a cache (i
 get data from different months
 
 Feb2025.json:
-    {
-        Day 1: {
-            Date: String;
+    [
+        {
+            Date: String; // feb 1st
             TimeStarted : bigint;
             TimeEnded : bigint;
             Sets : Set[];
             WorkoutComment : string
-        }
+        };
         ...
-        Day 28: {
-            Date: String;
+        {
+            Date: String; //feb 28th
             TimeStarted : bigint;
             TimeEnded : bigint;
             Sets : Set[];
             WorkoutComment : string
-        }
-    }
+        };
+    ]
 
 For each exercise we will also have a file which will store both info abt exercise and the exercise history
 Note: maybe we will change this to make getExerciseList() faster idk
