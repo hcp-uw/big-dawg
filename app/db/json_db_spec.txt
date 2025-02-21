@@ -37,4 +37,3 @@ Squat.json
         Comment : string;
         Hist = Set[]
     }
-
