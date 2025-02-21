@@ -1,5 +1,4 @@
 // Public interface and types for DB
-
 export interface DB {
 
     /*
@@ -10,7 +9,7 @@ export interface DB {
     *   Returns:
     *       -- true if a workout for that date was replaced, false otherwise
     */
-    saveWorkout: (w: Workout) => Promise<boolean>;
+    saveWorkout: (w: Workout) => boolean
 
     /*  
     *   get a workout for a specific Date
@@ -22,7 +21,7 @@ export interface DB {
     *       -- Workout: the workout if the date has workouts
             -- null: if the date requested has nothing
     */
-    getWorkout: (date: Date) => Promise<Workout | null>;
+    getWorkout: (date: Date) => Workout | null
     
     /*
     *   delete a logged workout for a specific Date
@@ -32,14 +31,14 @@ export interface DB {
     *   Returns: 
     *       -- true if a workout for that date was succesfully deleted, false otherwise
     */
-    deleteWorkout: (date: Date) => Promise<boolean>;
+    deleteWorkout: (date: Date) => boolean
     
     /*
     *   gets the list of exercises we have (prebuilt and custom)
     *   Returns: 
     *       -- the list of exercises
     */
-    getExerciseList: () => Promise<Exercise_List>;
+    getExerciseList: () => Exercise_List
     
     /*
     *   gets the entire exercise history for that exercise
@@ -50,7 +49,7 @@ export interface DB {
     *   Returns: 
     *       -- exercise history. If the user has never done the requested exercise the inner Hist will be empty.
     */
-    getExerciseHistory: (ex_name : string) => Promise<Exercise_Hist>;
+    getExerciseHistory: (ex_name : string) => Exercise_Hist
     
     /* 
     *   saves a new user-made custom exercise 
@@ -59,7 +58,7 @@ export interface DB {
     *   Returns: 
     *       -- true if the exercise was added, false if not 
     */
-    saveExercise: (ex: Exercise) => Promise<boolean>;
+    saveExercise: (ex: Exercise) => boolean
 
     /* 
     *   deletes a user-made custom exercise 
@@ -70,7 +69,7 @@ export interface DB {
     *   Returns: 
     *       -- true if the exercise was deleted, false if not
     */
-    deleteExercise: (ex_name: string) => Promise<boolean>;
+    deleteExercise: (ex_name: string) => boolean
     
     /* 
     *   gets the muscle group information for the workout calendar
@@ -82,46 +81,46 @@ export interface DB {
     *       -- an array of length 30, 31, or 28 (nnumber of days in that monthh)
     *            that holds an array of muscle groups trained in that day
     */ 
-    getCalendarView: (month: bigint) => Promise<Muscle_Group[][]>;
+    getCalendarView: (month: bigint) => Muscle_Group[][]
 }
 
-export type Muscle_Group = "Chest" | "Back" | "Legs" | "Triceps" | "Biceps" | "Shoulders";
+export type Muscle_Group = "Chest" | "Back" | "Legs" | "Triceps" | "Biceps" | "Shoulders"
 
-// export type Exercise_Type = "Weight" | "Cardio";  //Not in MVP but may be useful in future 
+// export type Exercise_Type = "Weight" | "Cardio"  //Not in MVP but may be useful in future 
 
 export type Exercise = {
     // name is unique per exercise
-    Exercise_Name : string;
-    Muscle_Group : Muscle_Group; 
-    Comment : string;
+    Exercise_Name : string
+    Muscle_Group : Muscle_Group 
+    Comment : string
     // Exercise_Type” : string 	//Not in MVP but may be useful in future 
-};
+}
 
 export type Exercise_List = {
-    Chest: Exercise[];
-    Back: Exercise[];
-    Legs: Exercise[];
-    Triceps: Exercise[];
-    Biceps: Exercise[];
-    Shoulders: Exercise[];
-};
+    Chest: Exercise[]
+    Back: Exercise[]
+    Legs: Exercise[]
+    Triceps: Exercise[]
+    Biceps: Exercise[]
+    Shoulders: Exercise[]
+}
 
 export type Set = {
-    Exercise_Name : string;
-    Weight : bigint;
-    Reps : bigint;
+    Exercise_Name : string
+    Weight : bigint
+    Reps : bigint
     Comment : string
-};
+}
 
 export type Exercise_Hist = {
-    Exercise_Name : string;
-    Hist : Set[];
-};
+    Exercise_Name : string
+    Hist : Set[]
+}
 
 export type Workout = {
-    Date : Date; // starting date
-    TimeStarted : bigint;
-    TimeEnded : bigint;
-    Sets : Set[];
+    Date : Date // starting date
+    TimeStarted : bigint
+    TimeEnded : bigint
+    Sets : Set[]
     WorkoutComment : string
-};
+}
