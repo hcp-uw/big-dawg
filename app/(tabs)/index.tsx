@@ -4,82 +4,82 @@ import { Dimensions } from 'react-native';
 import Svg, { Circle, G, Text as SvgText, TSpan } from 'react-native-svg';
 import Animated, { AnimatedProps, useAnimatedProps, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
 import { ReText } from 'react-native-redash';
-import CircularProgress from 'react-native-circular-progress-indicator';
 import colors from '@/src/styles/themes/colors';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '@/app/types'; // Import your types
 
 const { width, height } = Dimensions.get("window");
 
 const CIRCLE_LENGTH = 400;
-const R = CIRCLE_LENGTH / (1.6 * Math.PI);
+const R = CIRCLE_LENGTH / (2 * Math.PI);
 
-type NavigationProps = NativeStackNavigationProp<RootStackParamList, 'index'>;
+const SVG_WIDTH = width / 2;
+const SVG_HEIGHT = height / 3;
+
+const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 export default function Index() {
+  const progress = useSharedValue(0);
 
-  const navigation = useNavigation<NavigationProps>();
+  useEffect(() => {
+    progress.value = withTiming(1, { duration: 2000 });
+  }, []);
 
-  const [progress, setProgress] = useState(0);
-  const [LEFT_MARGIN, setLeftMargin] = useState(-45);
+  const animatedProps = useAnimatedProps(() => ({
+    strokeDashoffset: CIRCLE_LENGTH * (1 - progress.value)
+  }));
 
-  const doProgressChange = () => {
-    setProgress(prev => Math.min(prev + Math.floor(Math.random() * 25) + 1, 100));
-
-    if(progress > 9 && progress < 100) {
-      setLeftMargin(-35);
-    } else {
-      setLeftMargin(-30);
-    }
-  };
-
-  const doWorkoutPresetClick = () => {
-    navigation.navigate('WorkoutPreset');
-  };
+  const progressText = useDerivedValue(() => {
+    return `${Math.floor(progress.value * 100)}%`;
+  });
 
   return (
     <View style={styles.container}>
       <View style={styles.content}>
         <Text style={styles.activityTitle}>Your Activity Today:</Text>
         
-        <View style={styles.rowContainer}>
-          <Text style={styles.progressLabel} >Workout completion:</Text>
-          <CircularProgress
-            radius={R}
-            value={progress}
-            progressValueFontSize={30}
-            progressValueColor={colors.WHITE}
-            maxValue={100}
-            inActiveStrokeColor={colors.INACTIVE_BAR_COLOR}
-            activeStrokeColor={colors.ACTIVE_BAR_COLOR}
-            activeStrokeSecondaryColor={colors.ACTIVE_BAR_SECOND_COLOR}
-            inActiveStrokeWidth={8}
-            activeStrokeWidth={9}
-            titleFontSize={20}
-            valueSuffix={'%'}
-            duration={300}
-            progressFormatter={(value: number) => {
-              'worklet';
-              return Math.round(value).toString();
-            }}
-            progressValueStyle={{
-              width: 70, // Allows space for 3 digits + % symbol
-              fontWeight: 'bold',
-              textAlign: 'center',
-            }}
-            valueSuffixStyle={{
-              fontSize: 22,
-              marginLeft: LEFT_MARGIN,
-              color: colors.WHITE,
-              textAlign: 'center',
-            }}
-        />
-      </View>
+        <Text style={styles.progressLabel}>Workout completion:</Text>
+        <View style={styles.progressContainer}>
+            <Svg width={SVG_WIDTH}
+              height={SVG_HEIGHT}
+              viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`}>
+              <G>
+                <Circle
+                  cx={SVG_WIDTH / 2}
+                  cy={SVG_HEIGHT / 4}
+                  r={R}
+                  fill="rgba(255, 255, 255, 0)"
+                  stroke={'#3a0055'}
+                  strokeWidth={8}
+                />
+                <SvgText
+                  x={SVG_WIDTH / 2}
+                  y={SVG_HEIGHT / 4}
+                  textAnchor="middle"
+                  alignmentBaseline="central"
+                  fill="#ffffff"
+                  fontSize="30"
+                  fontWeight="bold"
+                >
+                  <ReText style={styles.progressText} text={progressText} />
+                </SvgText>
+                <AnimatedCircle
+                  cx={SVG_WIDTH / 2}
+                  cy={SVG_HEIGHT / 4}
+                  r={R}
+                  stroke={'#ff00ff'}
+                  fill="rgba(255, 255, 255, 0)"
+                  strokeWidth={8}
+                  strokeDasharray={CIRCLE_LENGTH}
+                  strokeDashoffset={CIRCLE_LENGTH}
+                  animatedProps={animatedProps}
+                  strokeLinecap={'round'}
+                />
+              </G>
+            </Svg>
+        </View>
         
         <Text style={styles.noWorkouts}>No active workouts!</Text>
         
-        <Pressable style={styles.button} onPress={doWorkoutPresetClick}>
+        <Pressable style={styles.button}>
           <Text style={styles.buttonText}>+ Choose workout preset</Text>
         </Pressable>
         
@@ -89,10 +89,6 @@ export default function Index() {
         
         <Pressable style={styles.button}>
           <Text style={styles.buttonText}>+ New timer</Text>
-        </Pressable>
-
-        <Pressable style={styles.button} onPress={doProgressChange}>
-          <Text style={styles.buttonText}>TEMP DEMO BUTTON</Text>
         </Pressable>
       </View>
     </View>
@@ -110,28 +106,30 @@ const styles = StyleSheet.create({
   },
   activityTitle: {
     color: '#ffffff',
-    fontSize: 22,
+    fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
-  },
-  rowContainer: {
-    flexDirection: 'row', // Align items horizontally
-    alignItems: 'center', // Vertically align items in the center
-    justifyContent: 'space-between', // Add spacing between text and progress
-    marginBottom: 20, // Add spacing below the row
   },
   progressLabel: {
     color: '#ffffff',
     fontSize: 18,
-    fontWeight: '500',
     textAlign: 'left',
-    marginRight: 10, // Add spacing between the text and CircularProgress
+    marginBottom: 10,
+  },
+  progressContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: height / 3,
+  },
+  progressText: {
+    color: '#ffffff',
+    fontSize: 30,
+    fontWeight: 'bold',
+    justifyContent: 'center',
   },
   noWorkouts: {
     color: '#ffffff',
     textAlign: 'center',
-    fontSize: 17,
-    fontStyle: 'italic',
     marginVertical: 20,
     opacity: 0.8,
   },
@@ -142,10 +140,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   buttonText: {
-    fontSize: 20,
-    fontWeight: '500',
+    fontSize: 16,
     color: colors.BUTTON_TEXT,
-    textAlign: 'left',
-    marginLeft: 8,
+    textAlign: 'center',
   },
 });
