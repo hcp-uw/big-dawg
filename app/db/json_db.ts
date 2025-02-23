@@ -48,12 +48,21 @@ export class json_db implements DB {
       return result
     }
 
-    getExerciseList (): Exercise_List {
-      
+    getExerciseList (): Exercise_List | null{
+      const file_name: string = "Exercise_List.json" // Assuming that there is 1 file with all the exercises
+      const uri: string = data_dir + file_name
+      if (!(checkFile(file_name))) {
+        return null
+      }
+      // UTF8 makes sure that the file is read as a string, and not as raw bytes
+      // Probably not necessary but just in case
+      const content = wrapAsync(FS.readAsStringAsync, uri, { encoding: FS.EncodingType.UTF8 });
+      const exerciseList = JSON.parse(content) as Exercise_List;
+      return exerciseList;
     }
 
     getExerciseHistory (ex_name: string): Exercise_Hist {
-
+      
     }
 
     saveExercise (): boolean {

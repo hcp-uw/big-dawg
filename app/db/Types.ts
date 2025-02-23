@@ -37,8 +37,9 @@ export interface DB {
     *   gets the list of exercises we have (prebuilt and custom)
     *   Returns: 
     *       -- the list of exercises
+    *      -- null if no exercises exist
     */
-    getExerciseList: () => Exercise_List
+    getExerciseList: () => Exercise_List | null
     
     /*
     *   gets the entire exercise history for that exercise
