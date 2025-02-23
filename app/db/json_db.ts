@@ -62,19 +62,19 @@ export class json_db implements DB {
     }
 
     getExerciseHistory (ex_name: string): Exercise_Hist {
-      
+      // Yoshi
     }
 
     saveExercise (): boolean {
-
+      // Yoshi
     }
 
     deleteExercise (ex_name: string): boolean {
-
+      // Steve
     }
 
     getCalendarView (month: bigint):  Muscle_Group[][] {
-
+      // steve 
     }
 }
 
