@@ -116,6 +116,7 @@ export type Set = {
 export type Exercise_Hist = {
     Exercise_Name : string
     Hist : Set[]
+    Date : Date 
 }
 
 export type Workout = {

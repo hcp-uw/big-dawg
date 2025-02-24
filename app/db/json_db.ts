@@ -1,4 +1,4 @@
-import {DB, Workout, Exercise_List, Exercise_Hist, Muscle_Group} from './Types'
+import {DB, Workout, Exercise_List, Exercise_Hist, Muscle_Group, Exercise} from './Types'
 import * as FS from 'expo-file-system'
 
 const data_dir: string = FS.documentDirectory + '.big-dawg/data/'
@@ -54,19 +54,45 @@ export class json_db implements DB {
       if (!(checkFile(file_name))) {
         return null
       }
-      // UTF8 makes sure that the file is read as a string, and not as raw bytes
-      // Probably not necessary but just in case
-      const content = wrapAsync(FS.readAsStringAsync, uri, { encoding: FS.EncodingType.UTF8 });
+      
+      const content = wrapAsync(FS.readAsStringAsync, uri);
       const exerciseList = JSON.parse(content) as Exercise_List;
       return exerciseList;
     }
 
     getExerciseHistory (ex_name: string): Exercise_Hist {
-      // Yoshi
+      const file_name: string = ex_name + ".json"  // For example, "Squat.json", "Bench_Press.json", etc.
+      const uri: string = data_dir + file_name
+      if (!(checkFile(file_name))) {
+        // throw exception if the file name does not exist
+        throw new InvalidExerciseException(ex_name);
+      }
+      const content = wrapAsync(FS.readAsStringAsync, uri);
+      const exerciseHist = JSON.parse(content) as Exercise_Hist;
+      return exerciseHist;
     }
 
-    saveExercise (): boolean {
-      // Yoshi
+    saveExercise (ex: Exercise): boolean {
+      // Save to exerciseHistory
+      // If custom exercise, add to the history as a new file
+      const file_name: string = ex.Exercise_Name + ".json"
+      const uri: string = data_dir + file_name;
+      let exerciseHist: Exercise_Hist;
+      if (checkFile(file_name)) {
+        const content = wrapAsync(FS.readAsStringAsync, uri);
+        exerciseHist = JSON.parse(content) as Exercise_Hist;  // exerciseHist holds the history of the exercise
+      } else {
+        exerciseHist = { Exercise_Name: ex.Exercise_Name, Hist: [], Date: new Date()};  // Create a new history for the exercise
+        exerciseHist.Exercise_Name = ex.Exercise_Name;
+      }
+      exerciseHist.Hist.push(ex); // Fix this later, bc idk if this is pushing the history into the file
+      exerciseHist.Date = new Date();
+      
+      // the updated content is the new history of the exercise
+      const updatedContent = JSON.stringify(exerciseHist, null, 2);  // Converts TS to JSON
+      wrapAsync(FS.writeAsStringAsync, uri, updatedContent); // Writes the updated content to the file
+      return true;  // Fix since, there is no way for this func to return false since all ex, is treated as eithe pre or custom
+
     }
 
     deleteExercise (ex_name: string): boolean {
@@ -119,6 +145,15 @@ function wrapAsync<Targs extends any[], TReturn> (fun: (...args: Targs) => Promi
   })
   while(!promise_resolved) {}
   return result
+}
+
+// Exception class that creates InvalidExerciseException for getExerciseHistory func.
+// Maybe we can put this inside a new file called exception.ts
+class InvalidExerciseException extends Error {
+  constructor(exerciseName: string) {
+    super(`Invalid exercise: ${exerciseName}`);
+    this.name = "InvalidExerciseException";
+  }
 }
 
 // default export the class
