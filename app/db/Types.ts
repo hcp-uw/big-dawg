@@ -108,7 +108,7 @@ export type Exercise_List = {
 
 export type Set = {
     Exercise_Name : string
-    Weight : bigint
+    Weight : number
     Reps : bigint
     Comment : string
 }
