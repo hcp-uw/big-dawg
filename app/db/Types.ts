@@ -76,13 +76,14 @@ export interface DB {
     *   gets the muscle group information for the workout calendar
     *   Params: 
     *       -- month: from 1-12 indicating the month from which to get muscle group data
+    *       -- year: the year
     *   Throws:
-    *       -- InvalidMonthException: if month does not exist
+    *       -- InvalidDateException: if the given month, year is not valid or not found
     *   Returns: 
-    *       -- an array of length 30, 31, or 28 (nnumber of days in that monthh)
+    *       -- an array of length 30, 31, or 28 (number of days in that month)
     *            that holds an array of muscle groups trained in that day
     */ 
-    getCalendarView: (month: bigint) => Muscle_Group[][]
+    getCalendarView: (month: bigint, year: bigint) => Muscle_Group[][]
 }
 
 export type Muscle_Group = "Chest" | "Back" | "Legs" | "Triceps" | "Biceps" | "Shoulders"
