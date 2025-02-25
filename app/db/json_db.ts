@@ -96,11 +96,90 @@ export class json_db implements DB {
     }
 
     deleteExercise (ex_name: string): boolean {
-      // Steve
+        let deleted : boolean = false
+
+        // two step removal: 1. remove from exerciselist
+        // reuse the getExerciseList function to load the list
+        const exerciseList : Exercise_List | null = this.getExerciseList()
+        if (exerciseList == null) return false  // exercise list file is not valid
+
+        // Since the ex_name could be in any of the muscle group Exercise arrays, we check each group
+        for (const muscleGroup in exerciseList) {
+            // look at each exercise for that group; if the name matches, splice it out of the array
+            const exercises: Exercise[] = exerciseList[muscleGroup as keyof Exercise_List]
+
+            for (let i = 0; i < exercises.length; i++) {
+                if (exercises[i].Exercise_Name === ex_name) {
+                    exercises.splice(i, 1)
+                    deleted = true
+                    i -= 1
+                }
+            }
+        }
+
+        // 2. delete ex_name.json file
+        const file_name: string = ex_name + ".json"
+        const uri: string = data_dir + file_name
+        // if the file exists, delete it
+        if (checkFile(file_name)) {
+            wrapAsync(FS.deleteAsync, uri)
+            deleted = true
+        }
+
+        // not sure if we want to destructively remove all historical records of this exercise
+        // from the calendar/previous months
+
+
+        return deleted
     }
 
-    getCalendarView (month: bigint):  Muscle_Group[][] {
-      // steve 
+    getCalendarView (month: bigint, year: bigint):  Muscle_Group[][] {
+        // if month not in range 1-12, throw exception
+        if (month <= 0 || month >= 13)
+            throw new InvalidDateException(month, year);
+
+        // try to get the file with the given month and year
+        const file_name: string  =  month + "_" + year + ".json"
+        const uri: string = data_dir + file_name
+        // if the file does not exist, throw exception
+        if (!(checkFile(file_name)))
+            throw new InvalidDateException(month, year);
+
+        // if the file exists, parse the file into a list of workouts for that month
+        let content: Workout[] = JSON.parse(wrapAsync(FS.readAsStringAsync, uri))
+
+        let monthView : Muscle_Group[][] = []
+
+
+        for (let i = 0; i < content.length; i++) {  // iterate through the days of the month
+            let daySet : Muscle_Group[] = []
+            for (let j = 0; j < content[i].Sets.length; j++) {  // iterate through the exercises of the day
+                daySet.push(...this.getMuscleGroups(content[i].Sets[j].Exercise_Name))
+            }
+
+            // filter daySet by unique since it can contain duplicates, then add the daySet to the month array
+            daySet = daySet.filter((muscle, index, self) => self.indexOf(muscle) === index);
+            monthView[i] = daySet
+        }
+
+        return monthView
+    }
+
+    // private helper function for getCalendarView
+    // given an exercise name, returns its muscle groups
+    // Todo: should type Exercise's Muscle_Group be an array? if so, update getMuscleGroups
+    getMuscleGroups (ex_name: string): Muscle_Group[] {
+        const file_name: string = ex_name + ".json"
+        const uri: string = data_dir + file_name
+        if (!(checkFile(file_name)))
+            throw new InvalidExerciseException(ex_name)
+
+        const content = JSON.parse(wrapAsync(FS.readAsStringAsync, uri)) as Exercise
+
+        const groups : Muscle_Group[] = []
+        groups.push(content.Muscle_Group)
+
+        return groups
     }
 }
 
@@ -154,6 +233,14 @@ class InvalidExerciseException extends Error {
     super(`Invalid exercise: ${exerciseName}`);
     this.name = "InvalidExerciseException";
   }
+}
+
+// Exception class that creates InvalidDateException for getCalendarView func
+class InvalidDateException extends Error {
+    constructor(month: bigint, year: bigint) {
+        super(`Invalid date: ${year}, ${month}`);
+        this.name = "InvalidDateException";
+    }
 }
 
 // default export the class
