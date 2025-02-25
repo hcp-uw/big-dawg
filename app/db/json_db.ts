@@ -10,16 +10,16 @@ export class json_db implements DB {
     saveWorkout(w: Workout) : boolean {
       const file_name: string = (w.Date.getMonth() + 1) + "_" + w.Date.getFullYear() + ".json"
       const uri: string = data_dir + file_name
-      var workout_exists: boolean = createFile(file_name)
-      var content: (Workout|undefined)[]
+      let workout_exists: boolean = createFile(file_name)
+      let content: (Workout|null)[]
       if (workout_exists) {
         content = JSON.parse(wrapAsync(FS.readAsStringAsync, uri))
-        workout_exists = !(content[w.Date.getDate() - 1] === undefined)
+        workout_exists = !(content[w.Date.getDate() - 1] === null)
       } else {
-        content = new Array<Workout|undefined>(31).fill(undefined)
+        content = new Array<Workout|null>(31).fill(null)
       }
       content[w.Date.getDate() - 1] = w
-      var result = wrapAsync(FS.writeAsStringAsync, uri, JSON.stringify(content))
+      wrapAsync(FS.writeAsStringAsync, uri, JSON.stringify(content))
       return workout_exists
     }
 
@@ -29,9 +29,8 @@ export class json_db implements DB {
       if (!(checkFile(file_name))) {
         return null
       }
-      var content: Workout[] = JSON.parse(wrapAsync(FS.readAsStringAsync, uri))
-      var result = content[date.getDate() - 1]
-      if (result === undefined) { return null }
+      let content: Workout[] = JSON.parse(wrapAsync(FS.readAsStringAsync, uri))
+      let result: Workout | null = content[date.getDate() - 1]
       return result
     }
 
@@ -41,11 +40,15 @@ export class json_db implements DB {
       if (!(checkFile(file_name))) {
         return false
       }
-      var content: (Workout|undefined)[] = JSON.parse(wrapAsync(FS.readAsStringAsync, uri))
-      const result: boolean  = !(content[date.getDate() - 1] === undefined)
-      content[date.getDate() - 1] = undefined
+      let content: (Workout|null)[] = JSON.parse(wrapAsync(FS.readAsStringAsync, uri))
+      const result: boolean  = !(content[date.getDate() - 1] === null)
+      if (content[date.getDate() - 1] === null) {
+        // nothing to delete
+        return false
+      }
+      content[date.getDate() - 1] = null
       wrapAsync(FS.writeAsStringAsync, uri, JSON.stringify(content))
-      return result
+      return true
     }
 
     getExerciseList (): Exercise_List | null{
@@ -54,9 +57,8 @@ export class json_db implements DB {
       if (!(checkFile(file_name))) {
         return null
       }
-      
-      const content = wrapAsync(FS.readAsStringAsync, uri);
-      const exerciseList = JSON.parse(content) as Exercise_List;
+      const content: string = wrapAsync(FS.readAsStringAsync, uri);
+      const exerciseList: Exercise_List = JSON.parse(content);
       return exerciseList;
     }
 
@@ -67,8 +69,8 @@ export class json_db implements DB {
         // throw exception if the file name does not exist
         throw new InvalidExerciseException(ex_name);
       }
-      const content = wrapAsync(FS.readAsStringAsync, uri);
-      const exerciseHist = JSON.parse(content) as Exercise_Hist;
+      const content: string = wrapAsync(FS.readAsStringAsync, uri);
+      const exerciseHist: Exercise_Hist = JSON.parse(content);
       return exerciseHist;
     }
 
@@ -210,8 +212,8 @@ function createDir(): void {
 
 // wrapper for async functions that blocks program until async functions are done
 function wrapAsync<Targs extends any[], TReturn> (fun: (...args: Targs) => Promise<TReturn>, ...args: Targs): TReturn {
-  var promise_resolved: boolean = false 
-  var result: any
+  let promise_resolved: boolean = false 
+  let result: any
   fun(...args).then((r: TReturn) => {
     result = r
     promise_resolved = true
