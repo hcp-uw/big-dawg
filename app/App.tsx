@@ -3,8 +3,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import TabLayout from './(tabs)';
 import Index from './(tabs)/index'; // Your main screen
-import WorkoutPreset from './(tabs)/WorkoutPreset'; // New screen to navigate to
-import AddExercise from './(tabs)/add-exercise';
+import WorkoutPreset from './(tabs)/workout_preset'; // New screen to navigate to
+import AddExercise from './(tabs)/(exercises)/add_exercise';
 
 const Stack = createStackNavigator();
 
