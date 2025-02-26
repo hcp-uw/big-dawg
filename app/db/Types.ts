@@ -6,6 +6,7 @@ export interface DB {
     *   if a workout for that date already exists that workout is replaced
     *   Params:
     *       -- w: the workout to save
+    *   Throws: InvalidExerciseException if one of the sets is for an exercise that doesn't exist, does nothing to db
     *   Returns:
     *       -- true if a workout for that date was replaced, false otherwise
     */
@@ -66,11 +67,11 @@ export interface DB {
     *   Params: 
     *       -- ex_name: the name of the exercise to delete 
     *   Throws: 
-    *       -- InvalidExerciseException: if the given exercise name does not exist 
+    *       -- InvalidExerciseException: if the given exercise name does not exist
     *   Returns: 
     *       -- true if the exercise was deleted, false if not
     */
-    deleteExercise: (ex_name: string) => boolean
+    //deleteExercise: (ex_name: string) => boolean
     
     /* 
     *   gets the muscle group information for the workout calendar
@@ -86,7 +87,8 @@ export interface DB {
     getCalendarView: (month: bigint, year: bigint) => Muscle_Group[][]
 }
 
-export type Muscle_Group = "Chest" | "Back" | "Legs" | "Triceps" | "Biceps" | "Shoulders"
+//export type Muscle_Group = "Chest" | "Back" | "Legs" | "Triceps" | "Biceps" | "Shoulders"
+export type Muscle_Group = keyof Exercise_List;
 
 // export type Exercise_Type = "Weight" | "Cardio"  //Not in MVP but may be useful in future 
 
@@ -116,8 +118,10 @@ export type Set = {
 
 export type Exercise_Hist = {
     Exercise_Name : string
-    Hist : Set[]
-    Date : Date // why was this added here?
+    Hist : ([Set, Date])[]
+   /* let my_tuple: [Set, Date] = Hist[0]
+    my_tuple[0] : Set
+    my_tuple[1] : Date*/
 }
 
 export type Workout = {

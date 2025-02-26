@@ -1,4 +1,4 @@
-import {DB, Workout, Exercise_List, Exercise_Hist, Muscle_Group, Exercise} from './Types'
+import {DB, Workout, Exercise_List, Exercise_Hist, Muscle_Group, Exercise, Set} from './Types'
 import * as FS from 'expo-file-system'
 
 const data_dir: string = FS.documentDirectory + '.big-dawg/data/'
@@ -18,9 +18,52 @@ export class json_db implements DB {
       } else {
         content = new Array<Workout|null>(31).fill(null)
       }
+      if (!(this.addToExerciseHist(w.Sets, w.Date))) {
+        throw new InvalidExerciseException("")
+      }
       content[w.Date.getDate() - 1] = w
       wrapAsync(FS.writeAsStringAsync, uri, JSON.stringify(content))
       return workout_exists
+    }
+
+    // helper for saveWorkout
+    // Given a workout and a date adds/replaces history for each exercise in the array
+    // returns true if succesful, false if one of the exercises for the sets doesn't exist
+    addToExerciseHist(sets: Set[], d: Date) : boolean {
+      // check all exercise names to make sure they are valid
+      let exerciseList: Exercise_List| null = this.getExerciseList()
+      if (exerciseList == null && sets.length != 0) {
+        return false
+      } 
+      let exerciseNames: string[] = Object.values(exerciseList as Exercise_List)
+        .flat()  // Flatten the array of arrays (e.g., Chest[], Back[], etc.)
+        .map(exercise => exercise.Exercise_Name);  // Extract Exercise_Name
+      sets.forEach((s: Set) => {
+        if (!exerciseNames.includes(s.Exercise_Name)) {
+          return false
+        }
+      });
+
+      // now that we know all exercise names are valid, for each exercise add it to the respective .json
+      for (let i = 0; i < sets.length; i++) {
+          // get the exercise of the current set we want to add
+          const ex: Exercise_Hist = this.getExerciseHistory(sets[i].Exercise_Name)
+          
+          // search for and splice out any existing history element with a matching date for this exercise
+          for (let j = 0; j < ex.Hist.length; j++) {
+              if (ex.Hist[j][1] === d) {
+                  ex.Hist.splice(j, 1)
+                  j -= 1
+              }
+          } 
+          
+          // now that there are no more history elements with the same date, add the new date in 
+          ex.Hist.push([sets[i], d])
+
+          // rewrite the updated object to file
+          const ex_uri: string = data_dir + sets[i].Exercise_Name + ".json"
+          wrapAsync(FS.writeAsStringAsync, ex_uri, JSON.stringify(ex))
+      }
     }
 
     getWorkout (date: Date): Workout | null {
@@ -46,58 +89,97 @@ export class json_db implements DB {
         // nothing to delete
         return false
       }
-      content[date.getDate() - 1] = null
+      if (content[date.getDate() - 1] != null) {
+        let exercise_names : string[] = (content[date.getDate() - 1] as Workout).Sets.map(exercise => exercise.Exercise_Name)
+        this.deleteFromExerciseHist(exercise_names, date)
+        content[date.getDate() - 1] = null
+      }
       wrapAsync(FS.writeAsStringAsync, uri, JSON.stringify(content))
       return true
     }
 
-    getExerciseList (): Exercise_List | null{
-      const file_name: string = "Exercise_List.json" // Assuming that there is 1 file with all the exercises
+    // helper for deleteWorkout
+    // Given a list of exercise names and gor each exercise in exercise names removes sets from that date 
+    deleteFromExerciseHist(ex_names: string[], d : Date) : void {
+        // for each exercise we want to update
+        for (let i = 0; i < ex_names.length; i++) {
+            // get the file and parse it into a Exercise_Hist object 
+            const ex: Exercise_Hist = this.getExerciseHistory(ex_names[i])
+            
+                        // loop through ex.Hist set and splice out every element with a matching date
+            for (let j = 0; j < ex.Hist.length; j++) {
+                if (ex.Hist[j][1] === d) {
+                    ex.Hist.splice(j, 1)
+                    j -= 1
+                }
+            }
+
+            // now that the elements with matching dates are gone from the object, rewrite the
+            // object to file
+            const ex_uri: string = data_dir + ex_names[i] + ".json"
+            wrapAsync(FS.writeAsStringAsync, ex_uri, JSON.stringify(ex))
+        }
+    }
+
+    getExerciseList (): Exercise_List | null {
+      const file_name: string = "Exercise_List.json"
       const uri: string = data_dir + file_name
       if (!(checkFile(file_name))) {
         return null
       }
-      const content: string = wrapAsync(FS.readAsStringAsync, uri);
-      const exerciseList: Exercise_List = JSON.parse(content);
-      return exerciseList;
+      let content: Exercise_List = JSON.parse(wrapAsync(FS.readAsStringAsync, uri))
+      return content
     }
 
     getExerciseHistory (ex_name: string): Exercise_Hist {
-      const file_name: string = ex_name + ".json"  // For example, "Squat.json", "Bench_Press.json", etc.
+      const file_name: string = ex_name + ".json"
       const uri: string = data_dir + file_name
       if (!(checkFile(file_name))) {
-        // throw exception if the file name does not exist
-        throw new InvalidExerciseException(ex_name);
+        throw new InvalidExerciseException(ex_name)
       }
-      const content: string = wrapAsync(FS.readAsStringAsync, uri);
-      const exerciseHist: Exercise_Hist = JSON.parse(content);
-      return exerciseHist;
+      let content: Exercise_Hist = JSON.parse(wrapAsync(FS.readAsStringAsync, uri))
+      return content
     }
 
     saveExercise (ex: Exercise): boolean {
       // Save to exerciseHistory
       // If custom exercise, add to the history as a new file
+      // add exerccise to exerccise list
       const file_name: string = ex.Exercise_Name + ".json"
       const uri: string = data_dir + file_name;
       let exerciseHist: Exercise_Hist;
       if (checkFile(file_name)) {
-        const content = wrapAsync(FS.readAsStringAsync, uri);
-        exerciseHist = JSON.parse(content) as Exercise_Hist;  // exerciseHist holds the history of the exercise
-      } else {
-        exerciseHist = { Exercise_Name: ex.Exercise_Name, Hist: [], Date: new Date()};  // Create a new history for the exercise
-        exerciseHist.Exercise_Name = ex.Exercise_Name;
+        return false
       }
-      exerciseHist.Hist.push(ex); // Fix this later, bc idk if this is pushing the history into the file
-      exerciseHist.Date = new Date();
-      
-      // the updated content is the new history of the exercise
-      const updatedContent = JSON.stringify(exerciseHist, null, 2);  // Converts TS to JSON
-      wrapAsync(FS.writeAsStringAsync, uri, updatedContent); // Writes the updated content to the file
-      return true;  // Fix since, there is no way for this func to return false since all ex, is treated as eithe pre or custom
+      // Creates new file for that exercise
 
+      const hist : Exercise_Hist = {Exercise_Name: ex.Exercise_Name, Hist: new Array<[Set, Date]>(0) }
+      const updatedContent: string = JSON.stringify(hist) // can add null, 2 for spaces
+      wrapAsync(FS.writeAsStringAsync, uri, updatedContent);
+
+      const list: Exercise_List | null = this.getExerciseList();
+      let exercise_list: Exercise_List;
+      if (list != null) {
+        exercise_list = list
+      }
+      else {
+        exercise_list = {Chest: [],
+          Back: [],
+          Legs: [],
+          Triceps: [],
+          Biceps: [],
+          Shoulders: [],}
+      }
+      // add our exercise
+      exercise_list[ex.Muscle_Group].push(ex)
+
+      // Update the Exercise_List JSON file with the new list of names
+      const updatedListContent = JSON.stringify(exercise_list);
+      wrapAsync(FS.writeAsStringAsync, data_dir + "Exercise_List.json", updatedListContent);
+      return true
     }
 
-    deleteExercise (ex_name: string): boolean {
+    /* deleteExercise (ex_name: string): boolean {
         let deleted : boolean = false
 
         // two step removal: 1. remove from exerciselist
@@ -107,17 +189,24 @@ export class json_db implements DB {
 
         // Since the ex_name could be in any of the muscle group Exercise arrays, we check each group
         for (const muscleGroup in exerciseList) {
-            // look at each exercise for that group; if the name matches, splice it out of the array
+            // look at each exercise for that group if the name matches, splice it out of the array
             const exercises: Exercise[] = exerciseList[muscleGroup as keyof Exercise_List]
 
-            for (let i = 0; i < exercises.length; i++) {
+            for (let i = 0 i < exercises.length i++) {
                 if (exercises[i].Exercise_Name === ex_name) {
                     exercises.splice(i, 1)
                     deleted = true
-                    i -= 1
+                    break  // assuming that the ex_name only appears once in the entire Exercise_List
                 }
             }
+            
+            if (deleted)
+                break  // assuming that the ex_name only appears once in the entire Exercise_List
         }
+        
+        // write the updated Exercise_List back to disk
+        const ex_list_uri: string = data_dir + "Exercise_List.json"
+        wrapAsync(FS.writeAsStringAsync, ex_list_uri, JSON.stringify(exerciseList))
 
         // 2. delete ex_name.json file
         const file_name: string = ex_name + ".json"
@@ -133,34 +222,33 @@ export class json_db implements DB {
 
 
         return deleted
-    }
+    }*/
 
     getCalendarView (month: bigint, year: bigint):  Muscle_Group[][] {
         // if month not in range 1-12, throw exception
         if (month <= 0 || month >= 13)
-            throw new InvalidDateException(month, year);
+            throw new InvalidDateException(month, year)
 
         // try to get the file with the given month and year
         const file_name: string  =  month + "_" + year + ".json"
         const uri: string = data_dir + file_name
         // if the file does not exist, throw exception
         if (!(checkFile(file_name)))
-            throw new InvalidDateException(month, year);
+            throw new InvalidDateException(month, year)
 
         // if the file exists, parse the file into a list of workouts for that month
         let content: Workout[] = JSON.parse(wrapAsync(FS.readAsStringAsync, uri))
 
         let monthView : Muscle_Group[][] = []
 
-
-        for (let i = 0; i < content.length; i++) {  // iterate through the days of the month
+        for (let i = 0 i < content.length i++) {  // iterate through the days of the month
             let daySet : Muscle_Group[] = []
-            for (let j = 0; j < content[i].Sets.length; j++) {  // iterate through the exercises of the day
+            for (let j = 0 j < content[i].Sets.length j++) {  // iterate through the exercises of the day
                 daySet.push(...this.getMuscleGroups(content[i].Sets[j].Exercise_Name))
             }
 
             // filter daySet by unique since it can contain duplicates, then add the daySet to the month array
-            daySet = daySet.filter((muscle, index, self) => self.indexOf(muscle) === index);
+            daySet = daySet.filter((muscle, index, self) => self.indexOf(muscle) === index)
             monthView[i] = daySet
         }
 
@@ -169,7 +257,6 @@ export class json_db implements DB {
 
     // private helper function for getCalendarView
     // given an exercise name, returns its muscle groups
-    // Todo: should type Exercise's Muscle_Group be an array? if so, update getMuscleGroups
     getMuscleGroups (ex_name: string): Muscle_Group[] {
         const file_name: string = ex_name + ".json"
         const uri: string = data_dir + file_name
@@ -232,16 +319,16 @@ function wrapAsync<Targs extends any[], TReturn> (fun: (...args: Targs) => Promi
 // Maybe we can put this inside a new file called exception.ts
 class InvalidExerciseException extends Error {
   constructor(exerciseName: string) {
-    super(`Invalid exercise: ${exerciseName}`);
-    this.name = "InvalidExerciseException";
+    super(`Invalid exercise: ${exerciseName}`)
+    this.name = "InvalidExerciseException"
   }
 }
 
 // Exception class that creates InvalidDateException for getCalendarView func
 class InvalidDateException extends Error {
     constructor(month: bigint, year: bigint) {
-        super(`Invalid date: ${year}, ${month}`);
-        this.name = "InvalidDateException";
+        super(`Invalid date: ${year}, ${month}`)
+        this.name = "InvalidDateException"
     }
 }
 

@@ -8,7 +8,7 @@ For each month we will have a json file with the workout history for that month 
 or GetCalendarView is called we will simply store the entire month in a cache (ie memory). This is since users are likely to not
 get data from different months
 
-Feb2025.json:
+2_2025.json:
     [
         {
             Date: String; // feb 1st
@@ -27,13 +27,19 @@ Feb2025.json:
         };
     ]
 
+We have a file ExerciseList.json that stores all exercise info
+ExerciseList.json
+    {
+        [Exercises]
+    }
+
+where each exercise has the exercise type
+
 For each exercise we will also have a file which will store both info abt exercise and the exercise history
 Note: maybe we will change this to make getExerciseList() faster idk
 
 Squat.json
     {
         Exercise_Name : string;
-        Muscle_Group : Muscle_Group; 
-        Comment : string;
-        Hist = Set[]
+        Hist = ([Set, Date])[]
     }
