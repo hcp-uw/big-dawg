@@ -62,4 +62,46 @@ export const styles = StyleSheet.create({
     color: colors.BUTTON_TEXT,
     borderRadius: 10,
   }, 
+  
+  // HEADER STYLES (IMPORTED FROM HOME PAGE)
+  headerContainer: {
+    backgroundColor: colors.BACKGROUND_COLOR,
+  },
+  header: {
+    backgroundColor: colors.TAB_TINT_COLOR,
+    paddingTop: 60,
+    paddingBottom: 15,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+  },
+  headerContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    height: 50,
+  },
+  logo: {
+    width: 45,
+    height: 45,
+    resizeMode: "contain",
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: colors.BUTTON_TEXT,
+    marginLeft: 12,
+  },
+  subHeaderText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: colors.WHITE,
+  },
+
+  // BACK BUTTON CONTAINER
+  backContainer: {
+    backgroundColor: colors.BACKGROUND_COLOR,
+    flex: 0.3,
+    justifyContent: 'flex-start',
+    alignItems: 'flex-end',
+  }
 });

@@ -1,50 +1,14 @@
-# Welcome to your Expo app 👋
+# Welcome to BIG DAWG 👋
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**Big Dawg** is a user-friendly mobile application designed to help young adults, especially college students, track their fitness progress and set personalized workout plans. 
 
-## Get started
+With an intuitive user interface, Big Dawg offers features like a rest timer, and interactive workout rings that provide a visual way to progress your daily workout. Users can also monitor their progress with detailed graphs, making it easy to see improvements over time. 
 
-1. Install dependencies
+With the convenience of the app and features that encourage your workout, Big Dawg makes it simple for users to **stay consistent** and achieve their fitness goals. 💪🔥🔥🔥
 
-   ```bash
-   npm install
-   ```
+We are building our app on [Expo](https://expo.dev), allowing both IOS and Android development.
 
-2. Start the app
+## Project Links
+[Design Spec](https://docs.google.com/document/d/1QbWJb0kECc7VsmT5B-eNRYg6oHW87e8hIJf0m4xqtqM/edit?usp=sharing)
 
-   ```bash
-    npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+[Figma](https://www.figma.com/proto/DJ7ITxQZ5WIV72COjDJ7g2/big-dawg?node-id=0-1&t=dR1eAcUhgphNbPFA-1)
