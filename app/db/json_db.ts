@@ -64,6 +64,7 @@ export class json_db implements DB {
           const ex_uri: string = data_dir + sets[i].Exercise_Name + ".json"
           wrapAsync(FS.writeAsStringAsync, ex_uri, JSON.stringify(ex))
       }
+      return true
     }
 
     getWorkout (date: Date): Workout | null {
@@ -241,9 +242,9 @@ export class json_db implements DB {
 
         let monthView : Muscle_Group[][] = []
 
-        for (let i = 0 i < content.length i++) {  // iterate through the days of the month
+        for (let i = 0; i < content.length; i++) {  // iterate through the days of the month
             let daySet : Muscle_Group[] = []
-            for (let j = 0 j < content[i].Sets.length j++) {  // iterate through the exercises of the day
+            for (let j = 0; j < content[i].Sets.length; j++) {  // iterate through the exercises of the day
                 daySet.push(...this.getMuscleGroups(content[i].Sets[j].Exercise_Name))
             }
 

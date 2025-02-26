@@ -113,7 +113,7 @@ export type Set = {
     Exercise_Name : string
     Weight : number
     Reps : bigint
-    Comment : string
+    Comment : string | null
 }
 
 export type Exercise_Hist = {
@@ -129,5 +129,5 @@ export type Workout = {
     TimeStarted : bigint
     TimeEnded : bigint
     Sets : Set[]
-    WorkoutComment : string
+    WorkoutComment : string|null
 }
