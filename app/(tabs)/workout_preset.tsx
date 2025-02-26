@@ -131,7 +131,7 @@ const WorkoutPreset = () => {
       {/* Create New Workout Button (positioned above bottom tab) */}
       <TouchableOpacity
         style={[styles.createButton, { bottom: insets.bottom + 60 }]}
-        onPress={() => router.push("/AddWorkout")}
+        onPress={() => router.push({ pathname: "/(tabs)/(workouts)/add_workout" })}
       >
         <Text style={styles.createButtonText}>Create New Workout</Text>
       </TouchableOpacity>

@@ -88,7 +88,7 @@ export default function TabLayout() {
             }}
           />
           <Tabs.Screen
-            name="WorkoutPreset"
+            name="workout_preset"
             options={{
               tabBarIcon: ({ color, focused }) => (
                 <Ionicons name={focused ? "fitness-sharp" : "fitness-outline"} size={24} color={color}  style={{ marginLeft: 10}}/>
@@ -97,21 +97,27 @@ export default function TabLayout() {
             }}
           />
           <Tabs.Screen
-            name='(exercises)/new-exercise'
+            name='(exercises)/new_exercise'
             options={{
               href: null,
             }}
           />
           <Tabs.Screen
-            name='(exercises)/add-exercise'
+            name='(exercises)/add_exercise'
+            options={{
+              href:null,
+            }} 
+          />
+          <Tabs.Screen
+            name='(workouts)/add_workout'
             options={{
               href:null,
             }} 
           />
         </Tabs>
 
-        <View style={styles.plusButtonContainer}>
-          <Pressable style={styles.plusButton} onPress={doPlusClick}>
+        <View style={localStyles.plusButtonContainer}>
+          <Pressable style={localStyles.plusButton} onPress={doPlusClick}>
             <Ionicons name="add-outline" size={55} color={colors.TAB_TINT_COLOR}/>
           </Pressable>
         </View>
@@ -123,14 +129,14 @@ export default function TabLayout() {
           <View style={localStyles.modalOverlay}>
             <View style={localStyles.modalContent}>
               {/* Dropdown Buttons */}
-              <Pressable style={styles.modalButton} onPress={() => { closeModal(); navigation.navigate('WorkoutPreset'); }}>
-                <Text style={styles.modalButtonText}>Choose workout preset</Text>
+              <Pressable style={localStyles.modalButton} onPress={() => { closeModal(); navigation.navigate('WorkoutPreset'); }}>
+                <Text style={localStyles.modalButtonText}>Choose workout preset</Text>
               </Pressable>
-              <Pressable style={styles.modalButton} onPress={() => console.log("add exercise")}>
-                <Text style={styles.modalButtonText}>New exercise</Text>
+              <Pressable style={localStyles.modalButton} onPress={() => console.log("add exercise")}>
+                <Text style={localStyles.modalButtonText}>New exercise</Text>
               </Pressable>
-              <Pressable style={styles.modalButton} onPress={() => console.log("New timer")}>
-                <Text style={styles.modalButtonText}>New timer</Text>
+              <Pressable style={localStyles.modalButton} onPress={() => console.log("New timer")}>
+                <Text style={localStyles.modalButtonText}>New timer</Text>
               </Pressable>
   
               {/* Close Button */}
@@ -141,8 +147,11 @@ export default function TabLayout() {
           </View>
           </Modal>
         </>
-      );
-  }
+  );
+}
+
+const localStyles = StyleSheet.create({
+  plusButtonContainer: {
     position: "absolute",
     bottom: 40,
     alignSelf: "center",
