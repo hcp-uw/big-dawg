@@ -12,4 +12,3 @@ We are building our app on [Expo](https://expo.dev), allowing both IOS and Andro
 [Design Spec](https://docs.google.com/document/d/1QbWJb0kECc7VsmT5B-eNRYg6oHW87e8hIJf0m4xqtqM/edit?usp=sharing)
 
 [Figma](https://www.figma.com/proto/DJ7ITxQZ5WIV72COjDJ7g2/big-dawg?node-id=0-1&t=dR1eAcUhgphNbPFA-1)
-

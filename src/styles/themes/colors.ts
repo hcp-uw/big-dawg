@@ -15,4 +15,4 @@ const colors = {
     TAB_TINT_COLOR: '#e6d5ff',
 };
 
-export default colors; 
+export default colors;

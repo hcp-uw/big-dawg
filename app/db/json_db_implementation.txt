@@ -1,0 +1,45 @@
+NOT FOR FRONT END!!! GTFO, implementation details not for u :)
+
+We will use types from Types.ts and implement the db interface with JSON_DB class.
+
+We will store our data across several json files. 
+
+For each month we will have a json file with the workout history for that month and when a function such as getWorkout()
+or GetCalendarView is called we will simply store the entire month in a cache (ie memory). This is since users are likely to not
+get data from different months
+
+2_2025.json:
+    [
+        {
+            Date: String; // feb 1st
+            TimeStarted : bigint;
+            TimeEnded : bigint;
+            Sets : Set[];
+            WorkoutComment : string
+        };
+        ...
+        {
+            Date: String; //feb 28th
+            TimeStarted : bigint;
+            TimeEnded : bigint;
+            Sets : Set[];
+            WorkoutComment : string
+        };
+    ]
+
+We have a file ExerciseList.json that stores all exercise info
+ExerciseList.json
+    {
+        [Exercises]
+    }
+
+where each exercise has the exercise type
+
+For each exercise we will also have a file which will store both info abt exercise and the exercise history
+Note: maybe we will change this to make getExerciseList() faster idk
+
+Squat.json
+    {
+        Exercise_Name : string;
+        Hist = ([Set, Date])[]
+    }
