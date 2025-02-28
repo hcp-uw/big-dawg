@@ -8,6 +8,8 @@ const WorkoutInput = () => {
   type SetField = 'reps' | 'weight';
   const [sets, setSets] = useState([{ id: 1, reps: "", weight: "", key:""}]); // Initial set
   const scrollViewRef = useRef<ScrollView>(null);
+  const { exerciseName } = useLocalSearchParams();
+  const router = useRouter();
 
   // Function to handle input changes
   const handleInputChange = (text: string, index: number, field: string, key: string) => {
@@ -34,10 +36,15 @@ const WorkoutInput = () => {
   return (
     <KeyboardAvoidingView 
       behavior={Platform.OS === "ios" ? "padding" : "height"} 
-      style={styles.container}
+      style={[localStyles.container]}
     >
-      <ScrollView ref={scrollViewRef} style={localStyles.scrollContainer}>
-        <Text style={styles.headerText}>Workout Tracker</Text>
+      <ScrollView 
+        ref={scrollViewRef} 
+        style={localStyles.scrollContainer} 
+        contentContainerStyle={{ paddingBottom: '20%' }}
+        keyboardShouldPersistTaps='handled'  
+      >
+        <Text style={styles.headerText}>{exerciseName}</Text>
 
         {sets.map((set, index) => (
           <View key={set.key} style={styles.container}>
@@ -65,7 +72,7 @@ const WorkoutInput = () => {
 
             {/* Remove Button (Only show if there's more than one set) */}
             {sets.length > 1 && (
-              <TouchableOpacity style={styles.button} onPress={() => removeSet(index)}>
+              <TouchableOpacity style={[styles.button, {width: '96%'}]} onPress={() => removeSet(index)}>
                 <Text style={styles.buttonText}>Remove Set</Text>
               </TouchableOpacity>
             )}
@@ -77,6 +84,11 @@ const WorkoutInput = () => {
           <Text style={styles.buttonText}>➕ Add Another Set</Text>
         </TouchableOpacity>
       </ScrollView>
+      <View style={[styles.backContainer]}>
+        <TouchableOpacity style={[styles.button]} onPress={() => router.back()}>
+            <Text style={styles.buttonText}>← Back</Text>
+        </TouchableOpacity>
+      </View>
     </KeyboardAvoidingView>
   );
 };
@@ -104,6 +116,7 @@ const localStyles = StyleSheet.create({
     marginBottom: 10,
   },
   scrollContainer: {
+    flex: 1,
     flexGrow: 1,
   },
 });
