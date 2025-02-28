@@ -100,7 +100,7 @@ export const styles = StyleSheet.create({
   // BACK BUTTON CONTAINER
   backContainer: {
     backgroundColor: colors.BACKGROUND_COLOR,
-    flex: 0.3,
+    flex: 0.25,
     justifyContent: 'flex-start',
     alignItems: 'flex-end',
   }

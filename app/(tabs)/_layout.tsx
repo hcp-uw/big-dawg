@@ -91,7 +91,7 @@ export default function TabLayout() {
             name="workout_preset"
             options={{
               tabBarIcon: ({ color, focused }) => (
-                <Ionicons name={focused ? "fitness-sharp" : "fitness-outline"} size={24} color={color}  style={{ marginLeft: 10}}/>
+                <Ionicons name={focused ? "fitness-sharp" : "fitness-outline"} size={24} color={color}  style={{}}/>
               ),
               title: 'Presets'
             }}
@@ -110,6 +110,12 @@ export default function TabLayout() {
           />
           <Tabs.Screen
             name='(workouts)/add_workout'
+            options={{
+              href:null,
+            }} 
+          />
+          <Tabs.Screen
+            name='(calendar)/DayWorkout'
             options={{
               href:null,
             }} 
