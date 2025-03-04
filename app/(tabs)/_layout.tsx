@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, Pressable, Modal } from "react-native";
 import { Image } from "expo-image";
 import { useState } from 'react';
 import colors from '@/src/styles/themes/colors';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute, getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import { RootStackParamList } from '@/app/types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { styles } from "@/src/styles/globalStyles";
@@ -12,12 +12,24 @@ import { StatusBar } from "expo-status-bar";
 
 const logo = require("@/assets/images/logo.png");
 
+const routeAliases: { [key: string]: string } = {
+  index: "Home",
+  search: "Search",
+  calendar: "Calendar",
+  workout_preset: "Workout Presets",
+  "(exercises)/new_exercise": "New Exercise",
+  "(exercises)/add_exercise": "Add Exercise",
+  "(workouts)/add_workout": "Add Workout",
+  "(calendar)/DayWorkout": "Day Workout",
+};
+
 type NavigationProps = NativeStackNavigationProp<RootStackParamList>;
 
 export default function TabLayout() {
   
   const [isModalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation<NavigationProps>();
+  const route = useRoute();
 
   const doPlusClick = () => {
     setModalVisible(true);
@@ -26,6 +38,13 @@ export default function TabLayout() {
   const closeModal = () => {
     setModalVisible(false);
   };
+
+  const getHeaderTitle = () => {
+    const routeName = route.name;
+    const routeOptions = getFocusedRouteNameFromRoute(route);
+    return routeAliases[routeOptions || routeName] || "Big Dawg";
+  };
+
   return (
       <>
         <Tabs
@@ -41,7 +60,7 @@ export default function TabLayout() {
                 <View style={styles.header}>
                   <View style={styles.headerContent}>
                     <Image source={logo} style={styles.logo} />
-                    <Text style={styles.headerTitle}>BIG DAWG</Text>
+                    <Text style={styles.headerTitle}>{getHeaderTitle()}</Text>
                   </View>
                 </View>
               </View>
