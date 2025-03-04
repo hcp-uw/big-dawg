@@ -3,6 +3,7 @@ import { Text, View, TextInput, FlatList, StyleSheet, Pressable, } from "react-n
 import colors from "@/src/styles/themes/colors";
 import { styles } from "@/src/styles/globalStyles";
 import { useRouter } from "expo-router";
+import GradientButton from "@/components/gradient_button";
 
 export default function SearchScreen() {
   const [query, setQuery] = useState("");
@@ -38,6 +39,7 @@ export default function SearchScreen() {
       <TextInput
         style={styles.input}
         placeholder="Search..."
+        placeholderTextColor={colors.WHITE}
         value={query}
         onChangeText={handleSearch}
       />
@@ -48,9 +50,7 @@ export default function SearchScreen() {
             data={filteredExercises}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => (
-              <Pressable style={[styles.button, {marginBottom: 0}]} onPress={() => handleExercisePress(item)}>
-                <Text style={styles.buttonText}>{item}</Text>
-              </Pressable>
+              <GradientButton title={item} onPress={() => handleExercisePress(item)} />
             )}
             contentContainerStyle={{ gap: 10 }}
             style={styles.flatList}
@@ -91,16 +91,18 @@ const workouts = [
 
 const localStyles = StyleSheet.create({
   addButtonContainer: {
-    flex: 0.15,
+    flex: 0.10,
     flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    bottom: '12%',
+    justifyContent: 'flex-end',
+    bottom: 100,
     padding: 10,
     backgroundColor: colors.BACKGROUND_COLOR,
   },
   addButton: {
     flex: 1,
-    backgroundColor: colors.BUTTON_COLOR,
+    backgroundColor: colors.PURPLE,
+    borderWidth: 2,
+    borderColor: colors.WHITE,
     padding: 10,
     borderRadius: 20,
     marginHorizontal: 5,

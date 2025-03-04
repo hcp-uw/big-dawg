@@ -8,6 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from '@/app/types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { styles } from "@/src/styles/globalStyles";
+import { StatusBar } from "expo-status-bar";
 
 const logo = require("@/assets/images/logo.png");
 
@@ -30,6 +31,7 @@ export default function TabLayout() {
         <Tabs
           screenOptions={{
             tabBarActiveTintColor: colors.ACTIVE_TAB_TINT,
+            tabBarInactiveTintColor: colors.WHITE,
             headerStyle: {
               backgroundColor: colors.HEADER_COLOR,
             },
@@ -165,6 +167,7 @@ const localStyles = StyleSheet.create({
   },
   plusButton: {
     backgroundColor: colors.ACTIVE_TAB_TINT,
+    outlineColor: "#FFF7FF",
     borderRadius: 35,
     elevation: 5,
     borderWidth: 3,
@@ -186,7 +189,7 @@ const localStyles = StyleSheet.create({
     alignItems: "center",
   },
   modalButton: {
-    backgroundColor: "#5f067d",
+    backgroundColor: "#8A00E0",
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 10,
@@ -195,7 +198,7 @@ const localStyles = StyleSheet.create({
     alignItems: "center",
   },
   modalButtonText: {
-    color: "#ffffff",
+    color: "#FFF7FF",
     fontSize: 18,
     fontWeight: "bold",
   },

@@ -12,10 +12,11 @@ export const styles = StyleSheet.create({
     color: '#fff',
   },
   button: {
-    backgroundColor: colors.BUTTON_COLOR,
-    padding: 15,
+    borderWidth: 1,
+    borderColor: colors.BUTTON_TEXT,
+    padding: 10,
     borderRadius: 20,
-    marginBottom: 10,
+    marginBottom: 0,
     marginHorizontal: 5,
   },
   buttonText: {
@@ -55,12 +56,13 @@ export const styles = StyleSheet.create({
   input: {
     height: 40,
     width: '96%',
-    backgroundColor: colors.BUTTON_COLOR,
-    borderWidth: 1,
+    backgroundColor: colors.BACKGROUND_COLOR,
+    borderWidth: 2,
+    borderColor: colors.WHITE,
     padding: 10,
     marginBottom: 20,
-    color: colors.BUTTON_TEXT,
     borderRadius: 10,
+    color: colors.WHITE,
   }, 
   
   // HEADER STYLES (IMPORTED FROM HOME PAGE)
