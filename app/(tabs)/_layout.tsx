@@ -13,14 +13,14 @@ import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 const logo = require("@/assets/images/logo.png");
 
 const routeAliases: { [key: string]: string } = {
-  index: "Home",
+  "": "Home",
   search: "Search",
   calendar: "Calendar",
   workout_preset: "Workout Presets",
-  "(exercises)/new_exercise": "New Exercise",
-  "(exercises)/add_exercise": "Add Exercise",
-  "(workouts)/add_workout": "Add Workout",
-  "(calendar)/DayWorkout": "Day Workout",
+  new_exercise: "New Exercise",
+  add_exercise: "Add Exercise",
+  add_workout: "Add Workout",
+  DayWorkout: "Day Workout",
 };
 
 export default function TabLayout() {
@@ -38,7 +38,7 @@ export default function TabLayout() {
 
   const getHeaderTitle = () => {
     const routeName = pathname.split("/").pop();
-    return routeName|| "Big Dawg";
+    return routeAliases[String(routeName)] || "Big Dawg";
   };
 
   return (
