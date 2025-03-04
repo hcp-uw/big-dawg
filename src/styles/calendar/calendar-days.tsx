@@ -128,9 +128,9 @@ const styles = StyleSheet.create({
     marginVertical: 6,
   },
   currentMonth: {
-    borderWidth: 1,
-    borderColor: colors.WHITE,
-    backgroundColor: "#B19Cd7",
+    borderWidth: 1.5,
+    borderColor: "#B892ff",
+    backgroundColor: colors.BLACK,
   },
   otherMonth: {
     borderWidth: 1,
@@ -138,6 +138,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.BLACK,
   },
   selectedDay: {
+    borderWidth: 1,
+    borderColor: colors.WHITE,
     backgroundColor: colors.PURPLE,
   },
   dayText: {
@@ -145,15 +147,19 @@ const styles = StyleSheet.create({
     color: colors.WHITE,
   },
   buttonPrev: {
-    backgroundColor: colors.PURPLE,
+    borderWidth: 1,
+    borderColor: colors.WHITE,
+    backgroundColor: colors.BLACK,
     paddingHorizontal: 20,
     paddingVertical: 5,
     borderRadius: 20,
     marginRight: 85,
   },
   buttonNext: {
-    backgroundColor: colors.PURPLE,
-    paddingHorizontal: 20,
+    borderWidth: 1,
+    borderColor: colors.WHITE,
+    backgroundColor: colors.BLACK,
+    paddingHorizontal: 25,
     paddingVertical: 5,
     borderRadius: 20,
     marginLeft: 85,
@@ -163,6 +169,8 @@ const styles = StyleSheet.create({
     color: colors.WHITE,
   },
   calendarFooter: {
+    paddingVertical: 5,
+    paddingHorizontal: 5,
     flexDirection: "row",
   },
 });
