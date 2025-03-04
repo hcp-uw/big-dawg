@@ -11,7 +11,15 @@ const Stack = createStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Index" screenOptions={{ headerShown: true }}>
+      <Stack.Navigator 
+        initialRouteName="Index" 
+        screenOptions={{ 
+          headerShown: true,
+          transitionSpec: {
+            open: { animation: 'timing', config: { duration: 300 } },
+            close: { animation: 'timing', config: { duration: 300 } },
+          }
+        }}>
       <Stack.Screen name="Index" component={TabLayout} />
 
       {/* Other Screens */}

@@ -28,7 +28,6 @@ const AddExercise = () => {
     return (
       <>
         <View style={[styles.container, {justifyContent: 'flex-start'}]}>
-          <Text style={styles.headerText}>New Exercise</Text>
           <View style={localStyles.addContainer}>
               <Text style={styles.text}>Name</Text>
               <TextInput
