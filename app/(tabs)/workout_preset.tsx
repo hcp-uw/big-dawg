@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useRouter } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import {
   View,
   Text,
@@ -10,8 +10,9 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import colors from "@/src/styles/themes/colors";
+import { styles } from "@/src/styles/globalStyles";
 
-const WorkoutPreset = () => {
+export default function WorkoutPreset() {
   const insets = useSafeAreaInsets(); // Get safe area insets
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
@@ -56,44 +57,44 @@ const WorkoutPreset = () => {
         ListHeaderComponent={
           <>
             {/* Back Button */}
-            <TouchableOpacity style={styles.backButton}>
-              <Text style={styles.backButtonText}> &lt; Back </Text>
+            <TouchableOpacity style={localStyles.backButton} onPress={router.back}>
+              <Text style={localStyles.backButtonText}> &lt; Back </Text>
             </TouchableOpacity>
 
             {/* Title */}
-            <Text style={styles.title}>Select a workout plan:</Text>
+            <Text style={localStyles.title}>Select a workout plan:</Text>
 
             {/* Search Bar & Filters */}
             <View style={styles.searchContainer}>
               <TextInput
-                style={styles.searchInput}
+                style={localStyles.searchInput}
                 placeholder="Search by name"
                 placeholderTextColor={colors.WHITE}
                 value={searchQuery}
                 onChangeText={setSearchQuery} // Updates search query state
               />
-              <View style={styles.filters}>
+              <View style={localStyles.filters}>
                 {filters.map((filter) => (
                   <TouchableOpacity
                     key={filter}
-                    style={styles.filter}
+                    style={localStyles.filter}
                     onPress={() => removeFilter(filter)}
                   >
-                    <Text style={styles.backButtonText}>{filter} ✕</Text>
+                    <Text style={localStyles.backButtonText}>{filter} ✕</Text>
                   </TouchableOpacity>
                 ))}
                 <TouchableOpacity
                   onPress={() => setIsAddingFilter(true)}
-                  style={styles.addFilterButton}
+                  style={localStyles.addFilterButton}
                 >
-                  <Text style={styles.addFilterText}>+</Text>
+                  <Text style={localStyles.addFilterText}>+</Text>
                 </TouchableOpacity>
               </View>
 
               {isAddingFilter && (
-                <View style={styles.addFilterContainer}>
+                <View style={localStyles.addFilterContainer}>
                   <TextInput
-                    style={styles.filterInput}
+                    style={localStyles.filterInput}
                     placeholder="Add filter"
                     placeholderTextColor="#aaa"
                     value={newFilter}
@@ -101,15 +102,15 @@ const WorkoutPreset = () => {
                   />
                   <TouchableOpacity
                     onPress={addFilter}
-                    style={styles.addFilterButton}
+                    style={localStyles.addFilterButton}
                   >
-                    <Text style={styles.addFilterText}>✔</Text>
+                    <Text style={localStyles.addFilterText}>✔</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => setIsAddingFilter(false)}
-                    style={styles.cancelFilterButton}
+                    style={localStyles.cancelFilterButton}
                   >
-                    <Text style={styles.cancelFilterText}>✕</Text>
+                    <Text style={localStyles.cancelFilterText}>✕</Text>
                   </TouchableOpacity>
                 </View>
               )}
@@ -117,29 +118,29 @@ const WorkoutPreset = () => {
           </>
         }
         renderItem={({ item }) => (
-          <TouchableOpacity style={styles.presetItem}>
-            <Text style={styles.presetText}>{item.name}</Text>
+          <TouchableOpacity style={localStyles.presetItem}>
+            <Text style={localStyles.presetText}>{item.name}</Text>
           </TouchableOpacity>
         )}
         ListEmptyComponent={
           searchQuery ? (
-            <Text style={styles.noResultsText}>No workouts found.</Text>
+            <Text style={localStyles.noResultsText}>No workouts found.</Text>
           ) : null
         }
       />
 
       {/* Create New Workout Button (positioned above bottom tab) */}
       <TouchableOpacity
-        style={[styles.createButton, { bottom: insets.bottom + 60 }]}
+        style={[localStyles.createButton, { bottom: insets.bottom + 60 }]}
         onPress={() => router.push({ pathname: "/(tabs)/(workouts)/add_workout" })}
       >
-        <Text style={styles.createButtonText}>Create New Workout</Text>
+        <Text style={localStyles.createButtonText}>Create New Workout</Text>
       </TouchableOpacity>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
+const localStyles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.BLACK,
@@ -266,5 +267,3 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
-
-export default WorkoutPreset;

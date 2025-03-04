@@ -1,25 +1,18 @@
 import { Text, View, StyleSheet, Pressable } from 'react-native';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Dimensions } from 'react-native';
-import Svg, { Circle, G, Text as SvgText, TSpan } from 'react-native-svg';
-import Animated, { AnimatedProps, useAnimatedProps, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
-import { ReText } from 'react-native-redash';
+import { useRouter } from 'expo-router';
 import CircularProgress from 'react-native-circular-progress-indicator';
 import colors from '@/src/styles/themes/colors';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '@/app/types'; // Import your types
 
 const { width, height } = Dimensions.get("window");
 
 const CIRCLE_LENGTH = 400;
 const R = CIRCLE_LENGTH / (1.6 * Math.PI);
 
-type NavigationProps = NativeStackNavigationProp<RootStackParamList>;
-
 export default function Index() {
 
-  const navigation = useNavigation<NavigationProps>();
+  const router = useRouter();
 
   const [progress, setProgress] = useState(0);
   const [LEFT_MARGIN, setLeftMargin] = useState(-45);
@@ -32,10 +25,6 @@ export default function Index() {
     } else {
       setLeftMargin(-30);
     }
-  };
-
-  const doWorkoutPresetClick = () => {
-    navigation.navigate('WorkoutPreset');
   };
 
   return (
@@ -51,9 +40,9 @@ export default function Index() {
             progressValueFontSize={30}
             progressValueColor={colors.WHITE}
             maxValue={100}
-            inActiveStrokeColor={colors.PURPLE}
-            activeStrokeColor={colors.PINK}
-            activeStrokeSecondaryColor={colors.WHITE}
+            inActiveStrokeColor={colors.WHITE}
+            activeStrokeColor={colors.DARK_PINK}
+            activeStrokeSecondaryColor={colors.PINK}
             inActiveStrokeWidth={8}
             activeStrokeWidth={9}
             titleFontSize={20}
@@ -79,11 +68,11 @@ export default function Index() {
         
         <Text style={styles.noWorkouts}>No active workouts!</Text>
         
-        <Pressable style={styles.button} onPress={doWorkoutPresetClick}>
+        <Pressable style={styles.button} onPress={() => router.push('./workout_preset')}>
           <Text style={styles.buttonText}>+ Choose workout preset</Text>
         </Pressable>
         
-        <Pressable style={styles.button}>
+        <Pressable style={styles.button} onPress={() => router.push('./(exercises)/add_exercise')}>
           <Text style={styles.buttonText}>+ New exercise</Text>
         </Pressable>
         

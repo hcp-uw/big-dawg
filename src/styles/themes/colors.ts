@@ -5,6 +5,7 @@ const colors = {
     BLACK: '#201925',
     PURPLE: '#8A00E0',
     PINK: '#FF00FF',
+    DARK_PINK: '#b800b8',
 };
 
 export default colors;
@@ -15,4 +16,5 @@ export default colors;
     Off-Black: #201925
     Off-White: #FFF7FF
     Pink: #ff00ff
+    Dark Pink: #b800b8
 */

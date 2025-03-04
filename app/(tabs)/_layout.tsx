@@ -4,11 +4,11 @@ import { View, Text, StyleSheet, Pressable, Modal } from "react-native";
 import { Image } from "expo-image";
 import { useState } from 'react';
 import colors from '@/src/styles/themes/colors';
-import { useNavigation, useRoute, getFocusedRouteNameFromRoute } from '@react-navigation/native';
-import { RootStackParamList } from '@/app/types';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { styles } from "@/src/styles/globalStyles";
 import { StatusBar } from "expo-status-bar";
+import { useRouter, usePathname } from 'expo-router';
+import { Platform } from 'react-native';
+import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 
 const logo = require("@/assets/images/logo.png");
 
@@ -23,13 +23,10 @@ const routeAliases: { [key: string]: string } = {
   "(calendar)/DayWorkout": "Day Workout",
 };
 
-type NavigationProps = NativeStackNavigationProp<RootStackParamList>;
-
 export default function TabLayout() {
-  
+  const router = useRouter();
+  const pathname = usePathname();
   const [isModalVisible, setModalVisible] = useState(false);
-  const navigation = useNavigation<NavigationProps>();
-  const route = useRoute();
 
   const doPlusClick = () => {
     setModalVisible(true);
@@ -40,9 +37,8 @@ export default function TabLayout() {
   };
 
   const getHeaderTitle = () => {
-    const routeName = route.name;
-    const routeOptions = getFocusedRouteNameFromRoute(route);
-    return routeAliases[routeOptions || routeName] || "Big Dawg";
+    const routeName = pathname.split("/").pop();
+    return routeName|| "Big Dawg";
   };
 
   return (
@@ -156,10 +152,10 @@ export default function TabLayout() {
           <View style={localStyles.modalOverlay}>
             <View style={localStyles.modalContent}>
               {/* Dropdown Buttons */}
-              <Pressable style={localStyles.modalButton} onPress={() => { closeModal(); navigation.navigate('WorkoutPreset'); }}>
+              <Pressable style={localStyles.modalButton} onPress={() => { closeModal(); router.push('./workout_preset'); }}>
                 <Text style={localStyles.modalButtonText}>Choose workout preset</Text>
               </Pressable>
-              <Pressable style={localStyles.modalButton} onPress={() => console.log("add exercise")}>
+              <Pressable style={localStyles.modalButton} onPress={() => {closeModal(); router.push('./(exercises)/new_exercise')}}>
                 <Text style={localStyles.modalButtonText}>New exercise</Text>
               </Pressable>
               <Pressable style={localStyles.modalButton} onPress={() => console.log("New timer")}>
@@ -167,8 +163,8 @@ export default function TabLayout() {
               </Pressable>
   
               {/* Close Button */}
-              <Pressable style={[localStyles.modalButton, localStyles.closeButton]} onPress={closeModal}>
-                <Text style={[localStyles.modalButtonText, localStyles.closeButtonText]}>Close</Text>
+              <Pressable style={localStyles.closeButtonContainer} onPress={closeModal}>
+                <Ionicons name='close' style={localStyles.closeIcon} />
               </Pressable>
             </View>
           </View>
@@ -180,13 +176,13 @@ export default function TabLayout() {
 const localStyles = StyleSheet.create({
   plusButtonContainer: {
     position: "absolute",
-    bottom: 40,
+    bottom: Platform.OS === 'ios' ? 40 : 10,
     alignSelf: "center",
     zIndex: 10,
   },
   plusButton: {
     backgroundColor: colors.PURPLE,
-    outlineColor: "#FFF7FF",
+    outlineColor: colors.WHITE,
     borderRadius: 35,
     elevation: 5,
     borderWidth: 3,
@@ -202,28 +198,37 @@ const localStyles = StyleSheet.create({
   },
   modalContent: {
     width: "80%",
-    backgroundColor: "#e6d5ff",
+    backgroundColor: colors.BLACK,
     borderRadius: 15,
-    paddingVertical: 20,
+    paddingTop: 40,
+    paddingBottom: 20,
+    paddingHorizontal: 5,
     alignItems: "center",
+    position: 'relative',
   },
   modalButton: {
-    backgroundColor: "#8A00E0",
+    backgroundColor: colors.BLACK,
+    borderColor: colors.WHITE,
+    borderRadius: 15,
+    borderWidth: 2,
     paddingVertical: 12,
     paddingHorizontal: 20,
-    borderRadius: 10,
     marginVertical: 8,
     width: "90%",
     alignItems: "center",
   },
   modalButtonText: {
-    color: "#FFF7FF",
+    color: colors.WHITE,
     fontSize: 18,
-    fontWeight: "bold",
   },
-  closeButton: {
-    backgroundColor: "#d3d3d3",
-    marginTop: 20,
+  closeButtonContainer: {
+    position: 'absolute',
+    top: 15,
+    right: 15,
+  },
+  closeIcon: {
+    fontSize: 24,
+    color: colors.WHITE,
   },
   closeButtonText: {
     opacity: 1,
