@@ -3,7 +3,6 @@ import { Text, View, TextInput, FlatList, StyleSheet, Pressable, } from "react-n
 import colors from "@/src/styles/themes/colors";
 import { styles } from "@/src/styles/globalStyles";
 import { useRouter } from "expo-router";
-import GradientButton from "@/components/gradient_button";
 
 export default function SearchScreen() {
   const [query, setQuery] = useState("");
@@ -50,7 +49,9 @@ export default function SearchScreen() {
             data={filteredExercises}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => (
-              <GradientButton title={item} onPress={() => handleExercisePress(item)} />
+              <Pressable style ={styles.button} onPress={() => handleExercisePress(item)} >
+                <Text style={styles.buttonText}>{item}</Text>
+              </Pressable>
             )}
             contentContainerStyle={{ gap: 10 }}
             style={styles.flatList}
