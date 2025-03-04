@@ -6,13 +6,26 @@ import { useState } from 'react';
 import colors from '@/src/styles/themes/colors';
 import { styles } from "@/src/styles/globalStyles";
 import { StatusBar } from "expo-status-bar";
-import { useRouter } from 'expo-router';
+import { useRouter, usePathname } from 'expo-router';
 import { Platform } from 'react-native';
+import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 
 const logo = require("@/assets/images/logo.png");
 
+const routeAliases: { [key: string]: string } = {
+  index: "Home",
+  search: "Search",
+  calendar: "Calendar",
+  workout_preset: "Workout Presets",
+  "(exercises)/new_exercise": "New Exercise",
+  "(exercises)/add_exercise": "Add Exercise",
+  "(workouts)/add_workout": "Add Workout",
+  "(calendar)/DayWorkout": "Day Workout",
+};
+
 export default function TabLayout() {
   const router = useRouter();
+  const pathname = usePathname();
   const [isModalVisible, setModalVisible] = useState(false);
 
   const doPlusClick = () => {
@@ -22,6 +35,12 @@ export default function TabLayout() {
   const closeModal = () => {
     setModalVisible(false);
   };
+
+  const getHeaderTitle = () => {
+    const routeName = pathname.split("/").pop();
+    return routeName|| "Big Dawg";
+  };
+
   return (
       <>
         <Tabs
@@ -37,7 +56,7 @@ export default function TabLayout() {
                 <View style={styles.header}>
                   <View style={styles.headerContent}>
                     <Image source={logo} style={styles.logo} />
-                    <Text style={styles.headerTitle}>BIG DAWG</Text>
+                    <Text style={styles.headerTitle}>{getHeaderTitle()}</Text>
                   </View>
                 </View>
               </View>

@@ -89,7 +89,7 @@ export const styles = StyleSheet.create({
     resizeMode: "contain",
   },
   headerTitle: {
-    fontSize: 24,
+    fontSize: 32,
     fontWeight: "bold",
     color: colors.WHITE,
     marginLeft: 12,

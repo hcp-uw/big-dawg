@@ -13,7 +13,7 @@ import {
   NavigationIndependentTree,
 } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import Calendar from "@/src/styles/calendar/calendar";
+import Calendar from "@/src/styles/calendar/calendar-comp";
 import colors from "@/src/styles/themes/colors";
 import DayWorkout from "@/app/(tabs)/(calendar)/DayWorkout";
 
@@ -68,9 +68,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   text: {
-    color: colors.PINK,
+    color: colors.WHITE,
   },
   button: {
+    borderWidth: 1,
+    borderColor: colors.WHITE,
     backgroundColor: colors.BLACK,
     paddingHorizontal: 15,
     paddingVertical: 25,

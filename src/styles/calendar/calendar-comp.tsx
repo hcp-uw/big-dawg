@@ -2,14 +2,26 @@
 
 import React, { Component } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import CalendarDays from "./calendar-days"; // Make sure this is compatible with React Native
+import CalendarDays from "./calendar-days"; // Ensure compatibility with React Native
 import colors from "@/src/styles/themes/colors";
 
-export default class Calendar extends Component {
-  constructor() {
-    super();
+interface CalendarProps {
+  navigation: {
+    navigate: (screen: string, params?: any) => void;
+  };
+}
 
-    // sets weekdays and months
+interface CalendarState {
+  currentDay: Date;
+}
+
+export default class Calendar extends Component<CalendarProps, CalendarState> {
+  private weekdays: string[];
+  private months: string[];
+
+  constructor(props: CalendarProps) {
+    super(props);
+
     this.weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     this.months = [
       "January",
@@ -26,14 +38,12 @@ export default class Calendar extends Component {
       "December",
     ];
 
-    // set current day that is selected: starts on current date
     this.state = {
       currentDay: new Date(),
     };
   }
 
-  // change date that is selected and changes to workout page for that day
-  changeCurrentDay = (day) => {
+  changeCurrentDay = (day: { year: number; month: number; number: number }) => {
     const newDate = new Date(day.year, day.month, day.number);
     this.setState({ currentDay: newDate });
     this.props.navigation.navigate("DayWorkout", {
@@ -41,13 +51,10 @@ export default class Calendar extends Component {
     });
   };
 
-  // flips month that is being shown
-  changeMonth = (year, month, day) => {
+  changeMonth = (year: number, month: number, day: number) => {
     this.setState({ currentDay: new Date(year, month, day) });
   };
 
-  // renders main calendar including heading with current date, buttons to change
-  // months, and actual calendar days
   render() {
     return (
       <View style={styles.calendar}>
@@ -59,13 +66,11 @@ export default class Calendar extends Component {
         </View>
         <View style={styles.calendarBody}>
           <View style={styles.tableHeader}>
-            {this.weekdays.map((weekday, index) => {
-              return (
-                <View key={index} style={styles.weekday}>
-                  <Text style={styles.weekdayText}>{weekday}</Text>
-                </View>
-              );
-            })}
+            {this.weekdays.map((weekday, index) => (
+              <View key={index} style={styles.weekday}>
+                <Text style={styles.weekdayText}>{weekday}</Text>
+              </View>
+            ))}
           </View>
           <CalendarDays
             day={this.state.currentDay}
@@ -81,7 +86,7 @@ export default class Calendar extends Component {
 const styles = StyleSheet.create({
   calendar: {
     padding: 10,
-    backgroundColor: colors.BACKGROUND_COLOR,
+    backgroundColor: colors.BLACK,
     borderRadius: 10,
     elevation: 5,
   },
