@@ -49,7 +49,7 @@ export default function WorkoutPreset() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={localStyles.container}>
       <FlatList
         data={filteredPresets} // Use filtered list
         keyExtractor={(item) => item.id}
@@ -65,7 +65,7 @@ export default function WorkoutPreset() {
             <Text style={localStyles.title}>Select a workout plan:</Text>
 
             {/* Search Bar & Filters */}
-            <View style={styles.searchContainer}>
+            <View style={localStyles.searchContainer}>
               <TextInput
                 style={localStyles.searchInput}
                 placeholder="Search by name"
