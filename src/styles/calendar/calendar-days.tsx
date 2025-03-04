@@ -4,39 +4,54 @@ import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import colors from "@/src/styles/themes/colors";
 
-function CalendarDays({ day, changeCurrentDay, changeMonth }) {
-  // constants do set first day of months and track current
+interface CalendarDay {
+  currentMonth: boolean;
+  date: Date;
+  month: number;
+  number: number;
+  selected: boolean;
+  year: number;
+}
+
+interface CalendarDaysProps {
+  day: Date;
+  changeCurrentDay: (day: CalendarDay) => void;
+  changeMonth: (year: number, month: number, day: number) => void;
+}
+
+const CalendarDays: React.FC<CalendarDaysProps> = ({
+  day,
+  changeCurrentDay,
+  changeMonth,
+}) => {
   let firstDayOfMonth = new Date(day.getFullYear(), day.getMonth(), 1);
   let weekdayOfFirstDay = firstDayOfMonth.getDay();
-  let currentDays = [];
+  let currentDays: CalendarDay[] = [];
 
-  // function for flipping to the previous month
   const handlePrevMonth = () => {
     let currentMonth = day.getMonth();
     let currentYear = day.getFullYear();
     if (currentMonth === 0) {
-      currentYear = currentYear - 1;
+      currentYear -= 1;
       currentMonth = 11;
     } else {
-      currentMonth = currentMonth - 1;
+      currentMonth -= 1;
     }
     changeMonth(currentYear, currentMonth, 1);
   };
 
-  // function for flipping to the next month
   const handleNextMonth = () => {
     let currentMonth = day.getMonth();
     let currentYear = day.getFullYear();
     if (currentMonth === 11) {
-      currentYear = currentYear + 1;
+      currentYear += 1;
       currentMonth = 0;
     } else {
-      currentMonth = currentMonth + 1;
+      currentMonth += 1;
     }
     changeMonth(currentYear, currentMonth, 1);
   };
 
-  // sets up days of month in correct order
   for (let i = 0; i < 42; i++) {
     if (i === 0 && weekdayOfFirstDay === 0) {
       firstDayOfMonth.setDate(firstDayOfMonth.getDate() - 7);
@@ -48,8 +63,7 @@ function CalendarDays({ day, changeCurrentDay, changeMonth }) {
       firstDayOfMonth.setDate(firstDayOfMonth.getDate() + 1);
     }
 
-    // sets current day
-    let calendarDay = {
+    let calendarDay: CalendarDay = {
       currentMonth: firstDayOfMonth.getMonth() === day.getMonth(),
       date: new Date(firstDayOfMonth),
       month: firstDayOfMonth.getMonth(),
@@ -61,7 +75,6 @@ function CalendarDays({ day, changeCurrentDay, changeMonth }) {
     currentDays.push(calendarDay);
   }
 
-  // renders actual calendar
   return (
     <View>
       <View style={styles.calendarContainer}>
@@ -89,13 +102,13 @@ function CalendarDays({ day, changeCurrentDay, changeMonth }) {
         </View>
         <View style={styles.buttonNext}>
           <TouchableOpacity onPress={handleNextMonth}>
-            <Text style={styles.buttonText}> Next </Text>
+            <Text style={styles.buttonText}>Next</Text>
           </TouchableOpacity>
         </View>
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   calendarContainer: {
@@ -106,8 +119,8 @@ const styles = StyleSheet.create({
     marginBottom: -80,
   },
   dayContainer: {
-    width: "13%", // Ensures 7 days per row
-    aspectRatio: 1, // Keeps it square
+    width: "13%",
+    aspectRatio: 1,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 5,
@@ -115,27 +128,31 @@ const styles = StyleSheet.create({
     marginVertical: 6,
   },
   currentMonth: {
-    backgroundColor: colors.BUTTON_COLOR,
+    borderWidth: 1,
+    borderColor: colors.WHITE,
+    backgroundColor: "#B19Cd7",
   },
   otherMonth: {
-    backgroundColor: "#270045",
+    borderWidth: 1,
+    borderColor: colors.WHITE,
+    backgroundColor: colors.BLACK,
   },
   selectedDay: {
-    backgroundColor: "#ADD8E6",
+    backgroundColor: colors.PURPLE,
   },
   dayText: {
     fontSize: 16,
-    color: "#000",
+    color: colors.WHITE,
   },
   buttonPrev: {
-    backgroundColor: colors.BUTTON_COLOR,
+    backgroundColor: colors.PURPLE,
     paddingHorizontal: 20,
     paddingVertical: 5,
     borderRadius: 20,
     marginRight: 85,
   },
   buttonNext: {
-    backgroundColor: colors.BUTTON_COLOR,
+    backgroundColor: colors.PURPLE,
     paddingHorizontal: 20,
     paddingVertical: 5,
     borderRadius: 20,
@@ -143,7 +160,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 16,
-    color: colors.BUTTON_TEXT,
+    color: colors.WHITE,
   },
   calendarFooter: {
     flexDirection: "row",
