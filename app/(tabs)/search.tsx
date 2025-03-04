@@ -38,6 +38,7 @@ export default function SearchScreen() {
       <TextInput
         style={styles.input}
         placeholder="Search..."
+        placeholderTextColor={colors.WHITE}
         value={query}
         onChangeText={handleSearch}
       />
@@ -48,7 +49,7 @@ export default function SearchScreen() {
             data={filteredExercises}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => (
-              <Pressable style={[styles.button, {marginBottom: 0}]} onPress={() => handleExercisePress(item)}>
+              <Pressable style ={styles.button} onPress={() => handleExercisePress(item)} >
                 <Text style={styles.buttonText}>{item}</Text>
               </Pressable>
             )}
@@ -63,7 +64,7 @@ export default function SearchScreen() {
           style={localStyles.addButton}
           onPress={() => router.push('/(tabs)/(exercises)/new_exercise')}
         >
-          <Text style={localStyles.addButtonText}>Add a new exercise</Text>
+          <Text style={localStyles.addButtonText}>+ New exercise</Text>
         </Pressable>
       </View>
     </View>
@@ -91,16 +92,18 @@ const workouts = [
 
 const localStyles = StyleSheet.create({
   addButtonContainer: {
-    flex: 0.15,
+    flex: 0.10,
     flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    bottom: '12%',
+    justifyContent: 'flex-end',
+    bottom: 100,
     padding: 10,
-    backgroundColor: colors.BACKGROUND_COLOR,
+    backgroundColor: colors.BLACK,
   },
   addButton: {
     flex: 1,
-    backgroundColor: colors.BUTTON_COLOR,
+    backgroundColor: colors.PURPLE,
+    borderWidth: 2,
+    borderColor: colors.WHITE,
     padding: 10,
     borderRadius: 20,
     marginHorizontal: 5,
@@ -109,7 +112,7 @@ const localStyles = StyleSheet.create({
   addButtonText: {
     fontSize: 24,
     fontWeight: "bold",
-    color: colors.BUTTON_TEXT,
+    color: colors.WHITE,
     textAlign: "center",
   },
   subHeaderText: {

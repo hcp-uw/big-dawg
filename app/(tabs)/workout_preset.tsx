@@ -68,7 +68,7 @@ const WorkoutPreset = () => {
               <TextInput
                 style={styles.searchInput}
                 placeholder="Search by name"
-                placeholderTextColor="#aaa"
+                placeholderTextColor={colors.WHITE}
                 value={searchQuery}
                 onChangeText={setSearchQuery} // Updates search query state
               />
@@ -79,7 +79,7 @@ const WorkoutPreset = () => {
                     style={styles.filter}
                     onPress={() => removeFilter(filter)}
                   >
-                    <Text>{filter} ✕</Text>
+                    <Text style={styles.backButtonText}>{filter} ✕</Text>
                   </TouchableOpacity>
                 ))}
                 <TouchableOpacity
@@ -142,19 +142,21 @@ const WorkoutPreset = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.BACKGROUND_COLOR,
+    backgroundColor: colors.BLACK,
     padding: 20,
   },
   backButton: {
     marginTop: 8,
     paddingVertical: 6,
     paddingHorizontal: 12,
-    backgroundColor: colors.BUTTON_COLOR,
+    backgroundColor: colors.BLACK,
+    borderWidth: 2,
+    borderColor: colors.WHITE,
     borderRadius: 8,
     alignSelf: "flex-start",
   },
   backButtonText: {
-    color: colors.BUTTON_TEXT,
+    color: colors.WHITE,
     fontSize: 14,
     fontWeight: "bold",
   },
@@ -168,7 +170,9 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   searchInput: {
-    backgroundColor: colors.WHITE,
+    backgroundColor: colors.BLACK,
+    borderWidth: 2,
+    borderColor: colors.WHITE,
     paddingVertical: 8,
     paddingHorizontal: 10,
     borderRadius: 8,
@@ -181,12 +185,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   filter: {
-    backgroundColor: colors.BUTTON_COLOR,
+    backgroundColor: colors.BLACK,
+    borderWidth: 2,
+    borderColor: colors.WHITE,
     paddingVertical: 5,
     paddingHorizontal: 10,
     borderRadius: 6,
     marginRight: 6,
-    color: colors.BUTTON_TEXT,
+    color: colors.WHITE,
     fontSize: 12,
     fontWeight: "bold",
   },
@@ -205,12 +211,12 @@ const styles = StyleSheet.create({
   },
   addFilterButton: {
     marginLeft: 8,
-    backgroundColor: colors.BUTTON_COLOR,
+    backgroundColor: colors.PURPLE,
     padding: 8,
     borderRadius: 6,
   },
   addFilterText: {
-    color: colors.BUTTON_TEXT,
+    color: colors.WHITE,
     fontSize: 16,
     fontWeight: "bold",
   },
@@ -227,13 +233,15 @@ const styles = StyleSheet.create({
   },
   presetItem: {
     marginTop: 10,
-    backgroundColor: colors.BUTTON_COLOR,
+    backgroundColor: colors.BLACK,
+    borderWidth: 2,
+    borderColor: colors.WHITE,
     padding: 12,
     borderRadius: 8,
     alignItems: "center",
   },
   presetText: {
-    color: colors.BUTTON_TEXT,
+    color: colors.WHITE,
     fontSize: 13,
     fontStyle: "italic",
     fontWeight: "500",
@@ -245,16 +253,15 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   createButton: {
-    backgroundColor: colors.BUTTON_COLOR,
+    backgroundColor: colors.PURPLE,
+    borderWidth: 2,
+    borderColor: colors.WHITE,
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: "center",
-    position: "absolute",
-    left: 20,
-    right: 20,
   },
   createButtonText: {
-    color: colors.BUTTON_TEXT,
+    color: colors.WHITE,
     fontSize: 16,
     fontWeight: "bold",
   },

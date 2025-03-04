@@ -51,9 +51,9 @@ export default function Index() {
             progressValueFontSize={30}
             progressValueColor={colors.WHITE}
             maxValue={100}
-            inActiveStrokeColor={colors.INACTIVE_BAR_COLOR}
-            activeStrokeColor={colors.ACTIVE_BAR_COLOR}
-            activeStrokeSecondaryColor={colors.ACTIVE_BAR_SECOND_COLOR}
+            inActiveStrokeColor={colors.PURPLE}
+            activeStrokeColor={colors.PINK}
+            activeStrokeSecondaryColor={colors.WHITE}
             inActiveStrokeWidth={8}
             activeStrokeWidth={9}
             titleFontSize={20}
@@ -102,7 +102,7 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.BACKGROUND_COLOR,
+    backgroundColor: colors.BLACK,
   },
   content: {
     flex: 1,
@@ -136,15 +136,17 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
   button: {
-    backgroundColor: colors.BUTTON_COLOR,
+    backgroundColor: colors.BLACK,
     padding: 15,
     borderRadius: 20,
     marginBottom: 10,
+    borderWidth: 2,
+    borderColor: colors.WHITE,
   },
   buttonText: {
     fontSize: 20,
     fontWeight: '500',
-    color: colors.BUTTON_TEXT,
+    color: colors.WHITE,
     textAlign: 'left',
     marginLeft: 8,
   },
