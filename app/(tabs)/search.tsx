@@ -64,7 +64,7 @@ export default function SearchScreen() {
           style={localStyles.addButton}
           onPress={() => router.push('/(tabs)/(exercises)/new_exercise')}
         >
-          <Text style={localStyles.addButtonText}>Add a new exercise</Text>
+          <Text style={localStyles.addButtonText}>+ New exercise</Text>
         </Pressable>
       </View>
     </View>
@@ -97,7 +97,7 @@ const localStyles = StyleSheet.create({
     justifyContent: 'flex-end',
     bottom: 100,
     padding: 10,
-    backgroundColor: colors.BACKGROUND_COLOR,
+    backgroundColor: colors.BLACK,
   },
   addButton: {
     flex: 1,
@@ -112,7 +112,7 @@ const localStyles = StyleSheet.create({
   addButtonText: {
     fontSize: 24,
     fontWeight: "bold",
-    color: colors.BUTTON_TEXT,
+    color: colors.WHITE,
     textAlign: "center",
   },
   subHeaderText: {

@@ -30,10 +30,10 @@ export default function TabLayout() {
       <>
         <Tabs
           screenOptions={{
-            tabBarActiveTintColor: colors.ACTIVE_TAB_TINT,
+            tabBarActiveTintColor: colors.PURPLE,
             tabBarInactiveTintColor: colors.WHITE,
             headerStyle: {
-              backgroundColor: colors.HEADER_COLOR,
+              backgroundColor: colors.BLACK,
             },
             headerShadowVisible: false,
             header: () => (
@@ -47,7 +47,7 @@ export default function TabLayout() {
               </View>
             ),
             tabBarStyle: {
-              backgroundColor: colors.TAB_TINT_COLOR,
+              backgroundColor: colors.BLACK,
               borderTopRightRadius: 20,
               borderTopLeftRadius: 20,
               overflow: "hidden",
@@ -126,7 +126,7 @@ export default function TabLayout() {
 
         <View style={localStyles.plusButtonContainer}>
           <Pressable style={localStyles.plusButton} onPress={doPlusClick}>
-            <Ionicons name="add-outline" size={55} color={colors.TAB_TINT_COLOR}/>
+            <Ionicons name="add-outline" size={55} color={colors.WHITE}/>
           </Pressable>
         </View>
 
@@ -166,12 +166,12 @@ const localStyles = StyleSheet.create({
     zIndex: 10,
   },
   plusButton: {
-    backgroundColor: colors.ACTIVE_TAB_TINT,
+    backgroundColor: colors.PURPLE,
     outlineColor: "#FFF7FF",
     borderRadius: 35,
     elevation: 5,
     borderWidth: 3,
-    borderColor: colors.TAB_TINT_COLOR,
+    borderColor: colors.WHITE,
     justifyContent: 'center',
     alignItems: 'center',
   },

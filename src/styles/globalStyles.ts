@@ -4,7 +4,7 @@ import colors from './themes/colors';
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.BACKGROUND_COLOR,
+    backgroundColor: colors.BLACK,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -13,7 +13,7 @@ export const styles = StyleSheet.create({
   },
   button: {
     borderWidth: 1,
-    borderColor: colors.BUTTON_TEXT,
+    borderColor: colors.WHITE,
     padding: 10,
     borderRadius: 20,
     marginBottom: 0,
@@ -21,7 +21,7 @@ export const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 16,
-    color: colors.BUTTON_TEXT,
+    color: colors.WHITE,
     textAlign: 'center',
   },
 
@@ -37,10 +37,10 @@ export const styles = StyleSheet.create({
   searchItem: {
     flex: 1,
     padding: 10,
-    backgroundColor: colors.BUTTON_COLOR,
+    backgroundColor: colors.BLACK,
     borderRadius: 20,
-    borderBottomColor: colors.BUTTON_COLOR,
-    color: colors.BUTTON_TEXT,
+    borderBottomColor: colors.WHITE,
+    color: colors.WHITE,
   },
   // text at the top of the page
   headerText: {
@@ -56,7 +56,7 @@ export const styles = StyleSheet.create({
   input: {
     height: 40,
     width: '96%',
-    backgroundColor: colors.BACKGROUND_COLOR,
+    backgroundColor: colors.BLACK,
     borderWidth: 2,
     borderColor: colors.WHITE,
     padding: 10,
@@ -67,10 +67,10 @@ export const styles = StyleSheet.create({
   
   // HEADER STYLES (IMPORTED FROM HOME PAGE)
   headerContainer: {
-    backgroundColor: colors.BACKGROUND_COLOR,
+    backgroundColor: colors.BLACK,
   },
   header: {
-    backgroundColor: colors.TAB_TINT_COLOR,
+    backgroundColor: colors.BLACK,
     paddingTop: 60,
     paddingBottom: 15,
     borderBottomLeftRadius: 20,
@@ -90,7 +90,7 @@ export const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 24,
     fontWeight: "bold",
-    color: colors.BUTTON_TEXT,
+    color: colors.WHITE,
     marginLeft: 12,
   },
   subHeaderText: {
@@ -101,9 +101,9 @@ export const styles = StyleSheet.create({
 
   // BACK BUTTON CONTAINER
   backContainer: {
-    backgroundColor: colors.BACKGROUND_COLOR,
-    flex: 0.25,
+    backgroundColor: colors.BLACK,
     justifyContent: 'flex-start',
     alignItems: 'flex-end',
+    paddingBottom: 100,
   }
 });
