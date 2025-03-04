@@ -63,15 +63,15 @@ export default function CalendarNavigator() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.BACKGROUND_COLOR,
+    backgroundColor: colors.BLACK,
     justifyContent: "center",
     alignItems: "center",
   },
   text: {
-    color: colors.HEADER_TEXT,
+    color: colors.PINK,
   },
   button: {
-    backgroundColor: colors.BUTTON_COLOR,
+    backgroundColor: colors.BLACK,
     paddingHorizontal: 15,
     paddingVertical: 25,
     borderRadius: 20,
@@ -80,6 +80,6 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 16,
-    color: colors.BUTTON_TEXT,
+    color: colors.WHITE,
   },
 });

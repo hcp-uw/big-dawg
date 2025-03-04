@@ -1,11 +1,13 @@
 import { Stack } from 'expo-router';
+import colors from '@/src/styles/themes/colors';
+import { styles } from '@/src/styles/globalStyles'
 
-export default function RootLayout() {
+export default function Layout() {
   return (
-    <Stack>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="(modals)" options={{ headerShown: false }} />
-      <Stack.Screen name="+not-found" />
-    </Stack>
+    <Stack
+      screenOptions={{
+        headerShown: false,
+      }}
+    />
   );
 }

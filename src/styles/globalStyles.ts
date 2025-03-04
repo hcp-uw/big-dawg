@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import colors from './themes/colors';
+import { Platform } from 'react-native';
 
 export const styles = StyleSheet.create({
   container: {
@@ -71,7 +72,7 @@ export const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: colors.BLACK,
-    paddingTop: 60,
+    paddingTop: Platform.OS === 'ios' ? 50 : 10,
     paddingBottom: 15,
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,

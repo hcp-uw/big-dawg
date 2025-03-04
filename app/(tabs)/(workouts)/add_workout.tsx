@@ -73,7 +73,7 @@ export default function AddWorkoutScreen() {
         <TextInput
           style={localStyles.input}
           placeholder="Workout Name"
-          placeholderTextColor={colors.BUTTON_TEXT}
+          placeholderTextColor={colors.WHITE}
           value={workoutName}
           onChangeText={setWorkoutName}
         />
@@ -122,7 +122,7 @@ export default function AddWorkoutScreen() {
         <TextInput
           style={localStyles.commentInput}
           placeholder="Add any notes..."
-          placeholderTextColor={colors.BUTTON_TEXT}
+          placeholderTextColor={colors.WHITE}
           value={workoutComment}
           onChangeText={setWorkoutComment}
           multiline
@@ -142,7 +142,7 @@ export default function AddWorkoutScreen() {
 const localStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.BACKGROUND_COLOR,
+    backgroundColor: colors.BLACK,
     padding: 20,
   },
   scrollContainer: {
@@ -165,10 +165,10 @@ const localStyles = StyleSheet.create({
   },
   input: {
     width: "100%",
-    backgroundColor: colors.BUTTON_COLOR,
+    backgroundColor: colors.BLACK,
     borderRadius: 10,
     padding: 10,
-    color: colors.BUTTON_TEXT,
+    color: colors.WHITE,
     marginBottom: 15,
   },
   daysContainer: {
@@ -180,18 +180,18 @@ const localStyles = StyleSheet.create({
   dayButton: {
     padding: 10,
     borderRadius: 8,
-    backgroundColor: colors.BUTTON_COLOR,
+    backgroundColor: colors.BLACK,
   },
   dayButtonSelected: {
-    backgroundColor: colors.BUTTON_TEXT,
+    backgroundColor: colors.WHITE,
   },
   dayText: {
     fontSize: 16,
     fontWeight: "bold",
-    color: colors.BUTTON_TEXT,
+    color: colors.WHITE,
   },
   addExerciseButton: {
-    backgroundColor: colors.BUTTON_COLOR,
+    backgroundColor: colors.BLACK,
     padding: 10,
     borderRadius: 10,
     marginBottom: 20,
@@ -201,12 +201,12 @@ const localStyles = StyleSheet.create({
   addExerciseText: {
     fontSize: 18,
     fontWeight: "bold",
-    color: colors.BUTTON_TEXT,
+    color: colors.WHITE,
   },
   exerciseItem: {
     padding: 10,
     borderRadius: 8,
-    backgroundColor: colors.BUTTON_COLOR,
+    backgroundColor: colors.BLACK,
     marginBottom: 10,
     width: "100%",
   },
@@ -217,14 +217,14 @@ const localStyles = StyleSheet.create({
   },
   exerciseDetails: {
     fontSize: 14,
-    color: colors.BUTTON_TEXT,
+    color: colors.WHITE,
   },
   commentInput: {
     width: "100%",
-    backgroundColor: colors.BUTTON_COLOR,
+    backgroundColor: colors.BLACK,
     borderRadius: 10,
     padding: 10,
-    color: colors.BUTTON_TEXT,
+    color: colors.WHITE,
     marginBottom: 15,
   },
   saveButtonContainer: {
@@ -235,7 +235,7 @@ const localStyles = StyleSheet.create({
     padding: 10,
   },
   saveButton: {
-    backgroundColor: colors.BUTTON_COLOR,
+    backgroundColor: colors.BLACK,
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: "center",
