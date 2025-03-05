@@ -28,41 +28,43 @@ const AddExercise = () => {
     return (
       <>
         <View style={[styles.container, {justifyContent: 'flex-start'}]}>
-          <Text style={styles.headerText}>New Exercise</Text>
           <View style={localStyles.addContainer}>
               <Text style={styles.text}>Name</Text>
               <TextInput
                   style={styles.input}
-                  placeholder="Exercise Name"
+                  placeholder="Name..."
+                  placeholderTextColor={colors.WHITE}
                   value={exerciseName}
                   onChangeText={setExerciseName}
               />
               <Text style={styles.text}>Muscle Group</Text>
               <TextInput
                   style={styles.input}
-                  placeholder="Muscle Group"
+                  placeholder="Muscle Group..."
+                  placeholderTextColor={colors.WHITE}
                   value={muscleGroup}
                   onChangeText={setMuscleGroup}
               />
               <Text style={styles.text}>Description</Text>
               <TextInput
                   style={styles.input}
-                  placeholder="Additional Info"
+                  placeholder="Additional Info..."
+                  placeholderTextColor={colors.WHITE}
                   value={description}
                   onChangeText={setDescription}
               />
               <Pressable 
-              style={styles.button} 
+              style={[styles.button, {backgroundColor: colors.PURPLE,}]} 
               onPress={handleAddExercise}>
-                  <Text style={styles.buttonText}>Add New Exercise</Text>
+                  <Text style={[styles.buttonText, {fontSize: 20, fontWeight: 'bold',}]}>+ New Exercise</Text>
               </Pressable>
           </View>
         </View>
         <View style={styles.backContainer}>
           <Pressable 
-                style={[styles.button, {margin: 20, width: '25%'}]} 
+                style={[styles.button, {margin: 20, width: '25%', backgroundColor: colors.PURPLE,}]} 
                 onPress={() => router.replace('../search')}>
-                  <Text style={styles.buttonText}>Back</Text>
+                  <Text style={[styles.buttonText, {fontWeight: 'bold',}]}>← Back</Text>
           </Pressable>
         </View>
       </>

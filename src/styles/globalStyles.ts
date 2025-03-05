@@ -1,10 +1,11 @@
 import { StyleSheet } from 'react-native';
 import colors from './themes/colors';
+import { Platform } from 'react-native';
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.BACKGROUND_COLOR,
+    backgroundColor: colors.BLACK,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -12,15 +13,16 @@ export const styles = StyleSheet.create({
     color: '#fff',
   },
   button: {
-    backgroundColor: colors.BUTTON_COLOR,
-    padding: 15,
+    borderWidth: 1,
+    borderColor: colors.WHITE,
+    padding: 10,
     borderRadius: 20,
-    marginBottom: 10,
+    marginBottom: 0,
     marginHorizontal: 5,
   },
   buttonText: {
     fontSize: 16,
-    color: colors.BUTTON_TEXT,
+    color: colors.WHITE,
     textAlign: 'center',
   },
 
@@ -36,10 +38,10 @@ export const styles = StyleSheet.create({
   searchItem: {
     flex: 1,
     padding: 10,
-    backgroundColor: colors.BUTTON_COLOR,
+    backgroundColor: colors.BLACK,
     borderRadius: 20,
-    borderBottomColor: colors.BUTTON_COLOR,
-    color: colors.BUTTON_TEXT,
+    borderBottomColor: colors.WHITE,
+    color: colors.WHITE,
   },
   // text at the top of the page
   headerText: {
@@ -55,21 +57,22 @@ export const styles = StyleSheet.create({
   input: {
     height: 40,
     width: '96%',
-    backgroundColor: colors.BUTTON_COLOR,
-    borderWidth: 1,
+    backgroundColor: colors.BLACK,
+    borderWidth: 2,
+    borderColor: colors.WHITE,
     padding: 10,
     marginBottom: 20,
-    color: colors.BUTTON_TEXT,
     borderRadius: 10,
+    color: colors.WHITE,
   }, 
   
   // HEADER STYLES (IMPORTED FROM HOME PAGE)
   headerContainer: {
-    backgroundColor: colors.BACKGROUND_COLOR,
+    backgroundColor: colors.BLACK,
   },
   header: {
-    backgroundColor: colors.TAB_TINT_COLOR,
-    paddingTop: 60,
+    backgroundColor: colors.BLACK,
+    paddingTop: Platform.OS === 'ios' ? 50 : 10,
     paddingBottom: 15,
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
@@ -86,9 +89,9 @@ export const styles = StyleSheet.create({
     resizeMode: "contain",
   },
   headerTitle: {
-    fontSize: 24,
+    fontSize: 32,
     fontWeight: "bold",
-    color: colors.BUTTON_TEXT,
+    color: colors.WHITE,
     marginLeft: 12,
   },
   subHeaderText: {
@@ -99,9 +102,9 @@ export const styles = StyleSheet.create({
 
   // BACK BUTTON CONTAINER
   backContainer: {
-    backgroundColor: colors.BACKGROUND_COLOR,
-    flex: 0.25,
+    backgroundColor: colors.BLACK,
     justifyContent: 'flex-start',
     alignItems: 'flex-end',
+    paddingBottom: 100,
   }
 });

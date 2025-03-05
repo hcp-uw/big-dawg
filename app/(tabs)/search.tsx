@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Text, View, TextInput, FlatList, StyleSheet, Pressable, } from "react-native";
 import colors from "@/src/styles/themes/colors";
 import { styles } from "@/src/styles/globalStyles";
-import { useRouter } from "expo-router";
+import { useRouter, Link } from "expo-router";
 
 export default function SearchScreen() {
   const [query, setQuery] = useState("");
@@ -33,11 +33,10 @@ export default function SearchScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.headerText}>Search for an exercise:</Text>
-
       <TextInput
         style={styles.input}
         placeholder="Search..."
+        placeholderTextColor={colors.WHITE}
         value={query}
         onChangeText={handleSearch}
       />
@@ -48,7 +47,7 @@ export default function SearchScreen() {
             data={filteredExercises}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => (
-              <Pressable style={[styles.button, {marginBottom: 0}]} onPress={() => handleExercisePress(item)}>
+              <Pressable style ={styles.button} onPress={() => handleExercisePress(item)} >
                 <Text style={styles.buttonText}>{item}</Text>
               </Pressable>
             )}
@@ -59,12 +58,11 @@ export default function SearchScreen() {
       </View>
 
       <View style={localStyles.addButtonContainer}>
-        <Pressable
-          style={localStyles.addButton}
-          onPress={() => router.push('/(tabs)/(exercises)/new_exercise')}
-        >
-          <Text style={localStyles.addButtonText}>Add a new exercise</Text>
-        </Pressable>
+        <Link href="/(tabs)/(exercises)/new_exercise" asChild>
+          <Pressable style={localStyles.addButton}>
+            <Text style={localStyles.addButtonText}>+ New exercise</Text>
+          </Pressable>
+        </Link>
       </View>
     </View>
   );
@@ -91,16 +89,18 @@ const workouts = [
 
 const localStyles = StyleSheet.create({
   addButtonContainer: {
-    flex: 0.15,
+    flex: 0.10,
     flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    bottom: '12%',
+    justifyContent: 'flex-end',
+    bottom: 100,
     padding: 10,
-    backgroundColor: colors.BACKGROUND_COLOR,
+    backgroundColor: colors.BLACK,
   },
   addButton: {
     flex: 1,
-    backgroundColor: colors.BUTTON_COLOR,
+    backgroundColor: colors.PURPLE,
+    borderWidth: 2,
+    borderColor: colors.WHITE,
     padding: 10,
     borderRadius: 20,
     marginHorizontal: 5,
@@ -109,7 +109,7 @@ const localStyles = StyleSheet.create({
   addButtonText: {
     fontSize: 24,
     fontWeight: "bold",
-    color: colors.BUTTON_TEXT,
+    color: colors.WHITE,
     textAlign: "center",
   },
   subHeaderText: {

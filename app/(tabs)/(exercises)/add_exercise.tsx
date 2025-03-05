@@ -53,7 +53,8 @@ const WorkoutInput = () => {
             {/* Reps Input */}
             <TextInput
               style={styles.input}
-              placeholder="Reps"
+              placeholder="Reps..."
+              placeholderTextColor={colors.WHITE}
               value={set.reps}
               keyboardType="numeric"
               returnKeyType = 'done'
@@ -63,7 +64,8 @@ const WorkoutInput = () => {
             {/* Weight Input */}
             <TextInput
               style={styles.input}
-              placeholder="Weight (lbs/kg)"
+              placeholder="Weight..."
+              placeholderTextColor={colors.WHITE}
               value={set.weight}
               keyboardType="numeric"
               returnKeyType = 'done'
@@ -80,13 +82,13 @@ const WorkoutInput = () => {
         ))}
 
         {/* Add Set Button */}
-        <TouchableOpacity style={styles.button} onPress={addSet}>
-          <Text style={styles.buttonText}>➕ Add Another Set</Text>
+        <TouchableOpacity style={[styles.button, {marginTop: 10, backgroundColor: colors.PURPLE,}]} onPress={addSet}>
+          <Text style={[styles.buttonText, {fontWeight: 'bold',}]}>+ Add Another Set</Text>
         </TouchableOpacity>
       </ScrollView>
       <View style={[styles.backContainer]}>
-        <TouchableOpacity style={[styles.button]} onPress={() => router.back()}>
-            <Text style={styles.buttonText}>← Back</Text>
+        <TouchableOpacity style={[styles.button, {backgroundColor: colors.PURPLE, marginRight: 20}]} onPress={() => router.back()}>
+            <Text style={[styles.buttonText, {fontWeight: 'bold',}]}>← Back</Text>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
@@ -98,9 +100,8 @@ export default WorkoutInput;
 const localStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.BACKGROUND_COLOR,
-    justifyContent: 'flex-start',
-    alignItems: 'stretch',
+    backgroundColor: colors.BLACK,
+    justifyContent: 'center',
     paddingBottom: '20%',
   },
   setContainer: {

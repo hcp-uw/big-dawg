@@ -13,7 +13,7 @@ import {
   NavigationIndependentTree,
 } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import Calendar from "@/src/styles/calendar/calendar";
+import Calendar from "@/src/styles/calendar/calendar-comp";
 import colors from "@/src/styles/themes/colors";
 import DayWorkout from "@/app/(tabs)/(calendar)/DayWorkout";
 
@@ -63,15 +63,17 @@ export default function CalendarNavigator() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.BACKGROUND_COLOR,
+    backgroundColor: colors.BLACK,
     justifyContent: "center",
     alignItems: "center",
   },
   text: {
-    color: colors.HEADER_TEXT,
+    color: colors.WHITE,
   },
   button: {
-    backgroundColor: colors.BUTTON_COLOR,
+    borderWidth: 1,
+    borderColor: colors.WHITE,
+    backgroundColor: colors.BLACK,
     paddingHorizontal: 15,
     paddingVertical: 25,
     borderRadius: 20,
@@ -80,6 +82,6 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 16,
-    color: colors.BUTTON_TEXT,
+    color: colors.WHITE,
   },
 });
