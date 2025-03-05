@@ -63,7 +63,7 @@ const AddExercise = () => {
         <View style={styles.backContainer}>
           <Pressable 
                 style={[styles.button, {margin: 20, width: '25%', backgroundColor: colors.PURPLE,}]} 
-                onPress={() => router.replace('../search')}>
+                onPress={() => router.back()}>
                   <Text style={[styles.buttonText, {fontWeight: 'bold',}]}>← Back</Text>
           </Pressable>
         </View>

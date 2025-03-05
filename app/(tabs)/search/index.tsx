@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Text, View, TextInput, FlatList, StyleSheet, Pressable, } from "react-native";
 import colors from "@/src/styles/themes/colors";
 import { styles } from "@/src/styles/globalStyles";
-import { useRouter, Link, useSegments } from "expo-router";
+import { useRouter, useSegments } from "expo-router";
 
 export default function SearchScreen() {
   const [query, setQuery] = useState("");
@@ -41,7 +41,7 @@ export default function SearchScreen() {
             data={filteredExercises}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => (
-              <Pressable style ={styles.button} onPress={() => router.push('/search/add_exercise')} >
+              <Pressable style ={styles.button} onPress={() => router.push({ pathname: '/search/add_exercise', params: { item } })} >
                 <Text style={styles.buttonText}>{item}</Text>
               </Pressable>
             )}
