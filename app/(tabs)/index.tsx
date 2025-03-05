@@ -40,11 +40,11 @@ export default function Index() {
             progressValueFontSize={30}
             progressValueColor={colors.WHITE}
             maxValue={100}
-            inActiveStrokeColor={colors.WHITE}
+            inActiveStrokeColor={colors.PINK_BROUND}
             activeStrokeColor={colors.DARK_PINK}
             activeStrokeSecondaryColor={colors.PINK}
-            inActiveStrokeWidth={8}
-            activeStrokeWidth={9}
+            inActiveStrokeWidth={11}
+            activeStrokeWidth={12}
             titleFontSize={20}
             valueSuffix={'%'}
             duration={300}
