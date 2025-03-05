@@ -1,7 +1,7 @@
 import {DB, Workout, Exercise_List, Exercise_Hist, Muscle_Group, Exercise, Set} from './Types'
-import * as FS from 'expo-file-system'
+import * as FileSystem from 'expo-file-system'
 
-const data_dir: string = FS.documentDirectory + '.big-dawg/data/'
+const data_dir: string = FileSystem.documentDirectory + '.big-dawg/data/'
 
 // implements interface for json
 export class json_db implements DB {
@@ -13,7 +13,7 @@ export class json_db implements DB {
       let workout_exists: boolean = createFile(file_name)
       let content: (Workout|null)[]
       if (workout_exists) {
-        content = JSON.parse(wrapAsync(FS.readAsStringAsync, uri))
+        content = JSON.parse(wrapAsync(FileSystem.readAsStringAsync, uri))
         workout_exists = !(content[w.Date.getDate() - 1] === null)
       } else {
         content = new Array<Workout|null>(31).fill(null)
@@ -22,7 +22,7 @@ export class json_db implements DB {
         throw new InvalidExerciseException("")
       }
       content[w.Date.getDate() - 1] = w
-      wrapAsync(FS.writeAsStringAsync, uri, JSON.stringify(content))
+      wrapAsync(FileSystem.writeAsStringAsync, uri, JSON.stringify(content))
       return workout_exists
     }
 
@@ -62,7 +62,7 @@ export class json_db implements DB {
 
           // rewrite the updated object to file
           const ex_uri: string = data_dir + sets[i].Exercise_Name + ".json"
-          wrapAsync(FS.writeAsStringAsync, ex_uri, JSON.stringify(ex))
+          wrapAsync(FileSystem.writeAsStringAsync, ex_uri, JSON.stringify(ex))
       }
       return true
     }
@@ -73,7 +73,7 @@ export class json_db implements DB {
       if (!(checkFile(file_name))) {
         return null
       }
-      let content: Workout[] = JSON.parse(wrapAsync(FS.readAsStringAsync, uri))
+      let content: Workout[] = JSON.parse(wrapAsync(FileSystem.readAsStringAsync, uri))
       let result: Workout | null = content[date.getDate() - 1]
       return result
     }
@@ -84,7 +84,7 @@ export class json_db implements DB {
       if (!(checkFile(file_name))) {
         return false
       }
-      let content: (Workout|null)[] = JSON.parse(wrapAsync(FS.readAsStringAsync, uri))
+      let content: (Workout|null)[] = JSON.parse(wrapAsync(FileSystem.readAsStringAsync, uri))
       const result: boolean  = !(content[date.getDate() - 1] === null)
       if (content[date.getDate() - 1] === null) {
         // nothing to delete
@@ -95,7 +95,7 @@ export class json_db implements DB {
         this.deleteFromExerciseHist(exercise_names, date)
         content[date.getDate() - 1] = null
       }
-      wrapAsync(FS.writeAsStringAsync, uri, JSON.stringify(content))
+      wrapAsync(FileSystem.writeAsStringAsync, uri, JSON.stringify(content))
       return true
     }
 
@@ -118,7 +118,7 @@ export class json_db implements DB {
             // now that the elements with matching dates are gone from the object, rewrite the
             // object to file
             const ex_uri: string = data_dir + ex_names[i] + ".json"
-            wrapAsync(FS.writeAsStringAsync, ex_uri, JSON.stringify(ex))
+            wrapAsync(FileSystem.writeAsStringAsync, ex_uri, JSON.stringify(ex))
         }
     }
 
@@ -128,7 +128,7 @@ export class json_db implements DB {
       if (!(checkFile(file_name))) {
         return null
       }
-      let content: Exercise_List = JSON.parse(wrapAsync(FS.readAsStringAsync, uri))
+      let content: Exercise_List = JSON.parse(wrapAsync(FileSystem.readAsStringAsync, uri))
       return content
     }
 
@@ -138,7 +138,7 @@ export class json_db implements DB {
       if (!(checkFile(file_name))) {
         throw new InvalidExerciseException(ex_name)
       }
-      let content: Exercise_Hist = JSON.parse(wrapAsync(FS.readAsStringAsync, uri))
+      let content: Exercise_Hist = JSON.parse(wrapAsync(FileSystem.readAsStringAsync, uri))
       return content
     }
 
@@ -156,7 +156,7 @@ export class json_db implements DB {
 
       const hist : Exercise_Hist = {Exercise_Name: ex.Exercise_Name, Hist: new Array<[Set, Date]>(0) }
       const updatedContent: string = JSON.stringify(hist) // can add null, 2 for spaces
-      wrapAsync(FS.writeAsStringAsync, uri, updatedContent);
+      wrapAsync(FileSystem.writeAsStringAsync, uri, updatedContent);
 
       const list: Exercise_List | null = this.getExerciseList();
       let exercise_list: Exercise_List;
@@ -176,7 +176,7 @@ export class json_db implements DB {
 
       // Update the Exercise_List JSON file with the new list of names
       const updatedListContent = JSON.stringify(exercise_list);
-      wrapAsync(FS.writeAsStringAsync, data_dir + "Exercise_List.json", updatedListContent);
+      wrapAsync(FileSystem.writeAsStringAsync, data_dir + "Exercise_List.json", updatedListContent);
       return true
     }
 
@@ -238,7 +238,7 @@ export class json_db implements DB {
             throw new InvalidDateException(month, year)
 
         // if the file exists, parse the file into a list of workouts for that month
-        let content: Workout[] = JSON.parse(wrapAsync(FS.readAsStringAsync, uri))
+        let content: Workout[] = JSON.parse(wrapAsync(FileSystem.readAsStringAsync, uri))
 
         let monthView : Muscle_Group[][] = []
 
@@ -264,7 +264,7 @@ export class json_db implements DB {
         if (!(checkFile(file_name)))
             throw new InvalidExerciseException(ex_name)
 
-        const content = JSON.parse(wrapAsync(FS.readAsStringAsync, uri)) as Exercise
+        const content = JSON.parse(wrapAsync(FileSystem.readAsStringAsync, uri)) as Exercise
 
         const groups : Muscle_Group[] = []
         groups.push(content.Muscle_Group)
@@ -275,31 +275,31 @@ export class json_db implements DB {
 
 // creates file if it doesn't exist, otherwise does nothing
 // returns true if the file already existed and nothing was created, false otherwise
-function createFile(file_name: string): boolean {
+export function createFile(file_name: string): boolean {
   if (checkFile(file_name)) { return false }
-  wrapAsync(FS.writeAsStringAsync, data_dir + file_name, '')
+  wrapAsync(FileSystem.writeAsStringAsync, data_dir + file_name, '')
   return true
 }
 
 // checks if a file exists
 // returns true if it does, false otherwise
-function checkFile(file_name: string): boolean {
+export function checkFile(file_name: string): boolean {
     createDir()
-    const fileInfo = wrapAsync(FS.getInfoAsync, data_dir + file_name)
+    const fileInfo = wrapAsync(FileSystem.getInfoAsync, data_dir + file_name)
     return fileInfo.exists
 }
 
 // Checks if data_dir directory exists. If not, creates it
-function createDir(): void {
-  const dirInfo = wrapAsync(FS.getInfoAsync, data_dir)
+export function createDir(): void {
+  const dirInfo = wrapAsync(FileSystem.getInfoAsync, data_dir)
   if (!dirInfo.exists) {
     console.log("Data directory doesn't exist, creating…")
-    wrapAsync(FS.makeDirectoryAsync, data_dir, { intermediates: true })
+    wrapAsync(FileSystem.makeDirectoryAsync, data_dir, { intermediates: true })
   }
 }
 
 // wrapper for async functions that blocks program until async functions are done
-function wrapAsync<Targs extends any[], TReturn> (fun: (...args: Targs) => Promise<TReturn>, ...args: Targs): TReturn {
+export function wrapAsync<Targs extends any[], TReturn> (fun: (...args: Targs) => Promise<TReturn>, ...args: Targs): TReturn {
   let promise_resolved: boolean = false 
   let result: any
   fun(...args).then((r: TReturn) => {
