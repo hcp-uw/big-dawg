@@ -111,7 +111,7 @@ export default function EditWorkoutScreen() {
           style={styles.backButton}
           onPress={() => router.back()}
         >
-          <Text style={styles.backButtonText}>&lt; Back</Text>
+          <Text style={styles.backButtonText}>←</Text>
         </TouchableOpacity>
 
         {/* Header */}
@@ -121,7 +121,7 @@ export default function EditWorkoutScreen() {
         <TextInput
           style={styles.input}
           placeholder="Workout Name"
-          placeholderTextColor={colors.BUTTON_TEXT}
+          placeholderTextColor={colors.WHITE}
           value={workoutName}
           onChangeText={setWorkoutName}
         />
@@ -167,7 +167,7 @@ export default function EditWorkoutScreen() {
         <TextInput
           style={styles.commentInput}
           placeholder="Add any notes..."
-          placeholderTextColor={colors.BUTTON_TEXT}
+          placeholderTextColor={colors.WHITE}
           value={workoutComment}
           onChangeText={setWorkoutComment}
           multiline
@@ -187,7 +187,7 @@ export default function EditWorkoutScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.BACKGROUND_COLOR,
+    backgroundColor: colors.BLACK,
     padding: 20,
   },
   scrollContainer: {
@@ -199,14 +199,13 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
     paddingVertical: 6,
     paddingHorizontal: 12,
-    backgroundColor: colors.BUTTON_COLOR,
+    backgroundColor: colors.BLACK,
     borderRadius: 8,
     marginTop: 8,
   },
   backButtonText: {
-    color: colors.BUTTON_TEXT,
-    fontSize: 14,
-    fontWeight: "bold",
+    color: colors.WHITE,
+    fontSize: 24,
   },
   header: {
     fontSize: 24,
@@ -223,10 +222,12 @@ const styles = StyleSheet.create({
   },
   input: {
     width: "100%",
-    backgroundColor: colors.BUTTON_COLOR,
+    backgroundColor: colors.BLACK,
+    borderWidth: 1,
+    borderColor: colors.WHITE,
     borderRadius: 10,
     padding: 10,
-    color: colors.BUTTON_TEXT,
+    color: colors.WHITE,
     marginBottom: 15,
   },
   daysContainer: {
@@ -238,18 +239,22 @@ const styles = StyleSheet.create({
   dayButton: {
     padding: 10,
     borderRadius: 8,
-    backgroundColor: colors.BUTTON_COLOR,
+    backgroundColor: colors.BLACK,
+    borderWidth: 1,
+    borderColor: colors.WHITE,
   },
   dayButtonSelected: {
-    backgroundColor: colors.BUTTON_TEXT,
+    backgroundColor: colors.PURPLE,
   },
   dayText: {
     fontSize: 16,
     fontWeight: "bold",
-    color: colors.BUTTON_TEXT,
+    color: colors.WHITE,
   },
   addExerciseButton: {
-    backgroundColor: colors.BUTTON_COLOR,
+    backgroundColor: colors.BLACK,
+    borderWidth: 1,
+    borderColor: colors.WHITE,
     padding: 10,
     borderRadius: 10,
     marginBottom: 20,
@@ -259,12 +264,14 @@ const styles = StyleSheet.create({
   addExerciseText: {
     fontSize: 18,
     fontWeight: "bold",
-    color: colors.BUTTON_TEXT,
+    color: colors.WHITE,
   },
   exerciseItem: {
     padding: 10,
     borderRadius: 8,
-    backgroundColor: colors.BUTTON_COLOR,
+    backgroundColor: colors.BLACK,
+    borderWidth: 1,
+    borderColor: colors.WHITE,
     marginBottom: 10,
     width: "100%",
   },
@@ -275,25 +282,25 @@ const styles = StyleSheet.create({
   },
   exerciseDetails: {
     fontSize: 14,
-    color: colors.BUTTON_TEXT,
+    color: colors.WHITE,
   },
   commentInput: {
     width: "100%",
-    backgroundColor: colors.BUTTON_COLOR,
+    backgroundColor: colors.BLACK,
+    borderWidth: 1,
+    borderColor: colors.WHITE,
     borderRadius: 10,
     padding: 10,
-    color: colors.BUTTON_TEXT,
+    color: colors.WHITE,
     marginBottom: 15,
   },
   saveButtonContainer: {
-    position: "absolute",
-    bottom: 60,
-    left: 0,
-    right: 0,
-    padding: 10,
+    marginBottom: 100,
   },
   saveButton: {
-    backgroundColor: colors.BUTTON_COLOR,
+    backgroundColor: colors.PURPLE,
+    borderWidth: 1,
+    borderColor: colors.WHITE,
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: "center",
@@ -301,6 +308,6 @@ const styles = StyleSheet.create({
   saveButtonText: {
     fontSize: 20,
     fontWeight: "bold",
-    color: colors.BUTTON_TEXT,
+    color: colors.WHITE,
   },
 });

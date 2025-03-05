@@ -71,7 +71,7 @@ export default function AddWorkoutScreen() {
           style={styles.backButton}
           onPress={() => router.back()}
         >
-          <Text style={styles.backButtonText}>&lt; Back</Text>
+          <Text style={styles.backButtonText}>←</Text>
         </TouchableOpacity>
 
         {/* Header */}
@@ -160,14 +160,13 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
     paddingVertical: 6,
     paddingHorizontal: 12,
-    backgroundColor: colors.BUTTON_COLOR,
+    backgroundColor: colors.BLACK,
     borderRadius: 8,
     marginTop: 8,
   },
   backButtonText: {
-    color: colors.BUTTON_TEXT,
-    fontSize: 14,
-    fontWeight: "bold",
+    color: colors.WHITE,
+    fontSize: 24,
   },
   header: {
     fontSize: 24,
@@ -185,6 +184,8 @@ const styles = StyleSheet.create({
   input: {
     width: "100%",
     backgroundColor: colors.BLACK,
+    borderWidth: 1,
+    borderColor: colors.WHITE,
     borderRadius: 10,
     padding: 10,
     color: colors.WHITE,
@@ -200,9 +201,11 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
     backgroundColor: colors.BLACK,
+    borderWidth: 1,
+    borderColor: colors.WHITE,
   },
   dayButtonSelected: {
-    backgroundColor: colors.WHITE,
+    backgroundColor: colors.PURPLE,
   },
   dayText: {
     fontSize: 16,
@@ -212,6 +215,8 @@ const styles = StyleSheet.create({
   addExerciseButton: {
     backgroundColor: colors.BLACK,
     padding: 10,
+    borderWidth: 1,
+    borderColor: colors.WHITE,
     borderRadius: 10,
     marginBottom: 20,
     width: "100%",
@@ -226,6 +231,8 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
     backgroundColor: colors.BLACK,
+    borderWidth: 1,
+    borderColor: colors.WHITE,
     marginBottom: 10,
     width: "100%",
   },
@@ -241,20 +248,20 @@ const styles = StyleSheet.create({
   commentInput: {
     width: "100%",
     backgroundColor: colors.BLACK,
+    borderWidth: 1,
+    borderColor: colors.WHITE,
     borderRadius: 10,
     padding: 10,
     color: colors.WHITE,
     marginBottom: 15,
   },
   saveButtonContainer: {
-    position: "absolute",
-    bottom: 60,
-    left: 0,
-    right: 0,
-    padding: 10,
+    marginBottom: 100,
   },
   saveButton: {
-    backgroundColor: colors.BLACK,
+    backgroundColor: colors.PURPLE,
+    borderWidth: 1,
+    borderColor: colors.WHITE,
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: "center",
@@ -262,6 +269,6 @@ const styles = StyleSheet.create({
   saveButtonText: {
     fontSize: 20,
     fontWeight: "bold",
-    color: colors.BUTTON_TEXT,
+    color: colors.WHITE,
   },
 });

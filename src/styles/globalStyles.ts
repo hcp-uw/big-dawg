@@ -13,6 +13,7 @@ export const styles = StyleSheet.create({
     color: '#fff',
   },
   button: {
+    backgroundColor: colors.BLACK,
     borderWidth: 1,
     borderColor: colors.WHITE,
     padding: 10,
