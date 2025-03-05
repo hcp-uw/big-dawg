@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { useRoute, RouteProp, useNavigation } from "@react-navigation/native";
 import colors from "@/src/styles/themes/colors";
+import Calendar from "@/src/styles/calendar/calendar-comp";
 
 // Define the type for the parameters passed to DayWorkout
 type DayWorkoutParams = {
@@ -29,7 +30,9 @@ const DayWorkout = () => {
   const navigation = useNavigation();
 
   // TODO: button to go back to calendar page
-  const goBack = () => {};
+  const goBack = () => {
+    navigation.goBack();
+  };
 
   // Fallback in case day isn't provided
   const currDate = new Date(newDate.year, newDate.month, newDate.day);
@@ -65,9 +68,11 @@ const styles = StyleSheet.create({
   detailText: {
     fontSize: 18,
     color: colors.WHITE,
-    marginBottom: 600,
+    marginBottom: 700,
   },
   backButton: {
+    borderWidth: 0.5,
+    borderColor: colors.WHITE,
     marginTop: 8,
     paddingVertical: 6,
     paddingHorizontal: 12,
