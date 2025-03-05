@@ -52,7 +52,7 @@ export default function CalendarNavigator() {
           <Stack.Screen
             name="DayWorkout"
             component={DayWorkout}
-            options={{ title: "Day Workout" }}
+            options={{ title: "Day Workout", headerShown: false }}
           />
         </Stack.Navigator>
       </NavigationContainer>
