@@ -10,7 +10,7 @@ export interface DB {
     *   Returns:
     *       -- true if a workout for that date was replaced, false otherwise
     */
-    saveWorkout: (w: Workout) => boolean
+    saveWorkout: (w: Workout) => Promise<boolean>
 
     /*  
     *   get a workout for a specific Date
@@ -22,7 +22,7 @@ export interface DB {
     *       -- Workout: the workout if the date has workouts
             -- null: if the date requested has nothing
     */
-    getWorkout: (date: Date) => Workout | null
+    getWorkout: (date: Date) => Promise<Workout | null>
     
     /*
     *   delete a logged workout for a specific Date
@@ -32,7 +32,7 @@ export interface DB {
     *   Returns: 
     *       -- true if a workout for that date was succesfully deleted, false otherwise
     */
-    deleteWorkout: (date: Date) => boolean
+    deleteWorkout: (date: Date) => Promise<boolean>
     
     /*
     *   gets the list of exercises we have (prebuilt and custom)
@@ -40,7 +40,7 @@ export interface DB {
     *       -- the list of exercises
     *      -- null if no exercises exist
     */
-    getExerciseList: () => Exercise_List | null
+    getExerciseList: () => Promise<Exercise_List | null>
     
     /*
     *   gets the entire exercise history for that exercise
@@ -51,7 +51,7 @@ export interface DB {
     *   Returns: 
     *       -- exercise history. If the user has never done the requested exercise the inner Hist will be empty.
     */
-    getExerciseHistory: (ex_name : string) => Exercise_Hist
+    getExerciseHistory: (ex_name : string) => Promise<Exercise_Hist>
     
     /* 
     *   saves a new user-made custom exercise 
@@ -60,7 +60,7 @@ export interface DB {
     *   Returns: 
     *       -- true if the exercise was added, false if not 
     */
-    saveExercise: (ex: Exercise) => boolean
+    saveExercise: (ex: Exercise) => Promise<boolean>
 
     /* 
     *   deletes a user-made custom exercise 
@@ -84,7 +84,7 @@ export interface DB {
     *       -- an array of length 30, 31, or 28 (number of days in that month)
     *            that holds an array of muscle groups trained in that day
     */ 
-    getCalendarView: (month: bigint, year: bigint) => Muscle_Group[][]
+    getCalendarView: (month: bigint, year: bigint) => Promise<Muscle_Group[][]>
 }
 
 //export type Muscle_Group = "Chest" | "Back" | "Legs" | "Triceps" | "Biceps" | "Shoulders"

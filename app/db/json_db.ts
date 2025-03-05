@@ -7,31 +7,31 @@ const data_dir: string = FS.documentDirectory + '.big-dawg/data/'
 export class json_db implements DB {
     
     // workouts are saved 
-    saveWorkout(w: Workout) : boolean {
+    async saveWorkout(w: Workout) : Promise<boolean> {
       const file_name: string = (w.Date.getMonth() + 1) + "_" + w.Date.getFullYear() + ".json"
       const uri: string = data_dir + file_name
-      let workout_exists: boolean = createFile(file_name)
+      let workout_exists: boolean = await createFile(file_name)
       let content: (Workout|null)[]
       if (workout_exists) {
-        content = JSON.parse(wrapAsync(FS.readAsStringAsync, uri))
+        content = JSON.parse(await FS.readAsStringAsync(uri))
         workout_exists = !(content[w.Date.getDate() - 1] === null)
       } else {
         content = new Array<Workout|null>(31).fill(null)
       }
-      if (!(this.addToExerciseHist(w.Sets, w.Date))) {
+      if (!(await this.addToExerciseHist(w.Sets, w.Date))) {
         throw new InvalidExerciseException("")
       }
       content[w.Date.getDate() - 1] = w
-      wrapAsync(FS.writeAsStringAsync, uri, JSON.stringify(content))
+      await FS.writeAsStringAsync(uri, JSON.stringify(content))
       return workout_exists
     }
 
     // helper for saveWorkout
     // Given a workout and a date adds/replaces history for each exercise in the array
     // returns true if succesful, false if one of the exercises for the sets doesn't exist
-    addToExerciseHist(sets: Set[], d: Date) : boolean {
+    async addToExerciseHist(sets: Set[], d: Date) : Promise<boolean> {
       // check all exercise names to make sure they are valid
-      let exerciseList: Exercise_List| null = this.getExerciseList()
+      let exerciseList: Exercise_List| null = await this.getExerciseList()
       if (exerciseList == null && sets.length != 0) {
         return false
       } 
@@ -47,7 +47,7 @@ export class json_db implements DB {
       // now that we know all exercise names are valid, for each exercise add it to the respective .json
       for (let i = 0; i < sets.length; i++) {
           // get the exercise of the current set we want to add
-          const ex: Exercise_Hist = this.getExerciseHistory(sets[i].Exercise_Name)
+          const ex: Exercise_Hist = await this.getExerciseHistory(sets[i].Exercise_Name)
           
           // search for and splice out any existing history element with a matching date for this exercise
           for (let j = 0; j < ex.Hist.length; j++) {
@@ -62,29 +62,29 @@ export class json_db implements DB {
 
           // rewrite the updated object to file
           const ex_uri: string = data_dir + sets[i].Exercise_Name + ".json"
-          wrapAsync(FS.writeAsStringAsync, ex_uri, JSON.stringify(ex))
+          await FS.writeAsStringAsync(ex_uri, JSON.stringify(ex))
       }
       return true
     }
 
-    getWorkout (date: Date): Workout | null {
+    async getWorkout (date: Date): Promise<Workout | null> {
       const file_name: string  =  (date.getMonth() + 1) + "_" + date.getFullYear() + ".json"
       const uri: string = data_dir + file_name
-      if (!(checkFile(file_name))) {
+      if (!(await checkFile(file_name))) {
         return null
       }
-      let content: Workout[] = JSON.parse(wrapAsync(FS.readAsStringAsync, uri))
+      let content: Workout[] = JSON.parse(await FS.readAsStringAsync(uri))
       let result: Workout | null = content[date.getDate() - 1]
       return result
     }
 
-    deleteWorkout (date: Date): boolean {
+    async deleteWorkout (date: Date): Promise<boolean> {
       const file_name: string  =  (date.getMonth() + 1) + "_" + date.getFullYear() + ".json"
       const uri: string = data_dir + file_name
-      if (!(checkFile(file_name))) {
+      if (!(await checkFile(file_name))) {
         return false
       }
-      let content: (Workout|null)[] = JSON.parse(wrapAsync(FS.readAsStringAsync, uri))
+      let content: (Workout|null)[] = JSON.parse(await FS.readAsStringAsync(uri))
       const result: boolean  = !(content[date.getDate() - 1] === null)
       if (content[date.getDate() - 1] === null) {
         // nothing to delete
@@ -92,20 +92,20 @@ export class json_db implements DB {
       }
       if (content[date.getDate() - 1] != null) {
         let exercise_names : string[] = (content[date.getDate() - 1] as Workout).Sets.map(exercise => exercise.Exercise_Name)
-        this.deleteFromExerciseHist(exercise_names, date)
+        await this.deleteFromExerciseHist(exercise_names, date)
         content[date.getDate() - 1] = null
       }
-      wrapAsync(FS.writeAsStringAsync, uri, JSON.stringify(content))
+      await FS.writeAsStringAsync(uri, JSON.stringify(content))
       return true
     }
 
     // helper for deleteWorkout
     // Given a list of exercise names and gor each exercise in exercise names removes sets from that date 
-    deleteFromExerciseHist(ex_names: string[], d : Date) : void {
+    async deleteFromExerciseHist(ex_names: string[], d : Date) : Promise<void> {
         // for each exercise we want to update
         for (let i = 0; i < ex_names.length; i++) {
             // get the file and parse it into a Exercise_Hist object 
-            const ex: Exercise_Hist = this.getExerciseHistory(ex_names[i])
+            const ex: Exercise_Hist = await this.getExerciseHistory(ex_names[i])
             
                         // loop through ex.Hist set and splice out every element with a matching date
             for (let j = 0; j < ex.Hist.length; j++) {
@@ -118,47 +118,47 @@ export class json_db implements DB {
             // now that the elements with matching dates are gone from the object, rewrite the
             // object to file
             const ex_uri: string = data_dir + ex_names[i] + ".json"
-            wrapAsync(FS.writeAsStringAsync, ex_uri, JSON.stringify(ex))
+            await FS.writeAsStringAsync(ex_uri, JSON.stringify(ex))
         }
     }
 
-    getExerciseList (): Exercise_List | null {
+    async getExerciseList (): Promise<Exercise_List | null> {
       const file_name: string = "Exercise_List.json"
       const uri: string = data_dir + file_name
-      if (!(checkFile(file_name))) {
+      if (!(await checkFile(file_name))) {
         return null
       }
-      let content: Exercise_List = JSON.parse(wrapAsync(FS.readAsStringAsync, uri))
+      let content: Exercise_List = JSON.parse(await FS.readAsStringAsync(uri))
       return content
     }
 
-    getExerciseHistory (ex_name: string): Exercise_Hist {
+    async getExerciseHistory (ex_name: string): Promise<Exercise_Hist> {
       const file_name: string = ex_name + ".json"
       const uri: string = data_dir + file_name
-      if (!(checkFile(file_name))) {
+      if (!(await checkFile(file_name))) {
         throw new InvalidExerciseException(ex_name)
       }
-      let content: Exercise_Hist = JSON.parse(wrapAsync(FS.readAsStringAsync, uri))
+      let content: Exercise_Hist = JSON.parse(await FS.readAsStringAsync(uri))
       return content
     }
 
-    saveExercise (ex: Exercise): boolean {
+    async saveExercise (ex: Exercise): Promise<boolean> {
       // Save to exerciseHistory
       // If custom exercise, add to the history as a new file
       // add exerccise to exerccise list
       const file_name: string = ex.Exercise_Name + ".json"
       const uri: string = data_dir + file_name;
       let exerciseHist: Exercise_Hist;
-      if (checkFile(file_name)) {
+      if (await checkFile(file_name)) {
         return false
       }
       // Creates new file for that exercise
 
       const hist : Exercise_Hist = {Exercise_Name: ex.Exercise_Name, Hist: new Array<[Set, Date]>(0) }
       const updatedContent: string = JSON.stringify(hist) // can add null, 2 for spaces
-      wrapAsync(FS.writeAsStringAsync, uri, updatedContent);
+      await FS.writeAsStringAsync(uri, updatedContent);
 
-      const list: Exercise_List | null = this.getExerciseList();
+      const list: Exercise_List | null = await this.getExerciseList();
       let exercise_list: Exercise_List;
       if (list != null) {
         exercise_list = list
@@ -176,7 +176,7 @@ export class json_db implements DB {
 
       // Update the Exercise_List JSON file with the new list of names
       const updatedListContent = JSON.stringify(exercise_list);
-      wrapAsync(FS.writeAsStringAsync, data_dir + "Exercise_List.json", updatedListContent);
+      await FS.writeAsStringAsync(data_dir + "Exercise_List.json", updatedListContent);
       return true
     }
 
@@ -225,7 +225,7 @@ export class json_db implements DB {
         return deleted
     }*/
 
-    getCalendarView (month: bigint, year: bigint):  Muscle_Group[][] {
+    async getCalendarView (month: bigint, year: bigint):  Promise<Muscle_Group[][]> {
         // if month not in range 1-12, throw exception
         if (month <= 0 || month >= 13)
             throw new InvalidDateException(month, year)
@@ -238,14 +238,14 @@ export class json_db implements DB {
             throw new InvalidDateException(month, year)
 
         // if the file exists, parse the file into a list of workouts for that month
-        let content: Workout[] = JSON.parse(wrapAsync(FS.readAsStringAsync, uri))
+        let content: Workout[] = JSON.parse(await FS.readAsStringAsync(uri))
 
         let monthView : Muscle_Group[][] = []
 
         for (let i = 0; i < content.length; i++) {  // iterate through the days of the month
             let daySet : Muscle_Group[] = []
             for (let j = 0; j < content[i].Sets.length; j++) {  // iterate through the exercises of the day
-                daySet.push(...this.getMuscleGroups(content[i].Sets[j].Exercise_Name))
+                daySet.push(...(await this.getMuscleGroups(content[i].Sets[j].Exercise_Name)))
             }
 
             // filter daySet by unique since it can contain duplicates, then add the daySet to the month array
@@ -258,13 +258,13 @@ export class json_db implements DB {
 
     // private helper function for getCalendarView
     // given an exercise name, returns its muscle groups
-    getMuscleGroups (ex_name: string): Muscle_Group[] {
+    async getMuscleGroups (ex_name: string): Promise<Muscle_Group[]> {
         const file_name: string = ex_name + ".json"
         const uri: string = data_dir + file_name
         if (!(checkFile(file_name)))
             throw new InvalidExerciseException(ex_name)
 
-        const content = JSON.parse(wrapAsync(FS.readAsStringAsync, uri)) as Exercise
+        const content = JSON.parse(await FS.readAsStringAsync(uri)) as Exercise
 
         const groups : Muscle_Group[] = []
         groups.push(content.Muscle_Group)
@@ -275,34 +275,35 @@ export class json_db implements DB {
 
 // creates file if it doesn't exist, otherwise does nothing
 // returns true if the file already existed and nothing was created, false otherwise
-function createFile(file_name: string): boolean {
-  if (checkFile(file_name)) { return false }
-  wrapAsync(FS.writeAsStringAsync, data_dir + file_name, '')
+async function createFile(file_name: string): Promise<boolean> {
+  if (await checkFile(file_name)) { return false }
+  await FS.writeAsStringAsync(data_dir + file_name, '')
   return true
 }
 
 // checks if a file exists
 // returns true if it does, false otherwise
-function checkFile(file_name: string): boolean {
+async function checkFile(file_name: string): Promise<boolean> {
     createDir()
-    const fileInfo = wrapAsync(FS.getInfoAsync, data_dir + file_name)
+    const fileInfo = await FS.getInfoAsync(data_dir + file_name)
     return fileInfo.exists
 }
 
 // Checks if data_dir directory exists. If not, creates it
-function createDir(): void {
-  const dirInfo = wrapAsync(FS.getInfoAsync, data_dir)
+async function createDir(): Promise<void> {
+  const dirInfo = await FS.getInfoAsync(data_dir)
   if (!dirInfo.exists) {
     console.log("Data directory doesn't exist, creating…")
-    wrapAsync(FS.makeDirectoryAsync, data_dir, { intermediates: true })
+    await FS.makeDirectoryAsync(data_dir, { intermediates: true })
   }
 }
 
-// wrapper for async functions that blocks program until async functions are done
-function wrapAsync<Targs extends any[], TReturn> (fun: (...args: Targs) => Promise<TReturn>, ...args: Targs): TReturn {
+/* wrapper for async functions that blocks program until async functions are done
+export function wrapAsync<Targs extends any[], TReturn> (fun: (...args: Targs) => Promise<TReturn>, ...args: Targs): TReturn {
   let promise_resolved: boolean = false 
   let result: any
-  fun(...args).then((r: TReturn) => {
+  fun(...args)
+  .then((r: TReturn) => {
     result = r
     promise_resolved = true
     return r
@@ -312,9 +313,11 @@ function wrapAsync<Targs extends any[], TReturn> (fun: (...args: Targs) => Promi
       promise_resolved = true
       throw error
   })
-  while(!promise_resolved) {}
+  while(!promise_resolved) {
+    setTimeout(() => {}, 10);
+  }
   return result
-}
+}*/
 
 // Exception class that creates InvalidExerciseException for getExerciseHistory func.
 // Maybe we can put this inside a new file called exception.ts
