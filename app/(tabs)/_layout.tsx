@@ -6,7 +6,7 @@ import { useState } from 'react';
 import colors from '@/src/styles/themes/colors';
 import { styles } from "@/src/styles/globalStyles";
 import { StatusBar } from "expo-status-bar";
-import { useRouter, usePathname } from 'expo-router';
+import { useRouter, usePathname, useSegments } from 'expo-router';
 import { Platform } from 'react-native';
 import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 
@@ -16,7 +16,7 @@ const routeAliases: { [key: string]: string } = {
   "": "Home",
   search: "Search",
   calendar: "Calendar",
-  workout_preset: "Workout Presets",
+  workouts: "Workouts",
   new_exercise: "New Exercise",
   add_exercise: "Add Exercise",
   add_workout: "Add Workout",
@@ -27,6 +27,7 @@ export default function TabLayout() {
   const router = useRouter();
   const pathname = usePathname();
   const [isModalVisible, setModalVisible] = useState(false);
+  const segments = useSegments();
 
   const doPlusClick = () => {
     setModalVisible(true);
@@ -42,6 +43,7 @@ export default function TabLayout() {
   };
 
   return (
+      console.log(JSON.stringify(segments)), 
       <>
         <Tabs
           screenOptions={{
@@ -118,7 +120,7 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="workout_preset"
+          name="workouts"
           options={{
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
@@ -129,30 +131,6 @@ export default function TabLayout() {
               />
             ),
             title: "Presets",
-          }}
-        />
-        <Tabs.Screen
-          name="(exercises)/new_exercise"
-          options={{
-            href: null,
-          }}
-        />
-        <Tabs.Screen
-          name="(exercises)/add_exercise"
-          options={{
-            href: null,
-          }}
-        />
-        <Tabs.Screen
-          name="(workouts)"
-          options={{
-            href: null,
-          }}
-        />
-        <Tabs.Screen
-          name="(calendar)/DayWorkout"
-          options={{
-            href: null,
           }}
         />
       </Tabs>
@@ -169,10 +147,10 @@ export default function TabLayout() {
           <View style={localStyles.modalOverlay}>
             <View style={localStyles.modalContent}>
               {/* Dropdown Buttons */}
-              <Pressable style={localStyles.modalButton} onPress={() => { closeModal(); router.push('./workout_preset'); }}>
+              <Pressable style={localStyles.modalButton} onPress={() => { closeModal(); router.push('/(tabs)/workouts'); }}>
                 <Text style={localStyles.modalButtonText}>Choose workout preset</Text>
               </Pressable>
-              <Pressable style={localStyles.modalButton} onPress={() => {closeModal(); router.push('./(exercises)/new_exercise')}}>
+              <Pressable style={localStyles.modalButton} onPress={() => {closeModal(); router.push('/search/new_exercise')}}>
                 <Text style={localStyles.modalButtonText}>New exercise</Text>
               </Pressable>
               <Pressable style={localStyles.modalButton} onPress={() => console.log("New timer")}>

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Text, View, TextInput, FlatList, StyleSheet, Pressable, } from "react-native";
 import colors from "@/src/styles/themes/colors";
 import { styles } from "@/src/styles/globalStyles";
-import { useRouter, useSegments } from "expo-router";
+import { useRouter } from "expo-router";
 
 export default function SearchScreen() {
   const [query, setQuery] = useState("");
@@ -10,7 +10,6 @@ export default function SearchScreen() {
     useState<string[]>(exercises);
   const [filteredWorkouts, setFilteredWorkouts] = useState<string[]>(workouts);
   const router = useRouter();
-  const segments = useSegments();
 
   const handleSearch = (text: string) => {
     setQuery(text);
@@ -25,7 +24,6 @@ export default function SearchScreen() {
   };
 
   return (
-    console.log(JSON.stringify(segments)), 
     <View style={styles.container}>
       <TextInput
         style={styles.input}
