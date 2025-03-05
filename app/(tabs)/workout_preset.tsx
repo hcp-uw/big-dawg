@@ -15,6 +15,8 @@ const WorkoutPreset = () => {
   const insets = useSafeAreaInsets(); // Get safe area insets
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Hard-coded workout presets
   const [presets] = useState([
     { id: "1", name: "Arm Day 1" },
     { id: "2", name: "Leg Day 1" },
@@ -22,30 +24,35 @@ const WorkoutPreset = () => {
     { id: "4", name: "Full Body Strength" },
     { id: "5", name: "Core Crusher" },
     { id: "6", name: "Back & Biceps" },
-  ]); // Added more workouts for testing search
-  const [filters, setFilters] = useState(["muscle", "equipment"]);
-  const [newFilter, setNewFilter] = useState("");
-  const [isAddingFilter, setIsAddingFilter] = useState(false);
+  ]);
+
+  // ------------------------------
+  // FILTER LOGIC REMOVED FOR NOW:
+  // ------------------------------
+  // const [filters, setFilters] = useState(["muscle", "equipment"]);
+  // const [newFilter, setNewFilter] = useState("");
+  // const [isAddingFilter, setIsAddingFilter] = useState(false);
+
+  // const addFilter = () => {
+  //   if (newFilter.trim() !== "" && !filters.includes(newFilter)) {
+  //     setFilters([...filters, newFilter.trim()]);
+  //     setNewFilter("");
+  //     setIsAddingFilter(false);
+  //   }
+  // };
+
+  // const removeFilter = (filter: string) => {
+  //   setFilters(filters.filter((f) => f !== filter));
+  //   if (filters.length === 0) {
+  //     setIsAddingFilter(false);
+  //   }
+  // };
+  // ------------------------------
 
   // Filter workouts based on the search query
   const filteredPresets = presets.filter((workout) =>
     workout.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
-  const addFilter = () => {
-    if (newFilter.trim() !== "" && !filters.includes(newFilter)) {
-      setFilters([...filters, newFilter.trim()]);
-      setNewFilter("");
-      setIsAddingFilter(false);
-    }
-  };
-
-  const removeFilter = (filter: string) => {
-    setFilters(filters.filter((f) => f !== filter));
-    if (filters.length === 0) {
-      setIsAddingFilter(false);
-    }
-  };
 
   return (
     <View style={styles.container}>
@@ -63,61 +70,90 @@ const WorkoutPreset = () => {
             {/* Title */}
             <Text style={styles.title}>Select a workout plan:</Text>
 
-            {/* Search Bar & Filters */}
+            {/* Search Bar (Keeping this) */}
             <View style={styles.searchContainer}>
               <TextInput
                 style={styles.searchInput}
                 placeholder="Search by name"
                 placeholderTextColor="#aaa"
                 value={searchQuery}
-                onChangeText={setSearchQuery} // Updates search query state
+                onChangeText={setSearchQuery}
               />
-              <View style={styles.filters}>
-                {filters.map((filter) => (
-                  <TouchableOpacity
-                    key={filter}
-                    style={styles.filter}
-                    onPress={() => removeFilter(filter)}
-                  >
-                    <Text>{filter} ✕</Text>
-                  </TouchableOpacity>
-                ))}
-                <TouchableOpacity
-                  onPress={() => setIsAddingFilter(true)}
-                  style={styles.addFilterButton}
-                >
-                  <Text style={styles.addFilterText}>+</Text>
-                </TouchableOpacity>
-              </View>
 
-              {isAddingFilter && (
-                <View style={styles.addFilterContainer}>
-                  <TextInput
-                    style={styles.filterInput}
-                    placeholder="Add filter"
-                    placeholderTextColor="#aaa"
-                    value={newFilter}
-                    onChangeText={setNewFilter}
-                  />
-                  <TouchableOpacity
-                    onPress={addFilter}
-                    style={styles.addFilterButton}
-                  >
-                    <Text style={styles.addFilterText}>✔</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => setIsAddingFilter(false)}
-                    style={styles.cancelFilterButton}
-                  >
-                    <Text style={styles.cancelFilterText}>✕</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
+              {/* 
+                // ----------------------------------------
+                // FILTER UI COMMENTED OUT:
+                // ----------------------------------------
+                // <View style={styles.filters}>
+                //   {filters.map((filter) => (
+                //     <TouchableOpacity
+                //       key={filter}
+                //       style={styles.filter}
+                //       onPress={() => removeFilter(filter)}
+                //     >
+                //       <Text>{filter} ✕</Text>
+                //     </TouchableOpacity>
+                //   ))}
+                //   <TouchableOpacity
+                //     onPress={() => setIsAddingFilter(true)}
+                //     style={styles.addFilterButton}
+                //   >
+                //     <Text style={styles.addFilterText}>+</Text>
+                //   </TouchableOpacity>
+                // </View>
+
+                // {isAddingFilter && (
+                //   <View style={styles.addFilterContainer}>
+                //     <TextInput
+                //       style={styles.filterInput}
+                //       placeholder="Add filter"
+                //       placeholderTextColor="#aaa"
+                //       value={newFilter}
+                //       onChangeText={setNewFilter}
+                //     />
+                //     <TouchableOpacity
+                //       onPress={addFilter}
+                //       style={styles.addFilterButton}
+                //     >
+                //       <Text style={styles.addFilterText}>✔</Text>
+                //     </TouchableOpacity>
+                //     <TouchableOpacity
+                //       onPress={() => setIsAddingFilter(false)}
+                //       style={styles.cancelFilterButton}
+                //     >
+                //       <Text style={styles.cancelFilterText}>✕</Text>
+                //     </TouchableOpacity>
+                //   </View>
+                // )}
+              */}
             </View>
           </>
         }
         renderItem={({ item }) => (
-          <TouchableOpacity style={styles.presetItem}>
+          <TouchableOpacity
+            style={styles.presetItem}
+            // Pass the preset's data as route params
+            onPress={() => {
+              router.push({
+                pathname: "/(tabs)/(workouts)/edit_workout",
+                params: {
+                  workoutId: item.id,
+                  name: item.name,
+                  // For days, exercises, etc., you could pass JSON
+                  days: JSON.stringify(["M", "W"]),
+                  exercises: JSON.stringify([
+                    {
+                      Exercise_Name: "Push Up",
+                      Weight: 0,
+                      Reps: 10,
+                      Comment: "",
+                    },
+                  ]),
+                  comment: "My existing notes here",
+                },
+              });
+            }}
+          >
             <Text style={styles.presetText}>{item.name}</Text>
           </TouchableOpacity>
         )}
@@ -131,13 +167,17 @@ const WorkoutPreset = () => {
       {/* Create New Workout Button (positioned above bottom tab) */}
       <TouchableOpacity
         style={[styles.createButton, { bottom: insets.bottom + 60 }]}
-        onPress={() => router.push({ pathname: "/(tabs)/(workouts)/add_workout" })}
+        onPress={() =>
+          router.push({ pathname: "/(tabs)/(workouts)/add_workout" })
+        }
       >
         <Text style={styles.createButtonText}>Create New Workout</Text>
       </TouchableOpacity>
     </View>
   );
 };
+
+export default WorkoutPreset;
 
 const styles = StyleSheet.create({
   container: {
@@ -174,6 +214,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     fontSize: 13,
   },
+  /* Filters (currently unused, left here for future re-enable) */
   filters: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -259,5 +300,3 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
-
-export default WorkoutPreset;

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   Text,
   View,
@@ -8,14 +8,40 @@ import {
   ScrollView,
   Alert,
 } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import colors from "@/src/styles/themes/colors";
 
-export default function AddWorkoutScreen() {
+export default function EditWorkoutScreen() {
   const router = useRouter();
 
-  // Workout Data
-  const [workoutName, setWorkoutName] = useState("");
+  // Grab route params
+  const {
+    workoutId,
+    name,
+    days,
+    exercises: preExercises,
+    comment,
+  } = useLocalSearchParams();
+
+  // Memoize the parsed values to prevent new references on every render
+  const existingName = useMemo(() => {
+    return Array.isArray(name) ? name[0] : name ?? "";
+  }, [name]);
+
+  const existingDays = useMemo(() => {
+    return days ? JSON.parse(days as string) : [];
+  }, [days]);
+
+  const existingExercises = useMemo(() => {
+    return preExercises ? JSON.parse(preExercises as string) : [];
+  }, [preExercises]);
+
+  const existingComment = useMemo(() => {
+    return Array.isArray(comment) ? comment[0] : comment ?? "";
+  }, [comment]);
+
+  // Local state for editing
+  const [workoutName, setWorkoutName] = useState<string>("");
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [exercises, setExercises] = useState<
     { Exercise_Name: string; Weight: number; Reps: number; Comment: string }[]
@@ -24,13 +50,21 @@ export default function AddWorkoutScreen() {
 
   const daysOfWeek = ["S", "M", "T", "W", "Th", "F", "Sa"];
 
+  // On mount, pre-populate with existing data
+  useEffect(() => {
+    setWorkoutName(existingName);
+    setSelectedDays(existingDays);
+    setExercises(existingExercises);
+    setWorkoutComment(existingComment);
+  }, [existingName, existingDays, existingExercises, existingComment]);
+
   // Toggle days for repetition
   const toggleDay = (day: string) => {
-    setSelectedDays((prevDays) => {
-      return prevDays.includes(day)
+    setSelectedDays((prevDays) =>
+      prevDays.includes(day)
         ? prevDays.filter((d) => d !== day)
-        : [...prevDays, day];
-    });
+        : [...prevDays, day]
+    );
   };
 
   // Function to handle adding a new exercise from search
@@ -38,29 +72,35 @@ export default function AddWorkoutScreen() {
     router.push("/search");
   };
 
-  // Function to save workout
-  const saveWorkout = () => {
+  // Function to update the workout
+  const updateWorkout = () => {
     if (!workoutName.trim()) {
       Alert.alert("Error", "Please enter a workout name.");
       return;
     }
-
     if (exercises.length === 0) {
       Alert.alert("Error", "Please add at least one exercise.");
       return;
     }
 
-    const newWorkout = {
+    const updatedWorkout = {
+      id: workoutId,
       Date: new Date(),
       TimeStarted: BigInt(Date.now()),
       TimeEnded: BigInt(Date.now()), // Placeholder
       Sets: exercises,
       WorkoutComment: workoutComment,
+      Days: selectedDays,
+      WorkoutName: workoutName,
     };
 
-    console.log("Workout saved:", newWorkout);
-    Alert.alert("Success", "Workout saved successfully!");
-    router.back(); // Navigate back to the previous screen
+    console.log("Workout updated:", updatedWorkout);
+    Alert.alert("Success", "Workout updated successfully!", [
+      {
+        text: "OK",
+        onPress: () => router.replace("/workout_preset"),
+      },
+    ]);
   };
 
   return (
@@ -75,7 +115,7 @@ export default function AddWorkoutScreen() {
         </TouchableOpacity>
 
         {/* Header */}
-        <Text style={styles.header}>Create a New Workout</Text>
+        <Text style={styles.header}>Edit Workout</Text>
 
         {/* Workout Name Input */}
         <TextInput
@@ -112,7 +152,7 @@ export default function AddWorkoutScreen() {
           <Text style={styles.addExerciseText}>+ Add Exercise</Text>
         </TouchableOpacity>
 
-        {/* List of Added Exercises */}
+        {/* List of Exercises */}
         {exercises.map((exercise, index) => (
           <View key={index} style={styles.exerciseItem}>
             <Text style={styles.exerciseText}>{exercise.Exercise_Name}</Text>
@@ -134,17 +174,16 @@ export default function AddWorkoutScreen() {
         />
       </ScrollView>
 
-      {/* Save Workout Button */}
+      {/* Update Workout Button */}
       <View style={styles.saveButtonContainer}>
-        <TouchableOpacity style={styles.saveButton} onPress={saveWorkout}>
-          <Text style={styles.saveButtonText}>Save Workout</Text>
+        <TouchableOpacity style={styles.saveButton} onPress={updateWorkout}>
+          <Text style={styles.saveButtonText}>Update Workout</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 }
 
-// Reuse your color styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
