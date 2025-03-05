@@ -6,6 +6,7 @@ const colors = {
     PURPLE: '#8A00E0',
     PINK: '#FF00FF',
     DARK_PINK: '#b800b8',
+    GRAY: 'rgb(170, 170, 170)',
 };
 
 export default colors;
@@ -17,4 +18,5 @@ export default colors;
     Off-White: #FFF7FF
     Pink: #ff00ff
     Dark Pink: #b800b8
+    Gray:rgb(170, 170, 170)
 */

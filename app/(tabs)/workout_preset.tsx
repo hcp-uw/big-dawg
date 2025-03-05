@@ -65,7 +65,7 @@ export default function WorkoutPreset() {
           <>
             {/* Back Button */}
             <TouchableOpacity style={localStyles.backButton} onPress={router.back}>
-              <Text style={localStyles.backButtonText}> &lt; Back </Text>
+              <Text style={localStyles.backButtonText}>←</Text>
             </TouchableOpacity>
 
             {/* Title */}
@@ -130,7 +130,7 @@ export default function WorkoutPreset() {
         }
         renderItem={({ item }) => (
           <TouchableOpacity
-            style={styles.presetItem}
+            style={localStyles.presetItem}
             // Pass the preset's data as route params
             onPress={() => {
               router.push({
@@ -153,7 +153,7 @@ export default function WorkoutPreset() {
               });
             }}
           >
-            <Text style={styles.presetText}>{item.name}</Text>
+            <Text style={localStyles.presetText}>{item.name}</Text>
           </TouchableOpacity>
         )}
         ListEmptyComponent={
@@ -185,15 +185,12 @@ const localStyles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 12,
     backgroundColor: colors.BLACK,
-    borderWidth: 2,
-    borderColor: colors.WHITE,
     borderRadius: 8,
     alignSelf: "flex-start",
   },
   backButtonText: {
     color: colors.WHITE,
-    fontSize: 14,
-    fontWeight: "bold",
+    fontSize: 24,
   },
   title: {
     color: colors.WHITE,

@@ -60,10 +60,9 @@ export default function TabLayout() {
                   </View>
                 </View>
               </View>
-            </View>
           ),
           tabBarStyle: {
-            backgroundColor: colors.TAB_TINT_COLOR,
+            backgroundColor: colors.BLACK,
             borderTopRightRadius: 20,
             borderTopLeftRadius: 20,
             overflow: "hidden",
@@ -164,34 +163,6 @@ export default function TabLayout() {
         </Pressable>
       </View>
 
-      {/* Dropdown Menu Modal */}
-      <Modal visible={isModalVisible} transparent animationType="fade">
-        <View style={localStyles.modalOverlay}>
-          <View style={localStyles.modalContent}>
-            {/* Dropdown Buttons */}
-            <Pressable
-              style={localStyles.modalButton}
-              onPress={() => {
-                closeModal();
-                navigation.navigate("WorkoutPreset");
-              }}
-            >
-              <Text style={localStyles.modalButtonText}>
-                Choose workout preset
-              </Text>
-            </Pressable>
-            <Pressable
-              style={localStyles.modalButton}
-              onPress={() => console.log("add exercise")}
-            >
-              <Text style={localStyles.modalButtonText}>New exercise</Text>
-            </Pressable>
-            <Pressable
-              style={localStyles.modalButton}
-              onPress={() => console.log("New timer")}
-            >
-              <Text style={localStyles.modalButtonText}>New timer</Text>
-            </Pressable>
   
         {/* Dropdown Menu Modal */}
         <Modal visible={isModalVisible} transparent animationType="fade">
@@ -214,7 +185,6 @@ export default function TabLayout() {
               </Pressable>
             </View>
           </View>
-        </View>
       </Modal>
     </>
   );
