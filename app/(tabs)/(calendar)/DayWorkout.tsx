@@ -77,6 +77,8 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 12,
     backgroundColor: colors.BLACK,
+    borderWidth: 1,
+    borderColor: colors.WHITE,
     borderRadius: 8,
     alignSelf: "flex-start",
   },
