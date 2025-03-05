@@ -1,12 +1,13 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "strict": true,
-    "paths": {
-      "@/*": [
-        "./*"
-      ]
-    }
+    "module": "ESNext",  // Use ESNext module resolution
+    "moduleResolution": "node",  // Ensure module resolution works for Node
+    "target": "ESNext",  // Target modern JavaScript
+    "esModuleInterop": true,  // Ensure compatibility with CommonJS modules
+    "skipLibCheck": true,  // Optional: Skip type-checking of declaration files
+    "allowJs": true,  // Optional: Allows JavaScript files in your project
+    "strict": true  // Optional: Enable all strict type-checking options
   },
   "include": [
     "**/*.ts",

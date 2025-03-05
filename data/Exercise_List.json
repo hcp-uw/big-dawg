@@ -1,0 +1,74 @@
+{
+    "Chest": [
+      {
+        "Exercise_Name": "Bench Press",
+        "Muscle_Group": "Chest",
+        "Comment": "Great for overall chest development"
+      },
+      {
+        "Exercise_Name": "Incline Dumbbell Press",
+        "Muscle_Group": "Chest",
+        "Comment": "Focuses on upper chest"
+      }
+    ],
+    "Back": [
+      {
+        "Exercise_Name": "Pull-Up",
+        "Muscle_Group": "Back",
+        "Comment": "Improves upper back and grip strength"
+      },
+      {
+        "Exercise_Name": "Deadlift",
+        "Muscle_Group": "Back",
+        "Comment": "Engages multiple muscle groups, great for strength"
+      }
+    ],
+    "Legs": [
+      {
+        "Exercise_Name": "Squat",
+        "Muscle_Group": "Legs",
+        "Comment": "Essential compound movement for leg strength"
+      },
+      {
+        "Exercise_Name": "Leg Press",
+        "Muscle_Group": "Legs",
+        "Comment": "Targets quads with reduced lower back strain"
+      }
+    ],
+    "Triceps": [
+      {
+        "Exercise_Name": "Tricep Dips",
+        "Muscle_Group": "Triceps",
+        "Comment": "Great for building tricep strength"
+      },
+      {
+        "Exercise_Name": "Skull Crushers",
+        "Muscle_Group": "Triceps",
+        "Comment": "Isolates the triceps effectively"
+      }
+    ],
+    "Biceps": [
+      {
+        "Exercise_Name": "Bicep Curl",
+        "Muscle_Group": "Biceps",
+        "Comment": "Good for overall bicep growth"
+      },
+      {
+        "Exercise_Name": "Hammer Curl",
+        "Muscle_Group": "Biceps",
+        "Comment": "Works both biceps and forearms"
+      }
+    ],
+    "Shoulders": [
+      {
+        "Exercise_Name": "Overhead Press",
+        "Muscle_Group": "Shoulders",
+        "Comment": "Great for shoulder strength and stability"
+      },
+      {
+        "Exercise_Name": "Lateral Raises",
+        "Muscle_Group": "Shoulders",
+        "Comment": "Isolates lateral deltoids for width"
+      }
+    ]
+  }
