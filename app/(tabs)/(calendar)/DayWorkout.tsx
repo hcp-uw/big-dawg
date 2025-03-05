@@ -51,7 +51,7 @@ const DayWorkout = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.BACKGROUND_COLOR,
+    backgroundColor: colors.BLACK,
     alignItems: "center",
     justifyContent: "center",
     padding: 20,
@@ -71,12 +71,14 @@ const styles = StyleSheet.create({
     marginTop: 8,
     paddingVertical: 6,
     paddingHorizontal: 12,
-    backgroundColor: colors.BUTTON_COLOR,
+    backgroundColor: colors.BLACK,
+    borderWidth: 1,
+    borderColor: colors.WHITE,
     borderRadius: 8,
     alignSelf: "flex-start",
   },
   backButtonText: {
-    color: colors.BUTTON_TEXT,
+    color: colors.WHITE,
     fontSize: 14,
     fontWeight: "bold",
   },
