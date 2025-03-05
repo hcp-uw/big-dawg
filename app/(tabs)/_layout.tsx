@@ -31,7 +31,7 @@ export default function TabLayout() {
   const doPlusClick = () => {
     setModalVisible(true);
   };
-  
+
   const closeModal = () => {
     setModalVisible(false);
   };
@@ -60,92 +60,138 @@ export default function TabLayout() {
                   </View>
                 </View>
               </View>
+            </View>
+          ),
+          tabBarStyle: {
+            backgroundColor: colors.TAB_TINT_COLOR,
+            borderTopRightRadius: 20,
+            borderTopLeftRadius: 20,
+            overflow: "hidden",
+            position: "absolute",
+          },
+        }}
+      >
+        <Tabs.Screen
+          name="index"
+          options={{
+            tabBarIcon: ({ color, focused }) => (
+              <Ionicons
+                name={focused ? "home-sharp" : "home-outline"}
+                color={color}
+                size={24}
+              />
             ),
-            tabBarStyle: {
-              backgroundColor: colors.BLACK,
-              borderTopRightRadius: 20,
-              borderTopLeftRadius: 20,
-              overflow: "hidden",
-              position: "absolute",
+            title: "Home",
+          }}
+        />
+        <Tabs.Screen
+          name="search"
+          options={{
+            tabBarIcon: ({ color, focused }) => (
+              <Ionicons
+                name={focused ? "search-sharp" : "search-outline"}
+                color={color}
+                size={24}
+                style={{ marginRight: 10 }}
+              />
+            ),
+            title: "Search",
+            tabBarItemStyle: {
+              marginRight: 35,
             },
           }}
-        >
-          <Tabs.Screen
-            name="index"
-            options={{
-              tabBarIcon: ({ color, focused }) => (
-                <Ionicons name={focused ? "home-sharp" : "home-outline"} color={color} size={24} />
-              ),
-              title: "Home",
-            }}
-          />
-          <Tabs.Screen
-            name="search"
-            options={{
-              tabBarIcon: ({ color, focused }) => (
-                <Ionicons name={focused ? "search-sharp" : "search-outline"} color={color} size={24} style={{ marginRight: 10 }}/>
-              ),
-              title: 'Search',
-              tabBarItemStyle: {
-                marginRight: 35,
-              }
-            }}
-          />
-          
-          <Tabs.Screen
-            name="calendar"
-            options={{
-              tabBarIcon: ({ color, focused }) => (
-                <Ionicons name={focused ? "calendar-sharp" : "calendar-outline"} size={24} color={color} />
-              ),
-              title: 'Calendar',
-              tabBarItemStyle: {
-                marginLeft: 35,
-              }
-            }}
-          />
-          <Tabs.Screen
-            name="workout_preset"
-            options={{
-              tabBarIcon: ({ color, focused }) => (
-                <Ionicons name={focused ? "fitness-sharp" : "fitness-outline"} size={24} color={color}  style={{}}/>
-              ),
-              title: 'Presets'
-            }}
-          />
-          <Tabs.Screen
-            name='(exercises)/new_exercise'
-            options={{
-              href: null,
-            }}
-          />
-          <Tabs.Screen
-            name='(exercises)/add_exercise'
-            options={{
-              href:null,
-            }} 
-          />
-          <Tabs.Screen
-            name='(workouts)/add_workout'
-            options={{
-              href:null,
-            }} 
-          />
-          <Tabs.Screen
-            name='(calendar)/DayWorkout'
-            options={{
-              href:null,
-            }} 
-          />
-        </Tabs>
+        />
 
-        <View style={localStyles.plusButtonContainer}>
-          <Pressable style={localStyles.plusButton} onPress={doPlusClick}>
-            <Ionicons name="add-outline" size={55} color={colors.WHITE}/>
-          </Pressable>
-        </View>
+        <Tabs.Screen
+          name="calendar"
+          options={{
+            tabBarIcon: ({ color, focused }) => (
+              <Ionicons
+                name={focused ? "calendar-sharp" : "calendar-outline"}
+                size={24}
+                color={color}
+              />
+            ),
+            title: "Calendar",
+            tabBarItemStyle: {
+              marginLeft: 35,
+            },
+          }}
+        />
+        <Tabs.Screen
+          name="workout_preset"
+          options={{
+            tabBarIcon: ({ color, focused }) => (
+              <Ionicons
+                name={focused ? "fitness-sharp" : "fitness-outline"}
+                size={24}
+                color={color}
+                style={{}}
+              />
+            ),
+            title: "Presets",
+          }}
+        />
+        <Tabs.Screen
+          name="(exercises)/new_exercise"
+          options={{
+            href: null,
+          }}
+        />
+        <Tabs.Screen
+          name="(exercises)/add_exercise"
+          options={{
+            href: null,
+          }}
+        />
+        <Tabs.Screen
+          name="(workouts)"
+          options={{
+            href: null,
+          }}
+        />
+        <Tabs.Screen
+          name="(calendar)/DayWorkout"
+          options={{
+            href: null,
+          }}
+        />
+      </Tabs>
+        
+      <View style={localStyles.plusButtonContainer}>
+        <Pressable style={localStyles.plusButton} onPress={doPlusClick}>
+          <Ionicons name="add-outline" size={55} color={colors.WHITE}/>
+        </Pressable>
+      </View>
 
-
+      {/* Dropdown Menu Modal */}
+      <Modal visible={isModalVisible} transparent animationType="fade">
+        <View style={localStyles.modalOverlay}>
+          <View style={localStyles.modalContent}>
+            {/* Dropdown Buttons */}
+            <Pressable
+              style={localStyles.modalButton}
+              onPress={() => {
+                closeModal();
+                navigation.navigate("WorkoutPreset");
+              }}
+            >
+              <Text style={localStyles.modalButtonText}>
+                Choose workout preset
+              </Text>
+            </Pressable>
+            <Pressable
+              style={localStyles.modalButton}
+              onPress={() => console.log("add exercise")}
+            >
+              <Text style={localStyles.modalButtonText}>New exercise</Text>
+            </Pressable>
+            <Pressable
+              style={localStyles.modalButton}
+              onPress={() => console.log("New timer")}
+            >
+              <Text style={localStyles.modalButtonText}>New timer</Text>
+            </Pressable>
   
         {/* Dropdown Menu Modal */}
         <Modal visible={isModalVisible} transparent animationType="fade">
@@ -168,8 +214,9 @@ export default function TabLayout() {
               </Pressable>
             </View>
           </View>
-          </Modal>
-        </>
+        </View>
+      </Modal>
+    </>
   );
 }
 

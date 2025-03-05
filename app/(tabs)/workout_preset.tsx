@@ -16,6 +16,8 @@ export default function WorkoutPreset() {
   const insets = useSafeAreaInsets(); // Get safe area insets
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Hard-coded workout presets
   const [presets] = useState([
     { id: "1", name: "Arm Day 1" },
     { id: "2", name: "Leg Day 1" },
@@ -23,30 +25,35 @@ export default function WorkoutPreset() {
     { id: "4", name: "Full Body Strength" },
     { id: "5", name: "Core Crusher" },
     { id: "6", name: "Back & Biceps" },
-  ]); // Added more workouts for testing search
-  const [filters, setFilters] = useState(["muscle", "equipment"]);
-  const [newFilter, setNewFilter] = useState("");
-  const [isAddingFilter, setIsAddingFilter] = useState(false);
+  ]);
+
+  // ------------------------------
+  // FILTER LOGIC REMOVED FOR NOW:
+  // ------------------------------
+  // const [filters, setFilters] = useState(["muscle", "equipment"]);
+  // const [newFilter, setNewFilter] = useState("");
+  // const [isAddingFilter, setIsAddingFilter] = useState(false);
+
+  // const addFilter = () => {
+  //   if (newFilter.trim() !== "" && !filters.includes(newFilter)) {
+  //     setFilters([...filters, newFilter.trim()]);
+  //     setNewFilter("");
+  //     setIsAddingFilter(false);
+  //   }
+  // };
+
+  // const removeFilter = (filter: string) => {
+  //   setFilters(filters.filter((f) => f !== filter));
+  //   if (filters.length === 0) {
+  //     setIsAddingFilter(false);
+  //   }
+  // };
+  // ------------------------------
 
   // Filter workouts based on the search query
   const filteredPresets = presets.filter((workout) =>
     workout.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
-  const addFilter = () => {
-    if (newFilter.trim() !== "" && !filters.includes(newFilter)) {
-      setFilters([...filters, newFilter.trim()]);
-      setNewFilter("");
-      setIsAddingFilter(false);
-    }
-  };
-
-  const removeFilter = (filter: string) => {
-    setFilters(filters.filter((f) => f !== filter));
-    if (filters.length === 0) {
-      setIsAddingFilter(false);
-    }
-  };
 
   return (
     <View style={localStyles.container}>
@@ -63,7 +70,6 @@ export default function WorkoutPreset() {
 
             {/* Title */}
             <Text style={localStyles.title}>Select a workout plan:</Text>
-
             {/* Search Bar & Filters */}
             <View style={localStyles.searchContainer}>
               <TextInput
@@ -71,8 +77,12 @@ export default function WorkoutPreset() {
                 placeholder="Search by name"
                 placeholderTextColor={colors.WHITE}
                 value={searchQuery}
-                onChangeText={setSearchQuery} // Updates search query state
+                onChangeText={setSearchQuery}
               />
+        {/*
+                // ----------------------------------------
+                // FILTER UI COMMENTED OUT:
+                // ----------------------------------------
               <View style={localStyles.filters}>
                 {filters.map((filter) => (
                   <TouchableOpacity
@@ -113,13 +123,37 @@ export default function WorkoutPreset() {
                     <Text style={localStyles.cancelFilterText}>✕</Text>
                   </TouchableOpacity>
                 </View>
-              )}
+              )} 
+        */}
             </View>
           </>
         }
         renderItem={({ item }) => (
-          <TouchableOpacity style={localStyles.presetItem}>
-            <Text style={localStyles.presetText}>{item.name}</Text>
+          <TouchableOpacity
+            style={styles.presetItem}
+            // Pass the preset's data as route params
+            onPress={() => {
+              router.push({
+                pathname: "/(tabs)/(workouts)/edit_workout",
+                params: {
+                  workoutId: item.id,
+                  name: item.name,
+                  // For days, exercises, etc., you could pass JSON
+                  days: JSON.stringify(["M", "W"]),
+                  exercises: JSON.stringify([
+                    {
+                      Exercise_Name: "Push Up",
+                      Weight: 0,
+                      Reps: 10,
+                      Comment: "",
+                    },
+                  ]),
+                  comment: "My existing notes here",
+                },
+              });
+            }}
+          >
+            <Text style={styles.presetText}>{item.name}</Text>
           </TouchableOpacity>
         )}
         ListEmptyComponent={
@@ -179,6 +213,7 @@ const localStyles = StyleSheet.create({
     borderRadius: 8,
     fontSize: 13,
   },
+  /* Filters (currently unused, left here for future re-enable) */
   filters: {
     flexDirection: "row",
     flexWrap: "wrap",
