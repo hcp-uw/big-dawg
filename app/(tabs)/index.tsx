@@ -68,12 +68,12 @@ export default function Index() {
         
         <Text style={styles.noWorkouts}>No active workouts!</Text>
         
-        <Pressable style={styles.button} onPress={() => router.push('./workout_preset')}>
+        <Pressable style={styles.button} onPress={() => router.push('/workouts')}>
           <Text style={styles.buttonText}>+ Choose workout preset</Text>
         </Pressable>
         
-        <Pressable style={styles.button} onPress={() => router.push('./(exercises)/add_exercise')}>
-          <Text style={styles.buttonText}>+ New exercise</Text>
+        <Pressable style={styles.button} onPress={() => router.push('./search')}>
+          <Text style={styles.buttonText}>+ Add exercise</Text>
         </Pressable>
         
         <Pressable style={styles.button}>
