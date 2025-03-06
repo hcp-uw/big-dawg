@@ -4,8 +4,9 @@ import colors from '@/src/styles/themes/colors';
 import { styles } from '@/src/styles/globalStyles';
 import { useRouter } from 'expo-router';
 import { useSharedValue, useAnimatedStyle, withTiming } from "react-native-reanimated";
+import AddExercise from '@/app/add-exercise';
 
-const AddExercise = () => {
+export default function newExercise() {
     const router = useRouter();
     const [exerciseName, setExerciseName] = useState('');
     const [description, setDescription] = useState('');
@@ -63,7 +64,7 @@ const AddExercise = () => {
         <View style={styles.backContainer}>
           <Pressable 
                 style={[styles.button, {margin: 20, width: '25%', backgroundColor: colors.PURPLE,}]} 
-                onPress={() => router.replace('../search')}>
+                onPress={() => router.back()}>
                   <Text style={[styles.buttonText, {fontWeight: 'bold',}]}>← Back</Text>
           </Pressable>
         </View>
@@ -82,5 +83,3 @@ const localStyles = StyleSheet.create({
         marginTop: 20,
     },
 });
-
-export default AddExercise;

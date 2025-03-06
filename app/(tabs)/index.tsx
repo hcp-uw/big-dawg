@@ -4,6 +4,7 @@ import { Dimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import CircularProgress from 'react-native-circular-progress-indicator';
 import colors from '@/src/styles/themes/colors';
+import { useSharedValue } from 'react-native-reanimated';
 
 const { width, height } = Dimensions.get("window");
 
@@ -72,7 +73,7 @@ export default function Index() {
           <Text style={styles.buttonText}>+ Choose workout preset</Text>
         </Pressable>
         
-        <Pressable style={styles.button} onPress={() => router.push('./(exercises)/add_exercise')}>
+        <Pressable style={styles.button} onPress={() => router.push('./(exercises)/new_exercise')}>
           <Text style={styles.buttonText}>+ New exercise</Text>
         </Pressable>
         
