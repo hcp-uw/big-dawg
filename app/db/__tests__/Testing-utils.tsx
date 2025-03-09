@@ -11,7 +11,7 @@ export function setupTest(options = {}) {
   const mocked_dir = "dataDir/"
 
   // Create the mock function with multiple implementations
-  const readAsStringAsyncMock = jest.fn();
+  const readAsStringAsyncMock = jest.fn()
     
   // Set up implementations for each call
   if (config.expected_rContents && Array.isArray(config.expected_rContents)) {
@@ -28,22 +28,22 @@ export function setupTest(options = {}) {
   }
 
   // Create the mock function with multiple implementations
-  const writeAsStringAsyncMock = jest.fn();
+  const writeAsStringAsyncMock = jest.fn()
     
   // Set up implementations for each call
   if (config.expected_wContents && Array.isArray(config.expected_wContents)) {
     config.expected_wContents.forEach((expected) => {
       writeAsStringAsyncMock.mockImplementationOnce((path: string, actual_content: string ) => {
-        expect(path).toBe(mocked_dir + expected.uri);
-        expect(actual_content).toBe(expected.content);
-        return Promise.resolve();
-      });
-    });
+        expect(path).toBe(mocked_dir + expected.uri)
+        expect(actual_content).toBe(expected.content)
+        return Promise.resolve()
+      })
+    })
     
     // Add a default implementation for any additional calls
     writeAsStringAsyncMock.mockImplementation((path, actualContent) => {
-      return Promise.resolve();
-    });
+      return Promise.resolve()
+    })
   }
   
   // make jest mock the entire expo-filesystem module

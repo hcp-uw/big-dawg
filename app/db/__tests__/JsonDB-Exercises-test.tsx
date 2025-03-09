@@ -1,7 +1,7 @@
 import {DB, Muscle_Group, Exercise, Exercise_List, Set, Exercise_Hist, Workout} from '../Types'
 import{setupTest} from './Testing-utils'
 
-describe('json_db Tests', () => {
+describe('json_db Exercise Tests', () => {
     afterEach(() => {
       console.log("Test output end")
       // resets mocked funcs created with spy on (used for mocked json_db funcs)
@@ -18,7 +18,7 @@ describe('json_db Tests', () => {
       }
       let {db} = setupTest() 
       await expect(db.saveExercise(ex1)).resolves.toBe(false)
-    });
+    })
 
     it('saveExercise_emptyExerciseList', async () => {
       console.log("Test saveExercise_emptyExerciseList output begin")
@@ -41,7 +41,7 @@ describe('json_db Tests', () => {
       let {db} = setupTest({file_exists: false, expected_wContents: [w1, w2]}) 
       // test
       await expect(db.saveExercise(ex1)).resolves.toBe(true)
-    });
+    })
 
     it('saveExercise_updatedExerciseList', async () => {
       console.log("Test saveExercise_updatedExerciseList output begin")
@@ -65,8 +65,8 @@ describe('json_db Tests', () => {
       let {db} = setupTest({file_exists: false, expected_wContents: [w1, w2]}) 
       jest.spyOn(db, 'getExerciseList').mockImplementation(() => Promise.resolve(
         { Chest:[],Back:[],Legs:[ex1], Triceps:[], Biceps:[],Shoulders:[] }
-      ));
+      ))
       // test
       await expect(db.saveExercise(ex2)).resolves.toBe(true)
-    });
-  });
+    })
+  })
