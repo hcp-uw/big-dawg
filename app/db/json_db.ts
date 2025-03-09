@@ -153,7 +153,6 @@ export class json_db implements DB {
         return false
       }
       // Creates new file for that exercise
-
       const hist : Exercise_Hist = {Exercise_Name: ex.Exercise_Name, Hist: new Array<[Set, Date]>(0) }
       const updatedContent: string = JSON.stringify(hist) // can add null, 2 for spaces
       await FS.writeAsStringAsync(uri, updatedContent);
@@ -164,7 +163,8 @@ export class json_db implements DB {
         exercise_list = list
       }
       else {
-        exercise_list = {Chest: [],
+        exercise_list = {
+          Chest: [],
           Back: [],
           Legs: [],
           Triceps: [],
@@ -293,7 +293,7 @@ async function checkFile(file_name: string): Promise<boolean> {
 async function createDir(): Promise<void> {
   const dirInfo = await FS.getInfoAsync(data_dir)
   if (!dirInfo.exists) {
-    console.log("Data directory doesn't exist, creating…")
+    //console.log("Data directory doesn't exist, creating…")
     await FS.makeDirectoryAsync(data_dir, { intermediates: true })
   }
 }
