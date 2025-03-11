@@ -3,7 +3,7 @@ import { View, Text, TextInput, StyleSheet, Pressable } from 'react-native';
 import colors from '@/src/styles/themes/colors';
 import { styles } from '@/src/styles/globalStyles';
 import { useRouter } from 'expo-router';
-import { useSharedValue, useAnimatedStyle, withTiming } from "react-native-reanimated";
+import BackButton from '@/components/back_button';
 
 const AddExercise = () => {
     const router = useRouter();
@@ -27,6 +27,9 @@ const AddExercise = () => {
 
     return (
       <>
+        <View style={styles.backContainer}>
+          <BackButton/>
+        </View>
         <View style={[styles.container, {justifyContent: 'flex-start'}]}>
           <View style={localStyles.addContainer}>
               <Text style={styles.text}>Name</Text>
@@ -59,13 +62,6 @@ const AddExercise = () => {
                   <Text style={[styles.buttonText, {fontSize: 20, fontWeight: 'bold',}]}>+ New Exercise</Text>
               </Pressable>
           </View>
-        </View>
-        <View style={styles.backContainer}>
-          <Pressable 
-                style={[styles.button, {margin: 20, width: '25%', backgroundColor: colors.PURPLE,}]} 
-                onPress={() => router.back()}>
-                  <Text style={[styles.buttonText, {fontWeight: 'bold',}]}>← Back</Text>
-          </Pressable>
         </View>
       </>
     );
