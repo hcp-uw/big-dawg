@@ -80,6 +80,7 @@ export const styles = StyleSheet.create({
   },
   headerContent: {
     flexDirection: "row",
+    justifyContent: 'flex-start',
     alignItems: "center",
     paddingHorizontal: 20,
     height: 50,
@@ -104,8 +105,8 @@ export const styles = StyleSheet.create({
   // BACK BUTTON CONTAINER
   backContainer: {
     backgroundColor: colors.BLACK,
-    justifyContent: 'flex-start',
-    alignItems: 'flex-end',
-    paddingBottom: 100,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   }
 });
