@@ -15,11 +15,27 @@ const set2: Set = {
   Comment: "PR!"
 }
 const w: Workout = {
-  Date: new Date(),
+  Date: new Date(2025, 0, 15),
   TimeStarted: 10,
   TimeEnded: 12,
   Sets: [set1, set1, set2],
   WorkoutComment: "Good workout"
+}
+
+const w2: Workout = {
+  Date: new Date(2025, 3, 1),
+  TimeStarted: 10,
+  TimeEnded: 12,
+  Sets: [set2, set1, set2],
+  WorkoutComment: "Good workout"
+}
+
+const w3: Workout = {
+  Date: new Date(2025, 3, 1),
+  TimeStarted: 8,
+  TimeEnded: 10,
+  Sets: [set2, set1, set1, set2],
+  WorkoutComment: "Bad workout"
 }
 
 describe('json_db Workout Tests', () => {
@@ -35,13 +51,6 @@ describe('json_db Workout Tests', () => {
   })
   it('getWorkout_doesn\'t Exist', async () => {
     console.log("Test getWorkout_doesn\'t Exist output begin")
-    const w: Workout = {
-      Date: new Date(),
-      TimeStarted: 10,
-      TimeEnded: 12,
-      Sets: [],
-      WorkoutComment: "Good workout"
-    }
     let { db } = setupTest({ file_exists: true, expected_rContents: [JSON.stringify([w, null, w])] })
     await expect(db.getWorkout(new Date(2025, 1, 2))).resolves.toBe(null)
   })
@@ -52,15 +61,55 @@ describe('json_db Workout Tests', () => {
   })
   it('saveWorkout_invalidExercise', async () => {
     console.log("Test saveWorkout_invalidExercise begin")
-    let { db } = setupTest()
+    let { db } = setupTest({ file_exists: false })
     jest.spyOn(db, 'addToExerciseHist').mockImplementation(() => Promise.resolve(false))
     await expect(db.saveWorkout(w)).rejects.toThrow(new InvalidExerciseException(""));
   })
   it('saveWorkout_newMonth', async () => {
-    console.log("Test saveExercise_alreadyExists output begin")
+    console.log("Test saveWorkout_newMonth output begin")
+    let c = [
+      null, null, null, null, null, null, null, null, null, null,
+      null, null, null, null, w, null, null, null, null, null,
+      null, null, null, null, null, null, null, null, null, null,
+      null]
+    let { db } = setupTest({
+      file_exists: false, expected_wContents:
+        [{ uri: ".big-dawg/data/1_2025.json", content: "" }, { uri: ".big-dawg/data/1_2025.json", content: JSON.stringify(c) }]
+    })
+    jest.spyOn(db, 'addToExerciseHist').mockImplementation(() => Promise.resolve(true))
+    await expect(db.saveWorkout(w)).resolves.toBe(false)
   })
-  it('saveWorkout_updatingMMonth', async () => {
-    console.log("Test saveExercise_alreadyExists output begin")
+  it('saveWorkout_newDay', async () => {
+    console.log("Test saveWorkout_newDay output begin")
+    let c1 = [
+      null, null, null, null, null, null, null, null, null, null,
+      null, null, null, null, w, null, null, null, null, null,
+      null, null, null, null, null, null, null, null, null, null,
+      null]
+    let c2 = [
+      w2, null, null, null, null, null, null, null, null, null,
+      null, null, null, null, w, null, null, null, null, null,
+      null, null, null, null, null, null, null, null, null, null,
+      null]
+    let { db } = setupTest({ expected_rContents: [JSON.stringify(c1)], expected_wContents: [{ uri: ".big-dawg/data/4_2025.json", content: JSON.stringify(c2) }] })
+    jest.spyOn(db, 'addToExerciseHist').mockImplementation(() => Promise.resolve(true))
+    await expect(db.saveWorkout(w2)).resolves.toBe(false)
+  })
+  it('saveWorkout_overwritingWorkout', async () => {
+    console.log("Test saveWorkout_overwritingWorkout output begin")
+    let c1 = [
+      w2, null, null, null, null, null, null, null, null, null,
+      null, null, null, null, w, null, null, null, null, null,
+      null, null, null, null, null, null, null, null, null, null,
+      null]
+    let c2 = [
+      w3, null, null, null, null, null, null, null, null, null,
+      null, null, null, null, w, null, null, null, null, null,
+      null, null, null, null, null, null, null, null, null, null,
+      null]
+    let { db } = setupTest({ expected_rContents: [JSON.stringify(c1)], expected_wContents: [{ uri: ".big-dawg/data/4_2025.json", content: JSON.stringify(c2) }] })
+    jest.spyOn(db, 'addToExerciseHist').mockImplementation(() => Promise.resolve(true))
+    await expect(db.saveWorkout(w3)).resolves.toBe(true)
   })
   it('addToExerciseHist ', async () => {
     console.log("Test saveExercise_alreadyExists output begin")

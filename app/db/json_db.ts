@@ -10,7 +10,7 @@ export class json_db implements DB {
   async saveWorkout(w: Workout): Promise<boolean> {
     const file_name: string = (w.Date.getMonth() + 1) + "_" + w.Date.getFullYear() + ".json"
     const uri: string = data_dir + file_name
-    let workout_exists: boolean = await createFile(file_name)
+    let workout_exists: boolean = !(await createFile(file_name))
     let content: (Workout | null)[]
     if (workout_exists) {
       content = JSON.parse(await FS.readAsStringAsync(uri))
@@ -275,7 +275,7 @@ export class json_db implements DB {
 }
 
 // creates file if it doesn't exist, otherwise does nothing
-// returns true if the file already existed and nothing was created, false otherwise
+// returns false if the file already existed and nothing was created, true otherwise
 async function createFile(file_name: string): Promise<boolean> {
   if (await checkFile(file_name)) { return false }
   await FS.writeAsStringAsync(data_dir + file_name, '')
