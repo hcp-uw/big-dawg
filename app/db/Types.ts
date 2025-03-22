@@ -16,8 +16,6 @@ export interface DB {
     *   get a workout for a specific Date
     *   Params: 
     *       -- date: date of the workout
-    *   Throws: 
-    *       -- InvalidDateException: if the date is an invalid date
     *   Returns: 
     *       -- Workout: the workout if the date has workouts
             -- null: if the date requested has nothing
