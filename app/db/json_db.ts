@@ -13,7 +13,7 @@ export class json_db implements DB {
     let workout_exists: boolean = !(await createFile(file_name))
     let content: (Workout | null)[]
     if (workout_exists) {
-      content = JSON.parse(await FS.readAsStringAsync(uri))
+      content = JSON.parse(await FS.readAsStringAsync(uri), dateReviver)
       workout_exists = !(content[w.Date.getDate() - 1] === null)
     } else {
       content = new Array<Workout | null>(31).fill(null)
@@ -84,17 +84,14 @@ export class json_db implements DB {
     if (!(await checkFile(file_name))) {
       return false
     }
-    let content: (Workout | null)[] = JSON.parse(await FS.readAsStringAsync(uri))
-    const result: boolean = !(content[date.getDate() - 1] === null)
+    let content: (Workout | null)[] = JSON.parse(await FS.readAsStringAsync(uri), dateReviver)
     if (content[date.getDate() - 1] === null) {
       // nothing to delete
       return false
     }
-    if (content[date.getDate() - 1] != null) {
-      let exercise_names: string[] = (content[date.getDate() - 1] as Workout).Sets.map(exercise => exercise.Exercise_Name)
-      await this.deleteFromExerciseHist(exercise_names, date)
-      content[date.getDate() - 1] = null
-    }
+    let exercise_names: string[] = (content[date.getDate() - 1] as Workout).Sets.map(exercise => exercise.Exercise_Name)
+    await this.deleteFromExerciseHist(exercise_names, date)
+    content[date.getDate() - 1] = null
     await FS.writeAsStringAsync(uri, JSON.stringify(content))
     return true
   }
@@ -128,7 +125,7 @@ export class json_db implements DB {
     if (!(await checkFile(file_name))) {
       return null
     }
-    let content: Exercise_List = JSON.parse(await FS.readAsStringAsync(uri))
+    let content: Exercise_List = JSON.parse(await FS.readAsStringAsync(uri), dateReviver)
     return content
   }
 
@@ -138,7 +135,7 @@ export class json_db implements DB {
     if (!(await checkFile(file_name))) {
       throw new InvalidExerciseException(ex_name)
     }
-    let content: Exercise_Hist = JSON.parse(await FS.readAsStringAsync(uri))
+    let content: Exercise_Hist = JSON.parse(await FS.readAsStringAsync(uri), dateReviver)
     return content
   }
 
@@ -239,7 +236,7 @@ export class json_db implements DB {
       throw new InvalidDateException(month, year)
 
     // if the file exists, parse the file into a list of workouts for that month
-    let content: Workout[] = JSON.parse(await FS.readAsStringAsync(uri))
+    let content: Workout[] = JSON.parse(await FS.readAsStringAsync(uri), dateReviver)
 
     let monthView: Muscle_Group[][] = []
 
@@ -265,7 +262,7 @@ export class json_db implements DB {
     if (!(checkFile(file_name)))
       throw new InvalidExerciseException(ex_name)
 
-    const content = JSON.parse(await FS.readAsStringAsync(uri)) as Exercise
+    const content: Exercise = JSON.parse(await FS.readAsStringAsync(uri), dateReviver)
 
     const groups: Muscle_Group[] = []
     groups.push(content.Muscle_Group)

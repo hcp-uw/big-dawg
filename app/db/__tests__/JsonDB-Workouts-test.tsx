@@ -114,11 +114,36 @@ describe('json_db Workout Tests', () => {
   it('addToExerciseHist ', async () => {
     console.log("Test saveExercise_alreadyExists output begin")
   })
-  it('deleteWorkout ', async () => {
-    console.log("Test saveExercise_alreadyExists output begin")
+  it('deleteWorkout_noFile', async () => {
+    console.log("Test deleteWorkout_noFile output begin")
+    let { db } = setupTest({ file_exists: false })
+    await expect(db.deleteWorkout(new Date())).resolves.toBe(false)
   })
-  it('deleteWorkout ', async () => {
-    console.log("Test saveExercise_alreadyExists output begin")
+  it('deleteWorkout_noWorkout', async () => {
+    console.log("Test deleteWorkout_noWorkout output begin")
+    let c = [
+      null, null, null, null, null, null, null, null, null, null,
+      null, null, null, null, null, null, null, null, null, null,
+      null, null, null, null, null, null, null, null, null, null,
+      null]
+    let { db } = setupTest({ expected_rContents: [JSON.stringify(c)] })
+    await expect(db.deleteWorkout(new Date())).resolves.toBe(false)
+  })
+  it('deleteWorkout', async () => {
+    console.log("Test deleteWorkout output begin")
+    let c = [
+      w, null, null, null, null, null, null, null, null, null,
+      null, null, null, null, null, null, null, null, null, null,
+      null, null, null, null, null, null, null, null, null, w,
+      w]
+    let c2 = [
+      w, null, null, null, null, null, null, null, null, null,
+      null, null, null, null, null, null, null, null, null, null,
+      null, null, null, null, null, null, null, null, null, w,
+      null]
+    let { db } = setupTest({ expected_rContents: [JSON.stringify(c)], expected_wContents: [{ uri: ".big-dawg/data/12_1999.json", content: JSON.stringify(c2) }] })
+    jest.spyOn(db, 'deleteFromExerciseHist').mockImplementation(() => Promise.resolve())
+    await expect(db.deleteWorkout(new Date(1999, 11, 31))).resolves.toBe(true)
   })
   it('deleteFromExerciseHist ', async () => {
     console.log("Test saveExercise_alreadyExists output begin")
