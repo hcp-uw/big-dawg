@@ -129,3 +129,21 @@ export type Workout = {
     Sets: Set[]
     WorkoutComment: string | null
 }
+
+// exceptions
+
+// Exception class that creates InvalidExerciseException
+export class InvalidExerciseException extends Error {
+    constructor(exerciseName: string) {
+        super(`Invalid exercise: ${exerciseName}`)
+        this.name = "InvalidExerciseException"
+    }
+}
+
+// Exception class that creates InvalidDateException
+export class InvalidDateException extends Error {
+    constructor(month: bigint, year: bigint) {
+        super(`Invalid date: ${year}, ${month}`)
+        this.name = "InvalidDateException"
+    }
+}

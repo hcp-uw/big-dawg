@@ -1,4 +1,4 @@
-import { DB, Workout, Exercise_List, Exercise_Hist, Muscle_Group, Exercise, Set } from './Types'
+import { DB, Workout, Exercise_List, Exercise_Hist, Muscle_Group, Exercise, Set, InvalidDateException, InvalidExerciseException } from './Types'
 import * as FS from 'expo-file-system'
 
 const data_dir: string = FS.documentDirectory + '.big-dawg/data/'
@@ -328,23 +328,6 @@ export function wrapAsync<Targs extends any[], TReturn> (fun: (...args: Targs) =
   }
   return result
 }*/
-
-// Exception class that creates InvalidExerciseException for getExerciseHistory func.
-// Maybe we can put this inside a new file called exception.ts
-class InvalidExerciseException extends Error {
-  constructor(exerciseName: string) {
-    super(`Invalid exercise: ${exerciseName}`)
-    this.name = "InvalidExerciseException"
-  }
-}
-
-// Exception class that creates InvalidDateException for getCalendarView func
-class InvalidDateException extends Error {
-  constructor(month: bigint, year: bigint) {
-    super(`Invalid date: ${year}, ${month}`)
-    this.name = "InvalidDateException"
-  }
-}
 
 // default export the class
 export default { json_db }

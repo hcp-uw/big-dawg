@@ -1,4 +1,4 @@
-import { DB, Muscle_Group, Exercise, Exercise_List, Set, Exercise_Hist, Workout } from '../Types'
+import { DB, Muscle_Group, Exercise, Exercise_List, Set, Exercise_Hist, Workout, InvalidExerciseException } from '../Types'
 import { setupTest } from '../Testing-utils'
 
 // consts for tests
@@ -51,7 +51,10 @@ describe('json_db Workout Tests', () => {
     await expect(db.getWorkout(new Date(2025, 1, 4))).resolves.toStrictEqual(w)
   })
   it('saveWorkout_invalidExercise', async () => {
-
+    console.log("Test saveWorkout_invalidExercise begin")
+    let { db } = setupTest()
+    jest.spyOn(db, 'addToExerciseHist').mockImplementation(() => Promise.resolve(false))
+    await expect(db.saveWorkout(w)).rejects.toThrow(new InvalidExerciseException(""));
   })
   it('saveWorkout_newMonth', async () => {
     console.log("Test saveExercise_alreadyExists output begin")
