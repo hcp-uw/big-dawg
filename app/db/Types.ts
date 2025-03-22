@@ -21,7 +21,7 @@ export interface DB {
             -- null: if the date requested has nothing
     */
     getWorkout: (date: Date) => Promise<Workout | null>
-    
+
     /*
     *   delete a logged workout for a specific Date
     *   doesn't do anything if no workout for that date exists
@@ -31,7 +31,7 @@ export interface DB {
     *       -- true if a workout for that date was succesfully deleted, false otherwise
     */
     deleteWorkout: (date: Date) => Promise<boolean>
-    
+
     /*
     *   gets the list of exercises we have (prebuilt and custom)
     *   Returns: 
@@ -39,7 +39,7 @@ export interface DB {
     *      -- null if no exercises exist
     */
     getExerciseList: () => Promise<Exercise_List | null>
-    
+
     /*
     *   gets the entire exercise history for that exercise
     *   Params:
@@ -49,8 +49,8 @@ export interface DB {
     *   Returns: 
     *       -- exercise history. If the user has never done the requested exercise the inner Hist will be empty.
     */
-    getExerciseHistory: (ex_name : string) => Promise<Exercise_Hist>
-    
+    getExerciseHistory: (ex_name: string) => Promise<Exercise_Hist>
+
     /* 
     *   saves a new user-made custom exercise 
     *   Params: 
@@ -70,7 +70,7 @@ export interface DB {
     *       -- true if the exercise was deleted, false if not
     */
     //deleteExercise: (ex_name: string) => boolean
-    
+
     /* 
     *   gets the muscle group information for the workout calendar
     *   Params: 
@@ -81,7 +81,7 @@ export interface DB {
     *   Returns: 
     *       -- an array of length 30, 31, or 28 (number of days in that month)
     *            that holds an array of muscle groups trained in that day
-    */ 
+    */
     getCalendarView: (month: bigint, year: bigint) => Promise<Muscle_Group[][]>
 }
 
@@ -92,9 +92,9 @@ export type Muscle_Group = keyof Exercise_List;
 
 export type Exercise = {
     // name is unique per exercise
-    Exercise_Name : string
-    Muscle_Group : Muscle_Group 
-    Comment : string
+    Exercise_Name: string
+    Muscle_Group: Muscle_Group
+    Comment: string
     // Exercise_Type” : string 	//Not in MVP but may be useful in future 
 }
 
@@ -108,24 +108,24 @@ export type Exercise_List = {
 }
 
 export type Set = {
-    Exercise_Name : string
-    Weight : number
-    Reps : bigint
-    Comment : string | null
+    Exercise_Name: string
+    Weight: number
+    Reps: number
+    Comment: string | null
 }
 
 export type Exercise_Hist = {
-    Exercise_Name : string
-    Hist : ([Set, Date])[]
-   /* let my_tuple: [Set, Date] = Hist[0]
-    my_tuple[0] : Set
-    my_tuple[1] : Date*/
+    Exercise_Name: string
+    Hist: ([Set, Date])[]
+    /* let my_tuple: [Set, Date] = Hist[0]
+     my_tuple[0] : Set
+     my_tuple[1] : Date*/
 }
 
 export type Workout = {
-    Date : Date // starting date
-    TimeStarted : bigint
-    TimeEnded : bigint
-    Sets : Set[]
-    WorkoutComment : string|null
+    Date: Date // starting date
+    TimeStarted: number
+    TimeEnded: number
+    Sets: Set[]
+    WorkoutComment: string | null
 }
