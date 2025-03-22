@@ -24,18 +24,17 @@ const w: Workout = {
 
 describe('json_db Workout Tests', () => {
   afterEach(() => {
-    console.log("Test output end")
     // resets mocked funcs created with spy on (used for mocked json_db funcs)
     jest.resetModules()
     jest.clearAllMocks()
   })
   it('getWorkout_noMonth', async () => {
-    console.log("Test getWorkout_doesn\'tExist output begin")
+    console.log("Test getWorkout_noMonth output begin")
     let { db } = setupTest({ file_exists: false })
     await expect(db.getWorkout(new Date())).resolves.toBe(null)
   })
   it('getWorkout_doesn\'t Exist', async () => {
-    console.log("Test getWorkout_exists output begin")
+    console.log("Test getWorkout_doesn\'t Exist output begin")
     const w: Workout = {
       Date: new Date(),
       TimeStarted: 10,

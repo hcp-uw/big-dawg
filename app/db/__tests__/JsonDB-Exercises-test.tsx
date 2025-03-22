@@ -21,7 +21,6 @@ const el2: Exercise_List = {
 }
 describe('json_db Exercise Tests', () => {
   afterEach(() => {
-    console.log("Test output end")
     // resets mocked funcs created with spy on (used for mocked json_db funcs)
     jest.resetModules()
     jest.clearAllMocks()
