@@ -27,13 +27,13 @@ describe('json_db Exercise Tests', () => {
   })
 
   it('saveExercise_alreadyExists', async () => {
-    console.log("Test saveExercise_alreadyExists output begin")
+    //console.log("Test saveExercise_alreadyExists output begin")
     let { db } = setupTest()
     await expect(db.saveExercise(ex1)).resolves.toBe(false)
   })
 
   it('saveExercise_emptyExerciseList', async () => {
-    console.log("Test saveExercise_emptyExerciseList output begin")
+    //console.log("Test saveExercise_emptyExerciseList output begin")
     const w1 = { uri: ".big-dawg/data/Bench.json", content: "{\"Exercise_Name\":\"Bench\",\"Hist\":[]}" }
     const w2 = {
       uri: ".big-dawg/data/Exercise_List.json",
@@ -46,7 +46,7 @@ describe('json_db Exercise Tests', () => {
   })
 
   it('saveExercise_updatedExerciseList', async () => {
-    console.log("Test saveExercise_updatedExerciseList output begin")
+    //console.log("Test saveExercise_updatedExerciseList output begin")
     const w1 = { uri: ".big-dawg/data/Bench.json", content: "{\"Exercise_Name\":\"Bench\",\"Hist\":[]}" }
     const w2 = {
       uri: ".big-dawg/data/Exercise_List.json",

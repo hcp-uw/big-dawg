@@ -94,7 +94,7 @@ export type Exercise = {
     // name is unique per exercise
     Exercise_Name: string
     Muscle_Group: Muscle_Group
-    Comment: string
+    Comment: string | null
     // Exercise_Type” : string 	//Not in MVP but may be useful in future 
 }
 

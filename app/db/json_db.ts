@@ -30,20 +30,20 @@ export class json_db implements DB {
   // Given a workout and a date adds/replaces history for each exercise in the array
   // returns true if succesful, false if one of the exercises for the sets doesn't exist
   async addToExerciseHist(sets: Set[], d: Date): Promise<boolean> {
+    if (sets.length == 0) return true
     // check all exercise names to make sure they are valid
     let exerciseList: Exercise_List | null = await this.getExerciseList()
-    if (exerciseList == null && sets.length != 0) {
+    if (exerciseList == null) {
       return false
     }
-    let exerciseNames: string[] = Object.values(exerciseList as Exercise_List)
+    let exerciseNames: string[] = Object.values(exerciseList)
       .flat()  // Flatten the array of arrays (e.g., Chest[], Back[], etc.)
       .map(exercise => exercise.Exercise_Name);  // Extract Exercise_Name
-    sets.forEach((s: Set) => {
-      if (!exerciseNames.includes(s.Exercise_Name)) {
+    for (let i = 0; i < sets.length; i++) {
+      if (!exerciseNames.includes(sets[i].Exercise_Name)) {
         return false
       }
-    });
-
+    }
     // now that we know all exercise names are valid, for each exercise add it to the respective .json
     for (let i = 0; i < sets.length; i++) {
       // get the exercise of the current set we want to add
