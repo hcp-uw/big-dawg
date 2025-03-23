@@ -8,6 +8,8 @@ export class json_db implements DB {
 
   // workouts are saved 
   async saveWorkout(w: Workout): Promise<boolean> {
+    // zero out the time for the date
+    w.Date.setHours(0, 0, 0, 0)
     const file_name: string = (w.Date.getMonth() + 1) + "_" + w.Date.getFullYear() + ".json"
     const uri: string = data_dir + file_name
     let workout_exists: boolean = !(await createFile(file_name))
@@ -29,40 +31,40 @@ export class json_db implements DB {
   // helper for saveWorkout
   // Given a workout and a date adds/replaces history for each exercise in the array
   // returns true if succesful, false if one of the exercises for the sets doesn't exist
-  async addToExerciseHist(sets: Set[], d: Date): Promise<boolean> {
-    if (sets.length == 0) return true
-    // check all exercise names to make sure they are valid
-    let exerciseList: Exercise_List | null = await this.getExerciseList()
-    if (exerciseList == null) {
-      return false
-    }
-    let exerciseNames: string[] = Object.values(exerciseList)
-      .flat()  // Flatten the array of arrays (e.g., Chest[], Back[], etc.)
-      .map(exercise => exercise.Exercise_Name);  // Extract Exercise_Name
-    for (let i = 0; i < sets.length; i++) {
-      if (!exerciseNames.includes(sets[i].Exercise_Name)) {
-        return false
+  async addToExerciseHist(s: Set[], d: Date): Promise<boolean> {
+    if (s.length == 0) return true
+    // zero out the time for the date
+    d.setHours(0, 0, 0, 0)
+    // create copy we are free to modify
+    let sets: Set[] = s.slice()
+    // sort the sets so the same exercise names are grouped together
+    sets.sort((a, b) => a.Exercise_Name.localeCompare(b.Exercise_Name))
+    // for each exercise, remove all sets for that day from it's history and add all the new sets
+    let curr_ex: string = sets[0].Exercise_Name
+    let curr_ex_sets: ([Set, Date])[] = []
+    for (const set of sets) {
+      if (set.Exercise_Name === curr_ex) {
+        curr_ex_sets.push([set, d])
+        continue
       }
-    }
-    // now that we know all exercise names are valid, for each exercise add it to the respective .json
-    for (let i = 0; i < sets.length; i++) {
-      // get the exercise of the current set we want to add
-      const ex: Exercise_Hist = await this.getExerciseHistory(sets[i].Exercise_Name)
-
-      // search for and splice out any existing history element with a matching date for this exercise
-      for (let j = 0; j < ex.Hist.length; j++) {
-        if (ex.Hist[j][1] === d) {
-          ex.Hist.splice(j, 1)
-          j -= 1
-        }
+      // get corresponding ex hist
+      let ex: Exercise_Hist
+      try { ex = await this.getExerciseHistory(curr_ex) } catch (error) {
+        if (error instanceof InvalidExerciseException) return false
+        else throw error
       }
-
-      // now that there are no more history elements with the same date, add the new date in 
-      ex.Hist.push([sets[i], d])
-
-      // rewrite the updated object to file
-      const ex_uri: string = data_dir + sets[i].Exercise_Name + ".json"
-      await FS.writeAsStringAsync(ex_uri, JSON.stringify(ex))
+      // splice out the sets with the curr date
+      ex.Hist = ex.Hist.filter(([_, date]) => date.getTime() !== d.getTime());
+      // add the new sets
+      ex.Hist = [...(ex.Hist), ...curr_ex_sets]
+      // sort array by date so newest is first
+      ex.Hist.sort((a, b) => b[1].getTime() - a[1].getTime())
+      // update the file contents
+      const ex_uri: string = data_dir + curr_ex + ".json"
+      FS.writeAsStringAsync(ex_uri, JSON.stringify(ex))
+      // update ex_sets and curr_ex
+      curr_ex = set.Exercise_Name
+      curr_ex_sets = []
     }
     return true
   }
@@ -79,6 +81,8 @@ export class json_db implements DB {
   }
 
   async deleteWorkout(date: Date): Promise<boolean> {
+    // zero out the time for the date
+    date.setHours(0, 0, 0, 0)
     const file_name: string = (date.getMonth() + 1) + "_" + date.getFullYear() + ".json"
     const uri: string = data_dir + file_name
     if (!(await checkFile(file_name))) {
@@ -99,19 +103,13 @@ export class json_db implements DB {
   // helper for deleteWorkout
   // Given a list of exercise names and gor each exercise in exercise names removes sets from that date 
   async deleteFromExerciseHist(ex_names: string[], d: Date): Promise<void> {
+    // zero out the time for the date
+    d.setHours(0, 0, 0, 0)
     // for each exercise we want to update
     for (let i = 0; i < ex_names.length; i++) {
       // get the file and parse it into a Exercise_Hist object 
       const ex: Exercise_Hist = await this.getExerciseHistory(ex_names[i])
-
-      // loop through ex.Hist set and splice out every element with a matching date
-      for (let j = 0; j < ex.Hist.length; j++) {
-        if (ex.Hist[j][1] === d) {
-          ex.Hist.splice(j, 1)
-          j -= 1
-        }
-      }
-
+      ex.Hist.filter(([value, date]) => date.getTime() !== d.getTime());
       // now that the elements with matching dates are gone from the object, rewrite the
       // object to file
       const ex_uri: string = data_dir + ex_names[i] + ".json"
@@ -184,7 +182,7 @@ export class json_db implements DB {
       // two step removal: 1. remove from exerciselist
       // reuse the getExerciseList function to load the list
       const exerciseList : Exercise_List | null = this.getExerciseList()
-      if (exerciseList == null) return false  // exercise list file is not valid
+      if (exerciseList === null) return false  // exercise list file is not valid
 
       // Since the ex_name could be in any of the muscle group Exercise arrays, we check each group
       for (const muscleGroup in exerciseList) {
@@ -297,7 +295,7 @@ async function createDir(): Promise<void> {
 }
 
 // helper function for JSON.parse that converts date strings to date objects
-const dateReviver = (key: string, value: any) => {
+function dateReviver(key: string, value: any): any {
   // Check if the value is a string and looks like a date
   if (typeof value === 'string' && !isNaN(Date.parse(value))) {
     return new Date(value);  // Convert to Date object

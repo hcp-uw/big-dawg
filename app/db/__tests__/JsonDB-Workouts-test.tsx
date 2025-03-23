@@ -139,12 +139,12 @@ describe('json_db Workout Tests', () => {
     jest.spyOn(db, 'getExerciseList').mockImplementation(() => Promise.resolve({ Chest: [ex1], Back: [], Legs: [], Triceps: [], Biceps: [], Shoulders: [] }))
     await expect(db.addToExerciseHist([set1, set2], new Date())).resolves.toBe(false)
   })
-  /*it('addToExerciseHist', async () => {
+  it('addToExerciseHist', async () => {
     //console.log("Test addTOExerciseHist output begin")
     let { db } = setupTest()
-    jest.spyOn(db, 'getExerciseList').mockImplementation(() => Promise.resolve({ Chest: [ex1], Back: [], Legs: [], Triceps: [], Biceps: [], Shoulders: [] }))
+    jest.spyOn(db, 'getExerciseList').mockImplementation(() => Promise.resolve({ Chest: [ex1], Back: [], Legs: [ex2], Triceps: [], Biceps: [], Shoulders: [] }))
     await expect(db.addToExerciseHist([set1, set2], new Date())).resolves.toBe(false)
-  })*/
+  })
   it('deleteWorkout_noFile', async () => {
     //console.log("Test deleteWorkout_noFile output begin")
     let { db } = setupTest({ file_exists: false })
