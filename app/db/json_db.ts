@@ -36,7 +36,7 @@ export class json_db implements DB {
     if (s.length == 0) return
     // zero out the time for the date
     d.setHours(0, 0, 0, 0)
-    let grouped_sets: (Set[])[] = this.SetsByEx(s)
+    let grouped_sets: (Set[])[] = SetsByEx(s)
     for (const g of grouped_sets) {
       let ex: Exercise_Hist = { Exercise_Name: "Compiler Dummy", Hist: [] }
       try {
@@ -67,29 +67,6 @@ export class json_db implements DB {
       err_str = err_str + " " + s
     }
     throw new InvalidExerciseException(err_str)
-  }
-
-  // helper func that splits an array of sets into
-  // multiple arrays based on ex name
-  SetsByEx(s: Set[]): (Set[])[] {
-    let result: (Set[])[] = []
-    // create copy we are free to modify
-    let sets: Set[] = s.slice()
-    // sort the sets so the same exercise names are grouped together
-    sets.sort((a, b) => a.Exercise_Name.localeCompare(b.Exercise_Name))
-    // split
-    let lo: number = 0
-    let hi: number = 0
-    for (; hi < sets.length; hi++) {
-      if (sets[lo].Exercise_Name === sets[hi].Exercise_Name) {
-        continue
-      } else {
-        result.push(sets.slice(lo, hi))
-        lo = hi
-      }
-    }
-    result.push(sets.slice(lo, hi))
-    return result
   }
 
   async getWorkout(date: Date): Promise<Workout | null> {
@@ -326,26 +303,28 @@ function dateReviver(key: string, value: any): any {
   return value;  // Otherwise, return the value as-is
 };
 
-/* wrapper for async functions that blocks program until async functions are done
-export function wrapAsync<Targs extends any[], TReturn> (fun: (...args: Targs) => Promise<TReturn>, ...args: Targs): TReturn {
-  let promise_resolved: boolean = false 
-  let result: any
-  fun(...args)
-  .then((r: TReturn) => {
-    result = r
-    promise_resolved = true
-    return r
-  })
-  .catch((error) => {
-      console.error(error)
-      promise_resolved = true
-      throw error
-  })
-  while(!promise_resolved) {
-    setTimeout(() => {}, 10);
+// helper func that splits an array of sets into
+// multiple arrays based on ex name
+function SetsByEx(s: Set[]): (Set[])[] {
+  let result: (Set[])[] = []
+  // create copy we are free to modify
+  let sets: Set[] = s.slice()
+  // sort the sets so the same exercise names are grouped together
+  sets.sort((a, b) => a.Exercise_Name.localeCompare(b.Exercise_Name))
+  // split
+  let lo: number = 0
+  let hi: number = 0
+  for (; hi < sets.length; hi++) {
+    if (sets[lo].Exercise_Name === sets[hi].Exercise_Name) {
+      continue
+    } else {
+      result.push(sets.slice(lo, hi))
+      lo = hi
+    }
   }
+  result.push(sets.slice(lo, hi))
   return result
-}*/
+}
 
 // default export the class
 export default { json_db }
