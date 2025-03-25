@@ -20,9 +20,8 @@ export class json_db implements DB {
     } else {
       content = new Array<Workout | null>(31).fill(null)
     }
-    if (!(await this.addToExerciseHist(w.Sets, w.Date))) {
-      throw new InvalidExerciseException("")
-    }
+    // throws NoSuchExercise exception if set has exercise name not in list
+    await this.addToExerciseHist(w.Sets, w.Date)
     content[w.Date.getDate() - 1] = w
     await FS.writeAsStringAsync(uri, JSON.stringify(content))
     return workout_exists
@@ -30,43 +29,67 @@ export class json_db implements DB {
 
   // helper for saveWorkout
   // Given a workout and a date adds/replaces history for each exercise in the array
-  // returns true if succesful, false if one of the exercises for the sets doesn't exist
-  async addToExerciseHist(s: Set[], d: Date): Promise<boolean> {
-    if (s.length == 0) return true
+  // saves all sets with valid exercise names and throws an InvalidExerciseException for
+  // sets with invalid exercises in the format "InvalidEx1 InvalidEx2 InvalidEX3"
+  async addToExerciseHist(s: Set[], d: Date): Promise<void> {
+    let invalidExercises: string[] = []
+    if (s.length == 0) return
     // zero out the time for the date
     d.setHours(0, 0, 0, 0)
-    // create copy we are free to modify
-    let sets: Set[] = s.slice()
-    // sort the sets so the same exercise names are grouped together
-    sets.sort((a, b) => a.Exercise_Name.localeCompare(b.Exercise_Name))
-    // for each exercise, remove all sets for that day from it's history and add all the new sets
-    let curr_ex: string = sets[0].Exercise_Name
-    let curr_ex_sets: ([Set, Date])[] = []
-    for (const set of sets) {
-      if (set.Exercise_Name === curr_ex) {
-        curr_ex_sets.push([set, d])
-        continue
+    let grouped_sets: (Set[])[] = this.SetsByEx(s)
+    for (const g of grouped_sets) {
+      let ex: Exercise_Hist = { Exercise_Name: "Compiler Dummy", Hist: [] }
+      try {
+        ex = await this.getExerciseHistory(g[0].Exercise_Name)
       }
-      // get corresponding ex hist
-      let ex: Exercise_Hist
-      try { ex = await this.getExerciseHistory(curr_ex) } catch (error) {
-        if (error instanceof InvalidExerciseException) return false
-        else throw error
+      catch (error) {
+        //console.log(error)
+        //if (error instanceof InvalidExerciseException) {
+        //throw new InvalidExerciseException("")
+        invalidExercises.push(error.message.slice(18))
+        continue
+        //}
       }
       // splice out the sets with the curr date
       ex.Hist = ex.Hist.filter(([_, date]) => date.getTime() !== d.getTime());
       // add the new sets
-      ex.Hist = [...(ex.Hist), ...curr_ex_sets]
+      ex.Hist = [...(ex.Hist), ...(g.map(set => [set, d] as [Set, Date]))]
       // sort array by date so newest is first
       ex.Hist.sort((a, b) => b[1].getTime() - a[1].getTime())
       // update the file contents
-      const ex_uri: string = data_dir + curr_ex + ".json"
+      const ex_uri: string = data_dir + g[0].Exercise_Name + ".json"
       FS.writeAsStringAsync(ex_uri, JSON.stringify(ex))
-      // update ex_sets and curr_ex
-      curr_ex = set.Exercise_Name
-      curr_ex_sets = []
     }
-    return true
+    if (invalidExercises.length == 0) return
+    // throw InvalidExercise with all invalid exercises
+    let err_str: string = ""
+    for (const s of invalidExercises) {
+      err_str = err_str + " " + s
+    }
+    throw new InvalidExerciseException(err_str)
+  }
+
+  // helper func that splits an array of sets into
+  // multiple arrays based on ex name
+  SetsByEx(s: Set[]): (Set[])[] {
+    let result: (Set[])[] = []
+    // create copy we are free to modify
+    let sets: Set[] = s.slice()
+    // sort the sets so the same exercise names are grouped together
+    sets.sort((a, b) => a.Exercise_Name.localeCompare(b.Exercise_Name))
+    // split
+    let lo: number = 0
+    let hi: number = 0
+    for (; hi < sets.length; hi++) {
+      if (sets[lo].Exercise_Name === sets[hi].Exercise_Name) {
+        continue
+      } else {
+        result.push(sets.slice(lo, hi))
+        lo = hi
+      }
+    }
+    result.push(sets.slice(lo, hi))
+    return result
   }
 
   async getWorkout(date: Date): Promise<Workout | null> {
@@ -109,7 +132,7 @@ export class json_db implements DB {
     for (let i = 0; i < ex_names.length; i++) {
       // get the file and parse it into a Exercise_Hist object 
       const ex: Exercise_Hist = await this.getExerciseHistory(ex_names[i])
-      ex.Hist.filter(([value, date]) => date.getTime() !== d.getTime());
+      ex.Hist = ex.Hist.filter(([_, date]) => date.getTime() !== d.getTime());
       // now that the elements with matching dates are gone from the object, rewrite the
       // object to file
       const ex_uri: string = data_dir + ex_names[i] + ".json"
