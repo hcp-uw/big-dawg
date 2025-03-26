@@ -1,4 +1,15 @@
-import { DB, Workout, Exercise_List, Exercise_Hist, Muscle_Group, Exercise, Set, InvalidDateException, InvalidExerciseException } from './Types'
+import {
+  DB,
+  Workout,
+  Exercise_List,
+  Exercise_Hist,
+  Muscle_Group,
+  Exercise,
+  Set,
+  InvalidDateException,
+  InvalidExerciseException,
+  InvalidInternalExerciseListException
+} from './Types'
 import * as FS from 'expo-file-system'
 
 const data_dir: string = FS.documentDirectory + '.big-dawg/data/'
@@ -6,7 +17,7 @@ const data_dir: string = FS.documentDirectory + '.big-dawg/data/'
 // implements interface for json
 export class json_db implements DB {
 
-  // workouts are saved 
+  // workouts are saved
   async saveWorkout(w: Workout): Promise<boolean> {
     // zero out the time for the date
     w.Date.setHours(0, 0, 0, 0)
@@ -101,13 +112,13 @@ export class json_db implements DB {
   }
 
   // helper for deleteWorkout
-  // Given a list of exercise names and gor each exercise in exercise names removes sets from that date 
+  // Given a list of exercise names and gor each exercise in exercise names removes sets from that date
   async deleteFromExerciseHist(ex_names: string[], d: Date): Promise<void> {
     // zero out the time for the date
     d.setHours(0, 0, 0, 0)
     // for each exercise we want to update
     for (let i = 0; i < ex_names.length; i++) {
-      // get the file and parse it into a Exercise_Hist object 
+      // get the file and parse it into a Exercise_Hist object
       const ex: Exercise_Hist = await this.getExerciseHistory(ex_names[i])
       ex.Hist.filter(([value, date]) => date.getTime() !== d.getTime());
       // now that the elements with matching dates are gone from the object, rewrite the
@@ -196,11 +207,11 @@ export class json_db implements DB {
                   break  // assuming that the ex_name only appears once in the entire Exercise_List
               }
           }
-          
+
           if (deleted)
               break  // assuming that the ex_name only appears once in the entire Exercise_List
       }
-      
+
       // write the updated Exercise_List back to disk
       const ex_list_uri: string = data_dir + "Exercise_List.json"
       wrapAsync(FS.writeAsStringAsync, ex_list_uri, JSON.stringify(exerciseList))
@@ -229,43 +240,68 @@ export class json_db implements DB {
     // try to get the file with the given month and year
     const file_name: string = month + "_" + year + ".json"
     const uri: string = data_dir + file_name
-    // if the file does not exist, throw exception
-    if (!(checkFile(file_name)))
-      throw new InvalidDateException(month, year)
+    // if the file does not exist, give up
+    if (!(await checkFile(file_name)))
+      return []
 
     // if the file exists, parse the file into a list of workouts for that month
-    let content: Workout[] = JSON.parse(await FS.readAsStringAsync(uri), dateReviver)
+    const monthHistory: Workout[] = JSON.parse(await FS.readAsStringAsync(uri), dateReviver)
+    const exerciseList: Exercise_List | null = await this.getExerciseList()
 
-    let monthView: Muscle_Group[][] = []
+    // THIS EXCEPTION IS ONLY THROWN IF THE Exercise_List.json FILE WAS NOT CREATED PRIOR TO getCalendarView BEING CALLED,
+    // THUS this.getExerciseList() RETURNED NULL. MAKE SURE THE Exercise_List.json FILE IS CREATED BEFORE CALLING
+    // getCalendarView
+    if (exerciseList == null)
+      return []
+      // throw new InvalidInternalExerciseListException()  //todo: implement db init and remove this? 
 
-    for (let i = 0; i < content.length; i++) {  // iterate through the days of the month
-      let daySet: Muscle_Group[] = []
-      for (let j = 0; j < content[i].Sets.length; j++) {  // iterate through the exercises of the day
-        daySet.push(...(await this.getMuscleGroups(content[i].Sets[j].Exercise_Name)))
+
+    let monthMuscleGroups: Muscle_Group[][] = []
+
+    for (let day = 0; day < monthHistory.length; day++) {  // iterate through the days of the month
+      // in the content workout list, the value at each index could either be a Workout object or null.
+      // so append an empty list to the monthView if the value is null,
+      // otherwise if not null, we need to actually find all of the muscle group info from the exercises
+      if (monthHistory[day] == null) {
+        monthMuscleGroups[day] = []
+        continue
       }
 
-      // filter daySet by unique since it can contain duplicates, then add the daySet to the month array
-      daySet = daySet.filter((muscle, index, self) => self.indexOf(muscle) === index)
-      monthView[i] = daySet
+      // now we know for sure that the current day has a recorded workout, so now we extract the muscle groups out of
+      // the day's exercises
+      let dayMuscleGroups: Muscle_Group[] = []
+      // for each set in the day's exercise,
+      monthHistory[day].Sets.forEach((set: Set) => {
+        // since a set can only have one exercise, get the set's exercise name
+        const ex_name: string = set.Exercise_Name
+
+        // for each muscle group of exerciseList,
+        Object.entries(exerciseList).forEach(([muscleGroup, exercisesArr]) => {
+          // check each Exercise object of that muscle group to see if the name matches.
+          exercisesArr.forEach((exercise: Exercise) => {
+            // if the name matches AND the muscle group is not already in the final returned array, add it
+            if (exercise.Exercise_Name == ex_name && !dayMuscleGroups.includes(<Muscle_Group> muscleGroup)) {
+              dayMuscleGroups.push(<Muscle_Group> muscleGroup)
+            }
+            // since Array.forEach does not support break;, we unfortunately must keep going through the rest of the
+            // array. potential optimization here. make a temp structure that holds only the exercise name instead of
+            // exercise objects
+          })
+        })
+
+        // by this point, the current exercise (i.e. ex_name) should have its muscle groups completely copied to
+        // dayMuscleGroups.
+      })
+
+      // by this point, every exercise of the current day should have their muscle groups copied to dayMuscleGroups,
+      // and the current day's muscle groups should be finalized.
+      // now store the day's muscle groups in the monthMuscleGroups[day]
+      monthMuscleGroups[day] = dayMuscleGroups.sort();
     }
+    // by the end of the loop all days of the month should be either populated with [] if no workouts were done, or
+    // with a populated Muscle_Group[]
 
-    return monthView
-  }
-
-  // private helper function for getCalendarView
-  // given an exercise name, returns its muscle groups
-  async getMuscleGroups(ex_name: string): Promise<Muscle_Group[]> {
-    const file_name: string = ex_name + ".json"
-    const uri: string = data_dir + file_name
-    if (!(checkFile(file_name)))
-      throw new InvalidExerciseException(ex_name)
-
-    const content: Exercise = JSON.parse(await FS.readAsStringAsync(uri), dateReviver)
-
-    const groups: Muscle_Group[] = []
-    groups.push(content.Muscle_Group)
-
-    return groups
+    return monthMuscleGroups
   }
 }
 
@@ -305,7 +341,7 @@ function dateReviver(key: string, value: any): any {
 
 /* wrapper for async functions that blocks program until async functions are done
 export function wrapAsync<Targs extends any[], TReturn> (fun: (...args: Targs) => Promise<TReturn>, ...args: Targs): TReturn {
-  let promise_resolved: boolean = false 
+  let promise_resolved: boolean = false
   let result: any
   fun(...args)
   .then((r: TReturn) => {

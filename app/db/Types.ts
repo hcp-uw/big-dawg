@@ -2,7 +2,7 @@
 export interface DB {
 
     /*
-    *   save a logged workout for a specific Date 
+    *   save a logged workout for a specific Date
     *   if a workout for that date already exists that workout is replaced
     *   Params:
     *       -- w: the workout to save
@@ -12,11 +12,11 @@ export interface DB {
     */
     saveWorkout: (w: Workout) => Promise<boolean>
 
-    /*  
+    /*
     *   get a workout for a specific Date
-    *   Params: 
+    *   Params:
     *       -- date: date of the workout
-    *   Returns: 
+    *   Returns:
     *       -- Workout: the workout if the date has workouts
             -- null: if the date requested has nothing
     */
@@ -27,14 +27,14 @@ export interface DB {
     *   doesn't do anything if no workout for that date exists
     *   Params:
     *       -- date: date of workout to delete
-    *   Returns: 
+    *   Returns:
     *       -- true if a workout for that date was succesfully deleted, false otherwise
     */
     deleteWorkout: (date: Date) => Promise<boolean>
 
     /*
     *   gets the list of exercises we have (prebuilt and custom)
-    *   Returns: 
+    *   Returns:
     *       -- the list of exercises
     *      -- null if no exercises exist
     */
@@ -44,43 +44,44 @@ export interface DB {
     *   gets the entire exercise history for that exercise
     *   Params:
     *       -- ex_name: exercise name
-    *   Throws: 
-    *       -- InvalidExerciseException: when an exercise with that name doesn't exist 
-    *   Returns: 
+    *   Throws:
+    *       -- InvalidExerciseException: when an exercise with that name doesn't exist
+    *   Returns:
     *       -- exercise history. If the user has never done the requested exercise the inner Hist will be empty.
     */
     getExerciseHistory: (ex_name: string) => Promise<Exercise_Hist>
 
-    /* 
-    *   saves a new user-made custom exercise 
-    *   Params: 
-    *       -- ex: the exercise to add. Will replace the exercise with the same name 
-    *   Returns: 
-    *       -- true if the exercise was added, false if not 
+    /*
+    *   saves a new user-made custom exercise
+    *   Params:
+    *       -- ex: the exercise to add. Will replace the exercise with the same name
+    *   Returns:
+    *       -- true if the exercise was added, false if not
     */
     saveExercise: (ex: Exercise) => Promise<boolean>
 
-    /* 
-    *   deletes a user-made custom exercise 
-    *   Params: 
-    *       -- ex_name: the name of the exercise to delete 
-    *   Throws: 
+    /*
+    *   deletes a user-made custom exercise
+    *   Params:
+    *       -- ex_name: the name of the exercise to delete
+    *   Throws:
     *       -- InvalidExerciseException: if the given exercise name does not exist
-    *   Returns: 
+    *   Returns:
     *       -- true if the exercise was deleted, false if not
     */
     //deleteExercise: (ex_name: string) => boolean
 
-    /* 
+    /*
     *   gets the muscle group information for the workout calendar
-    *   Params: 
+    *   Params:
     *       -- month: from 1-12 indicating the month from which to get muscle group data
     *       -- year: the year
     *   Throws:
-    *       -- InvalidDateException: if the given month, year is not valid or not found
-    *   Returns: 
+    *       -- InvalidDateException: if the given month, year is not valid
+    *   Returns:
     *       -- an array of length 30, 31, or 28 (number of days in that month)
     *            that holds an array of muscle groups trained in that day
+    *       -- 1d empty array [] if the given month, year has no logged workouts for that month
     */
     getCalendarView: (month: bigint, year: bigint) => Promise<Muscle_Group[][]>
 }
@@ -88,14 +89,14 @@ export interface DB {
 //export type Muscle_Group = "Chest" | "Back" | "Legs" | "Triceps" | "Biceps" | "Shoulders"
 export type Muscle_Group = keyof Exercise_List;
 
-// export type Exercise_Type = "Weight" | "Cardio"  //Not in MVP but may be useful in future 
+// export type Exercise_Type = "Weight" | "Cardio"  //Not in MVP but may be useful in future
 
 export type Exercise = {
     // name is unique per exercise
     Exercise_Name: string
     Muscle_Group: Muscle_Group
     Comment: string | null
-    // Exercise_Type” : string 	//Not in MVP but may be useful in future 
+    // Exercise_Type” : string 	//Not in MVP but may be useful in future
 }
 
 export type Exercise_List = {
@@ -145,5 +146,13 @@ export class InvalidDateException extends Error {
     constructor(month: bigint, year: bigint) {
         super(`Invalid date: ${year}, ${month}`)
         this.name = "InvalidDateException"
+    }
+}
+
+export class InvalidInternalExerciseListException extends Error {
+    constructor() {
+        super('Internal .getExerciseList returned null, most likely the exercise list DB file was not initialized prior ' +
+            'to function call')
+        this.name = "InvalidInternalExerciseListException"
     }
 }
