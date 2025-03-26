@@ -6,7 +6,9 @@ export interface DB {
     *   if a workout for that date already exists that workout is replaced
     *   Params:
     *       -- w: the workout to save
-    *   Throws: InvalidExerciseException if one of the sets is for an exercise that doesn't exist, does nothing to db
+    *   Throws: InvalidExerciseException if one of the sets is for an exercise that doesn't exist
+    *           in this case saves all sets of this workout to history except the ones for the invalid sets
+    *           returns exception of format InvalidExerciseException("InvalidEx1 InvalidEx2 InvalidEX3")
     *   Returns:
     *       -- true if a workout for that date was replaced, false otherwise
     */
