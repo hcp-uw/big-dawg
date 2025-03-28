@@ -7,7 +7,8 @@ import {
   Exercise,
   Set,
   InvalidDateException,
-  InvalidExerciseException
+  InvalidExerciseException,
+  InvalidInternalExerciseListException
 } from './Types'
 import * as FS from 'expo-file-system'
 
