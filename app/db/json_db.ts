@@ -6,9 +6,8 @@ import {
   Muscle_Group,
   Exercise,
   Set,
-  InvalidDateException,
   InvalidExerciseException,
-  InvalidInternalExerciseListException
+  NoSuchFileException
 } from './Types'
 import * as FS from 'expo-file-system'
 
@@ -128,11 +127,11 @@ export class json_db implements DB {
     }
   }
 
-  async getExerciseList(): Promise<Exercise_List | null> {
+  async getExerciseList(): Promise<Exercise_List> {
     const file_name: string = "Exercise_List.json"
     const uri: string = data_dir + file_name
     if (!(await checkFile(file_name))) {
-      return null
+      throw new NoSuchFileException("Exercise_List.json")
     }
     let content: Exercise_List = JSON.parse(await FS.readAsStringAsync(uri), dateReviver)
     return content
@@ -163,24 +162,9 @@ export class json_db implements DB {
     const updatedContent: string = JSON.stringify(hist) // can add null, 2 for spaces
     await FS.writeAsStringAsync(uri, updatedContent);
 
-    const list: Exercise_List | null = await this.getExerciseList();
-    let exercise_list: Exercise_List;
-    if (list != null) {
-      exercise_list = list
-    }
-    else {
-      exercise_list = {
-        Chest: [],
-        Back: [],
-        Legs: [],
-        Triceps: [],
-        Biceps: [],
-        Shoulders: [],
-      }
-    }
+    let exercise_list: Exercise_List = await this.getExerciseList();
     // add our exercise
     exercise_list[ex.Muscle_Group].push(ex)
-
     // Update the Exercise_List JSON file with the new list of names
     const updatedListContent = JSON.stringify(exercise_list);
     await FS.writeAsStringAsync(data_dir + "Exercise_List.json", updatedListContent);
@@ -232,30 +216,17 @@ export class json_db implements DB {
       return deleted
   }*/
 
-  async getCalendarView(month: bigint, year: bigint): Promise<Muscle_Group[][]> {
-    // if month not in range 1-12, throw exception
-    if (month <= 0 || month >= 13)
-      throw new InvalidDateException(month, year)
-
+  async getCalendarView(date: Date): Promise<Muscle_Group[][]> {
     // try to get the file with the given month and year
-    const file_name: string = month + "_" + year + ".json"
+    const file_name: string = (date.getMonth() + 1) + "_" + date.getFullYear() + ".json"
     const uri: string = data_dir + file_name
-    // if the file does not exist, give up
+    // if the file does not exist, no history so return empty array
     if (!(await checkFile(file_name)))
       return []
 
     // if the file exists, parse the file into a list of workouts for that month
     const monthHistory: Workout[] = JSON.parse(await FS.readAsStringAsync(uri), dateReviver)
-    const exerciseList: Exercise_List | null = await this.getExerciseList()
-
-    // THIS EXCEPTION IS ONLY THROWN IF THE Exercise_List.json FILE WAS NOT CREATED PRIOR TO getCalendarView BEING CALLED,
-    // THUS this.getExerciseList() RETURNED NULL. MAKE SURE THE Exercise_List.json FILE IS CREATED BEFORE CALLING
-    // getCalendarView
-    if (exerciseList == null)
-      return []
-      // throw new InvalidInternalExerciseListException()  //todo: implement db init and remove this? 
-
-
+    const exerciseList: Exercise_List = await this.getExerciseList()
     let monthMuscleGroups: Muscle_Group[][] = []
 
     for (let day = 0; day < monthHistory.length; day++) {  // iterate through the days of the month

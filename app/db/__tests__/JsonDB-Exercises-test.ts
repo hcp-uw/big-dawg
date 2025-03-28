@@ -100,7 +100,7 @@ describe('json_db Exercise Tests', () => {
     let { db } = setupTest({ 
       file_exists: false 
     })
-    await expect(db.getExerciseList()).resolves.toStrictEqual(null)
+    await expect(db.getExerciseList()).rejects.toThrow("File: Exercise_List.json doesn't exist")
   })
 
   //getExerciseList for empty list
