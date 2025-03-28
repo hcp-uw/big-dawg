@@ -1,3 +1,4 @@
-Test our current code with JTest
+implement db init (with exceptions instead of null for getExerciseList)
+Merge with front end and have them connect front end to db
 Implement Workout plans
 Implement DeleteExercise

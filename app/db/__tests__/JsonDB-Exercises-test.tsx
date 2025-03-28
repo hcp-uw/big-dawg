@@ -106,12 +106,8 @@ describe('json_db Exercise Tests', () => {
   //getExerciseList for empty list
   it('getExerciseList_empty', async () => {
     //console.log("Test getExerciseList_empty output begin")
-    const r1 = {
-      uri: ".big-dawg/data/Exercise_List.json",
-      content: JSON.stringify(emptyList)
-    }
     let { db } = setupTest({ 
-      file_exists: true, expected_rContents: [r1.content] 
+      file_exists: true, expected_rContents: [JSON.stringify(emptyList)] 
     });
     await expect(db.getExerciseList()).resolves.toStrictEqual(emptyList)
   })
@@ -119,13 +115,13 @@ describe('json_db Exercise Tests', () => {
   // for non-empty list
   it('getExerciseList_nonEmpty', async () => {
     //console.log("Test getExerciseList_nonEmpty output begin")
-    const r1 = {
-      uri: ".big-dawg/data/Exercise_List.json",
-      content: JSON.stringify(el)
-    }
+    //const r1 = {
+      //uri: ".big-dawg/data/Exercise_List.json",
+      //content: 
+    //}
     let { db } = setupTest({
       file_exists: true,
-      expected_rContents: [r1.content]
+      expected_rContents: [JSON.stringify(el)]
     });
     // Verify that the expected writes occurred
     await expect(db.getExerciseList()).resolves.toStrictEqual(expectedList);
@@ -142,28 +138,10 @@ describe('json_db Exercise Tests', () => {
     await expect(db.getExerciseHistory("Bench")).rejects.toThrow("Invalid exercise: Bench")
   })
 
-  // getExerciseHistory for an exercise that doesn't exist
-  it('getExerciseHistory_noSuchExercise', async () => {
-    //console.log("Test getExerciseHistory_noSuchExercise output begin")
-    const r1 = {
-      uri: ".big-dawg/data/Exercise_Hist.json",
-      content: JSON.stringify(Squat)
-    }
-    let { db } = setupTest({ 
-      file_exists: false, expected_rContents: [r1.content] 
-    });
-    await expect(db.getExerciseHistory("Bench")).rejects.toThrow("Invalid exercise: Bench")
-  })
-
   // getExerciseHistory for an exercise that does exist
   it('getExerciseHistory_fileExists', async () => {
-    //console.log("Test getExerciseHistory output begin")
-    const r1 = {
-      uri: ".big-dawg/data/Exercise_List.json",
-      content: JSON.stringify(Squat)
-    }
     let { db } = setupTest({
-      file_exists: true, expected_rContents: [r1.content]
+      file_exists: true, expected_rContents: [JSON.stringify(Squat)]
     });
     await expect(db.getExerciseHistory("Squat")).resolves.toStrictEqual(Squat);
   })

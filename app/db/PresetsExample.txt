@@ -1,0 +1,9 @@
+// example
+// in presets.tsx
+
+import { Exercise } from "./Types";
+
+const ex1: Exercise = {
+    Exercise_Name: "Squat",
+    
+}
