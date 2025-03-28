@@ -1,4 +1,4 @@
-import { DB, Muscle_Group, Exercise, Exercise_List, Set, Exercise_Hist, Workout, InvalidExerciseException } from '../Types'
+import {Exercise, Set, Workout, InvalidExerciseException } from '../Types'
 import { setupTest } from '../Testing-utils'
 
 // consts for tests
