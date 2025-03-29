@@ -1,4 +1,4 @@
-import {Exercise, Set, Workout, InvalidExerciseException } from '../Types'
+import { Exercise, Set, Workout, InvalidExerciseException } from '../Types'
 import { setupTest } from '../Testing-utils'
 
 // consts for tests
@@ -91,7 +91,7 @@ describe('json_db Workout Tests', () => {
       null]
     let { db } = setupTest({
       file_exists: false, expected_wContents:
-        [{ uri: ".big-dawg/data/1_2025.json", content: "" }, { uri: ".big-dawg/data/1_2025.json", content: JSON.stringify(c) }]
+        [{ uri: ".big-dawg/data/1_2025.json", content: JSON.stringify(c) }]
     })
     jest.spyOn(db, 'addToExerciseHist').mockImplementation(() => { return })
     await expect(db.saveWorkout(w)).resolves.toBe(false)

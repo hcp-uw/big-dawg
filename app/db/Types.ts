@@ -36,8 +36,7 @@ export interface DB {
     deleteWorkout: (date: Date) => Promise<boolean>
 
     /*
-    *   gets the list of exercises we have (prebuilt and custom)
-    *   Throws: NoSuchFileException if exercise list file doesn't exist 
+    *   gets the list of exercises we have
     *   Returns:
     *       -- the list of exercises
     */
@@ -59,7 +58,7 @@ export interface DB {
     *   Params:
     *       -- ex: the exercise to add. Will replace the exercise with the same name
     *   Returns:
-    *       -- true if the exercise was added, false if not
+    *       -- true if the exercise was added, false if it alredy existed
     */
     saveExercise: (ex: Exercise) => Promise<boolean>
 
@@ -138,12 +137,5 @@ export class InvalidExerciseException extends Error {
     constructor(exerciseName: string) {
         super(`Invalid exercise: ${exerciseName}`)
         this.name = "InvalidExerciseException"
-    }
-}
-
-export class NoSuchFileException extends Error {
-    constructor(m: string) {
-        super(`File: ${m} doesn't exist`)
-        this.name = "NoSuchFileException"
     }
 }
