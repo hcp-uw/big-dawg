@@ -1,4 +1,13 @@
 // Public interface and types for DB
+
+/*
+*   Note: If ui/front end is immplemented corectly, InvalidExerciseException shouldn't happen
+*         however in nightmare scenario that the disk is corrupted/files are deleted, if an it
+*         happens, turn exception into an error message for user to re-add the exercises. 
+*         Ex: If caught Invalid exercise: Bench Squat Deadlift, should pop up message to user in
+*         app saying "There seems to be an error with your storage and some data was lost.
+*                     Please create new exercises for: Bench, Squat, and Deadlift"
+* */
 export interface DB {
 
     /*
