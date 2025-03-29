@@ -58,7 +58,7 @@ describe('json_db Misc/Rest Tests', () => {
         // console.log("Test output end")
         // resets mocked funcs created with spy on (used for mocked json_db funcs)
         jest.resetModules()
-        jest.clearAllMocks()
+        jest.resetAllMocks()
     })
 
     // simple test, the only recorded workout of the month requested is the first day

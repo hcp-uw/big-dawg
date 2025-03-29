@@ -59,7 +59,7 @@ describe('json_db Workout Tests', () => {
   afterEach(() => {
     // resets mocked funcs created with spy on (used for mocked json_db funcs)
     jest.resetModules()
-    jest.clearAllMocks()
+    jest.resetAllMocks()
   })
   it('getWorkout_noMonth', async () => {
     //console.log("Test getWorkout_noMonth output begin")
