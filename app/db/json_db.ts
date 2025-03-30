@@ -128,7 +128,7 @@ export class json_db implements DB {
     }
   }
 
-  async getExerciseList(): Promise<Exercise_List | null> {
+  async getExerciseList(): Promise<Exercise_List> {
     const file_name: string = "Exercise_List.json"
     const uri: string = data_dir + file_name
     if (!(await checkFile(file_name))) {
