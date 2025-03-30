@@ -38,9 +38,9 @@ export interface DB {
     *   gets the list of exercises we have (prebuilt and custom)
     *   Returns:
     *       -- the list of exercises
-    *      -- exception if the exercise doesnt exist
+    *       -- null if the exercise doesnt exist
     */
-    getExerciseList: () => Promise<Exercise_List>
+    getExerciseList: () => Promise<Exercise_List | null>
 
     /*
     *   gets the entire exercise history for that exercise

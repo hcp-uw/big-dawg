@@ -128,7 +128,7 @@ export class json_db implements DB {
     }
   }
 
-  async getExerciseList(): Promise<Exercise_List> {
+  async getExerciseList(): Promise<Exercise_List | null> {
     const file_name: string = "Exercise_List.json"
     const uri: string = data_dir + file_name
     if (!(await checkFile(file_name))) {
@@ -302,6 +302,14 @@ export class json_db implements DB {
     // with a populated Muscle_Group[]
 
     return monthMuscleGroups
+  }
+
+  async getWorkoutPlan(plan_name: string): Promise<Workout[]> {
+    return []
+  }
+
+  async saveWorkoutPlan(plan_name: string, plan: Workout[]): Promise<boolean> {
+    return true
   }
 }
 
