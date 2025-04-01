@@ -167,14 +167,22 @@ export class json_db implements DB {
 
   async saveExercise(ex: Exercise): Promise<boolean> {
     let ex_list: Exercise_List = await this.getExerciseList();
-    const alr_exists: boolean = Object.values(ex_list).some((arr) => arr.some((obj) => obj.Exercise_Name === ex.Exercise_Name))
-    if (!alr_exists) {
-      // doesn't exist in ex_list so add our exercise list
-      ex_list[ex.Muscle_Group].push(ex)
-      // Update the Exercise_List JSON file with the new list of names
-      const updatedListContent = JSON.stringify(ex_list);
-      await FS.writeAsStringAsync(data_dir + "Exercise_List.json", updatedListContent);
+    let ex_exists: boolean = false
+    // remove old ex (if it exists)
+    // note: actually O(n) since first loop iterates over fixed size fields (muscle groups)
+    for (let arr of Object.values(ex_list)) {
+      const index = arr.findIndex(item => item.Exercise_Name === ex.Exercise_Name);
+      if (index !== -1) {
+        arr.splice(index, 1);  // Remove element at index
+        ex_exists = true;
+        break;
+      }
     }
+    // add new ex exercise list
+    ex_list[ex.Muscle_Group].push(ex)
+    // Update the Exercise_List JSON file with the new list of names
+    const updatedListContent = JSON.stringify(ex_list);
+    await FS.writeAsStringAsync(data_dir + "Exercise_List.json", updatedListContent);
     // make ex hist file (if it doesn't exist)
     const file_name: string = ex.Exercise_Name + ".json"
     const uri: string = data_dir + file_name;
@@ -186,7 +194,7 @@ export class json_db implements DB {
     const hist: Exercise_Hist = { Exercise_Name: ex.Exercise_Name, Hist: new Array<[Set, Date]>(0) }
     const updatedContent: string = JSON.stringify(hist)
     await FS.writeAsStringAsync(uri, updatedContent);
-    return !alr_exists
+    return !ex_exists
   }
 
   /* deleteExercise (ex_name: string): boolean {

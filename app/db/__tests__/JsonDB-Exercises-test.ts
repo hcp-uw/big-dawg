@@ -12,9 +12,6 @@ const ex2: Exercise = {
   Muscle_Group: "Legs",
   Comment: "Barbell"
 }
-const el: Exercise_List = {
-  Chest: [ex1], Back: [], Legs: [], Triceps: [], Biceps: [], Shoulders: []
-}
 
 const el2: Exercise_List = {
   Chest: [ex1], Back: [], Legs: [ex2], Triceps: [], Biceps: [], Shoulders: []
@@ -34,7 +31,6 @@ const Squat: Exercise_Hist = {
   Hist: []
 }
 
-
 // ----- test ------
 
 describe('json_db Exercise Tests', () => {
@@ -47,6 +43,9 @@ describe('json_db Exercise Tests', () => {
   // ------ saveExercise() test ------
   // the exercise already exists
   it('saveExercise_alreadyExists', async () => {
+    const el: Exercise_List = {
+      Chest: [ex1], Back: [], Legs: [], Triceps: [], Biceps: [], Shoulders: []
+    }
     //console.log("Test saveExercise_alreadyExists output begin")
     let { db } = setupTest()
     jest.spyOn(db, 'getExerciseList').mockImplementationOnce(() => Promise.resolve(
@@ -56,7 +55,38 @@ describe('json_db Exercise Tests', () => {
   })
 
   // the exerciseList doesn't contain that exercise
-  it('saveExercise_brandNew', async () => {
+  it('saveExercise_UpdateList', async () => {
+    const ex_new: Exercise = {
+      Exercise_Name: "Bench",
+      Muscle_Group: "Back",
+      Comment: "Dumbell"
+    }
+    const el: Exercise_List = {
+      Chest: [], Back: [ex_new], Legs: [], Triceps: [], Biceps: [], Shoulders: []
+    }
+    //console.log("Test saveExercise_emptyExerciseList output begin")
+    const w1 = {
+      uri: ".big-dawg/data/Exercise_List.json",
+      content: JSON.stringify(el)
+    }
+    // change mock implementation setup
+    let { db } = setupTest({ file_exists: true, expected_wContents: [w1] })
+    jest.spyOn(db, 'getExerciseList').mockImplementationOnce(() => Promise.resolve({
+      Chest: [ex1], Back: [], Legs: [], Triceps: [], Biceps: [], Shoulders: []
+    }))
+    // test
+    await expect(db.saveExercise(ex_new)).resolves.toBe(false)
+  })
+
+  it('saveExercise_UpdateList_andFile', async () => {
+    const ex_new: Exercise = {
+      Exercise_Name: "Bench",
+      Muscle_Group: "Back",
+      Comment: "Dumbell"
+    }
+    const el: Exercise_List = {
+      Chest: [], Back: [ex_new], Legs: [], Triceps: [], Biceps: [], Shoulders: []
+    }
     //console.log("Test saveExercise_emptyExerciseList output begin")
     const w1 = {
       uri: ".big-dawg/data/Exercise_List.json",
@@ -66,25 +96,28 @@ describe('json_db Exercise Tests', () => {
     // change mock implementation setup
     let { db } = setupTest({ file_exists: false, expected_wContents: [w1, w2] })
     jest.spyOn(db, 'getExerciseList').mockImplementationOnce(() => Promise.resolve({
-      Chest: [], Back: [], Legs: [], Triceps: [], Biceps: [], Shoulders: []
+      Chest: [ex1], Back: [], Legs: [], Triceps: [], Biceps: [], Shoulders: []
     }))
     // test
-    await expect(db.saveExercise(ex1)).resolves.toBe(true)
+    await expect(db.saveExercise(ex_new)).resolves.toBe(false)
   })
 
   // exerciseList needs to be updated for that exercise
-  it('saveExercise_updatedExerciseList', async () => {
+  it('saveExercise_newEx_oldFile', async () => {
+    const el: Exercise_List = {
+      Chest: [ex1], Back: [], Legs: [], Triceps: [], Biceps: [], Shoulders: []
+    }
     //console.log("Test saveExercise_updatedExerciseList output begin")
     const w1 = {
       uri: ".big-dawg/data/Exercise_List.json",
       content: JSON.stringify(el2)
     }
-    const w2 = { uri: ".big-dawg/data/Squat.json", content: "{\"Exercise_Name\":\"Squat\",\"Hist\":[]}" }
+    //const w2 = { uri: ".big-dawg/data/Squat.json", content: "{\"Exercise_Name\":\"Squat\",\"Hist\":[]}" }
     //  change mock implementation setup
-    let { db } = setupTest({ file_exists: false, expected_wContents: [w1, w2] })
+    let { db } = setupTest({ file_exists: true, expected_wContents: [w1] })
     jest.spyOn(db, 'getExerciseList').mockImplementationOnce(() => Promise.resolve(el))
     // test
-    await expect(db.saveExercise(ex2)).resolves.toBe(true)
+    await expect(db.saveExercise(ex2)).resolves.toBe(false)
   })
 
   // -----getExerciseList tests-----
@@ -109,6 +142,9 @@ describe('json_db Exercise Tests', () => {
 
   // for non-empty list
   it('getExerciseList_nonEmpty', async () => {
+    const el: Exercise_List = {
+      Chest: [ex1], Back: [], Legs: [], Triceps: [], Biceps: [], Shoulders: []
+    }
     //console.log("Test getExerciseList_nonEmpty output begin")
     let { db } = setupTest({
       file_exists: true,
