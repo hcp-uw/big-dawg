@@ -131,7 +131,15 @@ describe('json_db Exercise Tests', () => {
     await expect(db.getExerciseList()).resolves.toStrictEqual(emptyList)
   })
 
-  //getExerciseList for empty list
+  //getExerciseList for creating new one
+  it('getExerciseList_noFile', async () => {
+    //console.log("Test getExerciseList_empty output begin")
+    let { db } = setupTest({
+      file_exists: false, expected_rContents: [JSON.stringify(emptyList)]
+    });
+    await expect(db.getExerciseList()).resolves.toStrictEqual(emptyList)
+  })
+
   it('getExerciseList_empty', async () => {
     //console.log("Test getExerciseList_empty output begin")
     let { db } = setupTest({
