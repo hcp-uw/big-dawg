@@ -6,9 +6,7 @@ import {
   Muscle_Group,
   Exercise,
   Set,
-  InvalidDateException,
   InvalidExerciseException,
-  InvalidInternalExerciseListException
 } from './Types'
 import * as FS from 'expo-file-system'
 
@@ -23,15 +21,17 @@ export class json_db implements DB {
     w.Date.setHours(0, 0, 0, 0)
     const file_name: string = (w.Date.getMonth() + 1) + "_" + w.Date.getFullYear() + ".json"
     const uri: string = data_dir + file_name
-    let workout_exists: boolean = !(await createFile(file_name))
+    // check if the month/file exists
+    let workout_exists: boolean = await checkFile(file_name)
     let content: (Workout | null)[]
     if (workout_exists) {
+      // if month/file exists read it
       content = JSON.parse(await FS.readAsStringAsync(uri), dateReviver)
+      // check if workout exists in that day
       workout_exists = !(content[w.Date.getDate() - 1] === null)
     } else {
       content = new Array<Workout | null>(31).fill(null)
     }
-    // throws NoSuchExercise exception if set has exercise name not in list
     await this.addToExerciseHist(w.Sets, w.Date)
     content[w.Date.getDate() - 1] = w
     await FS.writeAsStringAsync(uri, JSON.stringify(content))
@@ -128,11 +128,20 @@ export class json_db implements DB {
     }
   }
 
-  async getExerciseList(): Promise<Exercise_List | null> {
+  async getExerciseList(): Promise<Exercise_List> {
     const file_name: string = "Exercise_List.json"
     const uri: string = data_dir + file_name
     if (!(await checkFile(file_name))) {
-      return null
+      const empty_exList: Exercise_List = {
+        Chest: [],
+        Back: [],
+        Legs: [],
+        Triceps: [],
+        Biceps: [],
+        Shoulders: [],
+      }
+      FS.writeAsStringAsync(uri, JSON.stringify(empty_exList))
+      return empty_exList
     }
     let content: Exercise_List = JSON.parse(await FS.readAsStringAsync(uri), dateReviver)
     return content
@@ -142,16 +151,39 @@ export class json_db implements DB {
     const file_name: string = ex_name + ".json"
     const uri: string = data_dir + file_name
     if (!(await checkFile(file_name))) {
-      throw new InvalidExerciseException(ex_name)
+      const ex_list: Exercise_List = await this.getExerciseList()
+      const my_ex: Exercise | null = Object.values(ex_list).flat().find((obj) => obj.Exercise_Name === ex_name) || null;
+      if (my_ex != null) {
+        // if it's in exerciseList, create empty hist and return it
+        this.saveExercise(my_ex)
+        return { Exercise_Name: ex_name, Hist: [] }
+      } else {
+        throw new InvalidExerciseException(ex_name)
+      }
     }
     let content: Exercise_Hist = JSON.parse(await FS.readAsStringAsync(uri), dateReviver)
     return content
   }
 
   async saveExercise(ex: Exercise): Promise<boolean> {
-    // Save to exerciseHistory
-    // If custom exercise, add to the history as a new file
-    // add exerccise to exerccise list
+    let ex_list: Exercise_List = await this.getExerciseList();
+    let ex_exists: boolean = false
+    // remove old ex (if it exists)
+    // note: actually O(n) since first loop iterates over fixed size fields (muscle groups)
+    for (let arr of Object.values(ex_list)) {
+      const index = arr.findIndex(item => item.Exercise_Name === ex.Exercise_Name);
+      if (index !== -1) {
+        arr.splice(index, 1);  // Remove element at index
+        ex_exists = true;
+        break;
+      }
+    }
+    // add new ex exercise list
+    ex_list[ex.Muscle_Group].push(ex)
+    // Update the Exercise_List JSON file with the new list of names
+    const updatedListContent = JSON.stringify(ex_list);
+    await FS.writeAsStringAsync(data_dir + "Exercise_List.json", updatedListContent);
+    // make ex hist file (if it doesn't exist)
     const file_name: string = ex.Exercise_Name + ".json"
     const uri: string = data_dir + file_name;
     let exerciseHist: Exercise_Hist;
@@ -160,31 +192,9 @@ export class json_db implements DB {
     }
     // Creates new file for that exercise
     const hist: Exercise_Hist = { Exercise_Name: ex.Exercise_Name, Hist: new Array<[Set, Date]>(0) }
-    const updatedContent: string = JSON.stringify(hist) // can add null, 2 for spaces
+    const updatedContent: string = JSON.stringify(hist)
     await FS.writeAsStringAsync(uri, updatedContent);
-
-    const list: Exercise_List | null = await this.getExerciseList();
-    let exercise_list: Exercise_List;
-    if (list != null) {
-      exercise_list = list
-    }
-    else {
-      exercise_list = {
-        Chest: [],
-        Back: [],
-        Legs: [],
-        Triceps: [],
-        Biceps: [],
-        Shoulders: [],
-      }
-    }
-    // add our exercise
-    exercise_list[ex.Muscle_Group].push(ex)
-
-    // Update the Exercise_List JSON file with the new list of names
-    const updatedListContent = JSON.stringify(exercise_list);
-    await FS.writeAsStringAsync(data_dir + "Exercise_List.json", updatedListContent);
-    return true
+    return !ex_exists
   }
 
   /* deleteExercise (ex_name: string): boolean {
@@ -232,30 +242,17 @@ export class json_db implements DB {
       return deleted
   }*/
 
-  async getCalendarView(month: bigint, year: bigint): Promise<Muscle_Group[][]> {
-    // if month not in range 1-12, throw exception
-    if (month <= 0 || month >= 13)
-      throw new InvalidDateException(month, year)
-
+  async getCalendarView(date: Date): Promise<Muscle_Group[][]> {
     // try to get the file with the given month and year
-    const file_name: string = month + "_" + year + ".json"
+    const file_name: string = (date.getMonth() + 1) + "_" + date.getFullYear() + ".json"
     const uri: string = data_dir + file_name
-    // if the file does not exist, give up
+    // if the file does not exist, no history so return empty array
     if (!(await checkFile(file_name)))
       return []
 
     // if the file exists, parse the file into a list of workouts for that month
     const monthHistory: Workout[] = JSON.parse(await FS.readAsStringAsync(uri), dateReviver)
-    const exerciseList: Exercise_List | null = await this.getExerciseList()
-
-    // THIS EXCEPTION IS ONLY THROWN IF THE Exercise_List.json FILE WAS NOT CREATED PRIOR TO getCalendarView BEING CALLED,
-    // THUS this.getExerciseList() RETURNED NULL. MAKE SURE THE Exercise_List.json FILE IS CREATED BEFORE CALLING
-    // getCalendarView
-    if (exerciseList == null)
-      return []
-      // throw new InvalidInternalExerciseListException()  //todo: implement db init and remove this? 
-
-
+    const exerciseList: Exercise_List = await this.getExerciseList()
     let monthMuscleGroups: Muscle_Group[][] = []
 
     for (let day = 0; day < monthHistory.length; day++) {  // iterate through the days of the month
@@ -280,8 +277,8 @@ export class json_db implements DB {
           // check each Exercise object of that muscle group to see if the name matches.
           exercisesArr.forEach((exercise: Exercise) => {
             // if the name matches AND the muscle group is not already in the final returned array, add it
-            if (exercise.Exercise_Name == ex_name && !dayMuscleGroups.includes(<Muscle_Group> muscleGroup)) {
-              dayMuscleGroups.push(<Muscle_Group> muscleGroup)
+            if (exercise.Exercise_Name == ex_name && !dayMuscleGroups.includes(<Muscle_Group>muscleGroup)) {
+              dayMuscleGroups.push(<Muscle_Group>muscleGroup)
             }
             // since Array.forEach does not support break;, we unfortunately must keep going through the rest of the
             // array. potential optimization here. make a temp structure that holds only the exercise name instead of
@@ -303,14 +300,6 @@ export class json_db implements DB {
 
     return monthMuscleGroups
   }
-}
-
-// creates file if it doesn't exist, otherwise does nothing
-// returns false if the file already existed and nothing was created, true otherwise
-async function createFile(file_name: string): Promise<boolean> {
-  if (await checkFile(file_name)) { return false }
-  await FS.writeAsStringAsync(data_dir + file_name, '')
-  return true
 }
 
 // checks if a file exists
