@@ -202,49 +202,36 @@ export class json_db implements DB {
     const file_name: string = (date.getMonth() + 1) + "_" + date.getFullYear() + ".json"
     const uri: string = data_dir + file_name
     // if the file does not exist, no history so return empty array
-    if (!(await checkFile(file_name)))
-      return []
+    if (!(await checkFile(file_name))) return []
 
     // if the file exists, parse the file into a list of workouts for that month
     const monthHistory: Workout[] = JSON.parse(await FS.readAsStringAsync(uri), dateReviver)
-    const exerciseList: Exercise_List = await this.getExerciseList()
+    const ex_list: Exercise_List = await this.getExerciseList()
+    const exercise_Map: Map<string, Exercise> = new Map(
+      Object.values(ex_list).flat().map(ex => [ex.Exercise_Name, ex])
+    )
+    let num_MuscleGroups: number = Object.keys(ex_list).length
     let monthMuscleGroups: Muscle_Group[][] = []
-
-    for (let day = 0; day < monthHistory.length; day++) {  // iterate through the days of the month
-      // in the content workout list, the value at each index could either be a Workout object or null.
-      // so append an empty list to the monthView if the value is null,
-      // otherwise if not null, we need to actually find all of the muscle group info from the exercises
+    for (let day = 0; day < monthHistory.length; day++) {
       if (monthHistory[day] == null) {
+        // no workout for that day
         monthMuscleGroups[day] = []
         continue
       }
-
-      // now we know for sure that the current day has a recorded workout, so now we extract the muscle groups out of
-      // the day's exercises
+      // get muscle groups for curr day
       let dayMuscleGroups: Muscle_Group[] = []
-      // for each set in the day's exercise,
-      monthHistory[day].Sets.forEach((set: Set) => {
-        // since a set can only have one exercise, get the set's exercise name
-        const ex_name: string = set.Exercise_Name
-
-        // for each muscle group of exerciseList,
-        Object.entries(exerciseList).forEach(([muscleGroup, exercisesArr]) => {
-          // check each Exercise object of that muscle group to see if the name matches.
-          exercisesArr.forEach((exercise: Exercise) => {
-            // if the name matches AND the muscle group is not already in the final returned array, add it
-            if (exercise.Exercise_Name == ex_name && !dayMuscleGroups.includes(<Muscle_Group>muscleGroup)) {
-              dayMuscleGroups.push(<Muscle_Group>muscleGroup)
-            }
-            // since Array.forEach does not support break;, we unfortunately must keep going through the rest of the
-            // array. potential optimization here. make a temp structure that holds only the exercise name instead of
-            // exercise objects
-          })
-        })
-
-        // by this point, the current exercise (i.e. ex_name) should have its muscle groups completely copied to
-        // dayMuscleGroups.
-      })
-
+      // loop through sets while we haven't reached maximum muscle groups
+      for (let i = 0; i < monthHistory[day].Sets.length && dayMuscleGroups.length < num_MuscleGroups; i++) {
+        const curr_ex: Exercise | undefined = exercise_Map.get(monthHistory[day].Sets[i].Exercise_Name)
+        if (curr_ex != undefined) {
+          if (dayMuscleGroups.find((obj: Muscle_Group) => obj === curr_ex.Muscle_Group) == undefined) {
+            dayMuscleGroups.push(curr_ex.Muscle_Group)
+          }
+        } else {
+          // maybe add error checking for this case?
+          continue
+        }
+      }
       // by this point, every exercise of the current day should have their muscle groups copied to dayMuscleGroups,
       // and the current day's muscle groups should be finalized.
       // now store the day's muscle groups in the monthMuscleGroups[day]
@@ -252,7 +239,6 @@ export class json_db implements DB {
     }
     // by the end of the loop all days of the month should be either populated with [] if no workouts were done, or
     // with a populated Muscle_Group[]
-
     return monthMuscleGroups
   }
 }
