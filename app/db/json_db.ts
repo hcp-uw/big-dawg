@@ -197,51 +197,6 @@ export class json_db implements DB {
     return !ex_exists
   }
 
-  /* deleteExercise (ex_name: string): boolean {
-      let deleted : boolean = false
-
-      // two step removal: 1. remove from exerciselist
-      // reuse the getExerciseList function to load the list
-      const exerciseList : Exercise_List | null = this.getExerciseList()
-      if (exerciseList === null) return false  // exercise list file is not valid
-
-      // Since the ex_name could be in any of the muscle group Exercise arrays, we check each group
-      for (const muscleGroup in exerciseList) {
-          // look at each exercise for that group if the name matches, splice it out of the array
-          const exercises: Exercise[] = exerciseList[muscleGroup as keyof Exercise_List]
-
-          for (let i = 0 i < exercises.length i++) {
-              if (exercises[i].Exercise_Name === ex_name) {
-                  exercises.splice(i, 1)
-                  deleted = true
-                  break  // assuming that the ex_name only appears once in the entire Exercise_List
-              }
-          }
-
-          if (deleted)
-              break  // assuming that the ex_name only appears once in the entire Exercise_List
-      }
-
-      // write the updated Exercise_List back to disk
-      const ex_list_uri: string = data_dir + "Exercise_List.json"
-      wrapAsync(FS.writeAsStringAsync, ex_list_uri, JSON.stringify(exerciseList))
-
-      // 2. delete ex_name.json file
-      const file_name: string = ex_name + ".json"
-      const uri: string = data_dir + file_name
-      // if the file exists, delete it
-      if (checkFile(file_name)) {
-          wrapAsync(FS.deleteAsync, uri)
-          deleted = true
-      }
-
-      // not sure if we want to destructively remove all historical records of this exercise
-      // from the calendar/previous months
-
-
-      return deleted
-  }*/
-
   async getCalendarView(date: Date): Promise<Muscle_Group[][]> {
     // try to get the file with the given month and year
     const file_name: string = (date.getMonth() + 1) + "_" + date.getFullYear() + ".json"

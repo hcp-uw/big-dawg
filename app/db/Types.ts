@@ -72,17 +72,6 @@ export interface DB {
     saveExercise: (ex: Exercise) => Promise<boolean>
 
     /*
-    *   deletes a user-made custom exercise
-    *   Params:
-    *       -- ex_name: the name of the exercise to delete
-    *   Throws:
-    *       -- InvalidExerciseException: if the given exercise name does not exist
-    *   Returns:
-    *       -- true if the exercise was deleted, false if not
-    */
-    //deleteExercise: (ex_name: string) => boolean
-
-    /*
     *   gets the muscle group information for the workout calendar
     *   Params:
     *       -- date: a Date object, will return the calendar view for the month that
