@@ -6,6 +6,8 @@ import {
   Muscle_Group,
   Exercise,
   Set,
+  WorkoutSchema,
+  WorkoutPlan,
   InvalidDateException,
   InvalidExerciseException,
   InvalidInternalExerciseListException
@@ -57,7 +59,7 @@ export class json_db implements DB {
         //console.log(error)
         //if (error instanceof InvalidExerciseException) {
         //throw new InvalidExerciseException("")
-        invalidExercises.push(error.message.slice(18))
+        //invalidExercises.push(error.message.slice(18))
         continue
         //}
       }
@@ -304,13 +306,31 @@ export class json_db implements DB {
     return monthMuscleGroups
   }
 
-  async getWorkoutPlan(plan_name: string): Promise<Workout[]> {
-    return []
+  async getWorkoutPlan(plan_name: string): Promise<WorkoutPlan> {
+    const file_name: string = plan_name + ".json" // so like push.json
+    const uri: string = data_dir + file_name
+    if (!(await checkFile(file_name))) {
+      throw new InvalidExerciseException(plan_name)  // fix because its not really invalid exercise...
+    }
+    let content: WorkoutPlan = JSON.parse(await FS.readAsStringAsync(uri), dateReviver)
+    return content
   }
 
-  async saveWorkoutPlan(plan_name: string, plan: Workout[]): Promise<boolean> {
+  // btw this function doesnt update the already existing workout plan
+  async saveWorkoutPlan(schema: WorkoutSchema, days: string[]): Promise<boolean> {
+    // it should take the WorkoutSchema and days and save it as WorkoutPlan
+    const file_name: string = schema.name + ".json"
+    const uri: string = data_dir + file_name;
+    if(await checkFile(file_name)){
+      return false; // plan already exists
+    }
+    const workoutPlan: WorkoutPlan = {plan: schema, days: days}
+    const updatedContent: string = JSON.stringify(workoutPlan)
+    await FS.writeAsStringAsync(uri, updatedContent)
     return true
   }
+
+  
 }
 
 // creates file if it doesn't exist, otherwise does nothing

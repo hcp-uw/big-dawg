@@ -92,13 +92,13 @@ export interface DB {
     *   Params:
     *      -- name of the workout plan
     *   Returns:
-    *     -- an array of workouts (workout plan)
+    *     -- the WorkoutPlan
     *     -- exception if the workout plan doesn't exist
     */
-    getWorkoutPlan: (plan_name: string) => Promise<Workout[]>
+    getWorkoutPlan: (plan_name: string) => Promise<WorkoutPlan>
 
     /*
-    *   saves a workout plan ** where do we save this? R we creating a new file per workout plan?**
+    *   saves a workout plan. Save it as --> "plan_name.json"
     *   Params:
     *     -- name of the workout plan
     *     -- workout plan (array of workouts)
@@ -106,7 +106,8 @@ export interface DB {
     *     -- true if the workout plan was saved
     *     -- false if not
     */
-    saveWorkoutPlan: (plan_name: string, workout_plan: Workout[]) => Promise<boolean>
+    saveWorkoutPlan: (schema: WorkoutSchema, days: string[]) => Promise<boolean>
+
 }
 
 //export type Muscle_Group = "Chest" | "Back" | "Legs" | "Triceps" | "Biceps" | "Shoulders"
@@ -152,6 +153,16 @@ export type Workout = {
     TimeEnded: number
     Sets: Set[]
     WorkoutComment: string | null
+}
+
+export type WorkoutSchema = {
+    name: string
+    exercises: Set[] // or Exercise[]?
+}
+
+export type WorkoutPlan = {
+    plan: WorkoutSchema
+    days: string[] // array of days to repeat --> ex) ['Tuesday', 'Wednesday']
 }
 
 // exceptions
