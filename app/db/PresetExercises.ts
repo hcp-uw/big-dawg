@@ -5,188 +5,183 @@ export let defaultExercises: Exercise[];
 
 // Chest exercises
 const ex1: Exercise = {
-    Exercise_Name: "Barbell bench press",
+    Exercise_Name: "Barbell Bench Press",
     Muscle_Group: "Chest",
-    Comment: "A fundamental compound movement that targets the chest, triceps, and shoulders."
+    Comment: "Primarily targets overall chest. Secondary movers are front delts and triceps"
 }
 
 const ex2: Exercise = {
     Exercise_Name: "Incline dumbbell press",
     Muscle_Group: "Chest",
-    Comment: "Emphasizes the upper chest and requires stabilization from the shoulders and triceps."
+    Comment: "Primarily targets chest, biasing upper chest. Secondary movers are front delts and triceps"
 }
 
 const ex3: Exercise = {
-    Exercise_Name: "Chest dips",
+    Exercise_Name: "Weighted Dips",
     Muscle_Group: "Chest",
-    Comment: "Great for developing lower chest strength and size when performed with a forward lean."
+    Comment: "Primarily targets chest, biasing lower chest. Secondary movers are front delts and triceps"
 }
 
 const ex4: Exercise = {
     Exercise_Name: "Pec deck machine",
     Muscle_Group: "Chest",
-    Comment: "Isolates the chest muscles by minimizing triceps involvement."
+    Comment: "Chest isolation"
 }
 
 const ex5: Exercise = {
     Exercise_Name: "Push-ups",
     Muscle_Group: "Chest",
-    Comment: "A bodyweight exercise that effectively targets the chest, shoulders, and triceps."
+    Comment: "Primarily targets overall chest. Secondary movers are front delts and triceps"
 }
 
 // Back exercises
 const ex6: Exercise = {
     Exercise_Name: "Seated cable row",
     Muscle_Group: "Back",
-    Comment: "A controlled movement that targets the mid-back and lats."
+    Comment: "Can performed to train either lats or upper back"
 }
 
 const ex7: Exercise = {
     Exercise_Name: "Pull-ups",
     Muscle_Group: "Back",
-    Comment: "A bodyweight exercise that strengthens the upper back and lats."
+    Comment: "Biases lats but can be performed to bias upper back"
 }
 
 const ex8: Exercise = {
-    Exercise_Name: "Deadlifts",
+    Exercise_Name: "Lat pulldown",
     Muscle_Group: "Back",
-    Comment: "A compound lift that engages the entire posterior chain, including the lower and upper back."
+    Comment: "Trains lats"
 }
 
 const ex9: Exercise = {
-    Exercise_Name: "Lat pulldown",
-    Muscle_Group: "Back",
-    Comment: "Simulates a pull-up motion and targets the latissimus dorsi."
-}
-
-const ex10: Exercise = {
     Exercise_Name: "Bent-over barbell row",
     Muscle_Group: "Back",
-    Comment: "Builds overall back thickness and strength."
+    Comment: "Compound that trains entire back, primarily engaging upper back"
 }
 
 // Legs exercises
-const ex11: Exercise = {
+const ex10: Exercise = {
     Exercise_Name: "Barbell squat",
     Muscle_Group: "Legs",
-    Comment: "The king of lower body exercises, working the quads, hamstrings, and glutes."
+    Comment: "Compound that primarily trains quads and glutes. Also engages adductors"
+}
+
+const ex11: Exercise = {
+    Exercise_Name: "Barbell Deadlift",
+    Muscle_Group: "Legs",
+    Comment: "Compound that trains entire posterior chain, including glutes, hamstrings, and erectors."
 }
 
 const ex12: Exercise = {
-    Exercise_Name: "Romanian deadlifts",
+    Exercise_Name: "Barbell Romanian deadlift (RDL)",
     Muscle_Group: "Legs",
-    Comment: "Primarily targets the hamstrings and glutes with a hip hinge movement."
+    Comment: "Hip Hinge compound primarily targeting the hamstrings and glutes. Engages entire posterior chain"
 }
 
 const ex13: Exercise = {
     Exercise_Name: "Leg press",
     Muscle_Group: "Legs",
-    Comment: "A machine-based movement that allows for heavy loading on the quads."
+    Comment: "Compound that trains quads and glutes, bias depends on setup. Engages adductors"
 }
 
 const ex14: Exercise = {
     Exercise_Name: "Bulgarian split squat",
     Muscle_Group: "Legs",
-    Comment: "Unilateral exercise that enhances balance, strength, and mobility."
+    Comment: "Unilateral exercise training quads and glutes. Bias depends on setup"
 }
 
 const ex15: Exercise = {
     Exercise_Name: "Seated leg curl",
     Muscle_Group: "Legs",
-    Comment: "Isolates the hamstrings for targeted development."
+    Comment: "Hamstring isolation exercise"
 }
 
 // Triceps exercises
 const ex16: Exercise = {
-    Exercise_Name: "Cable triceps pushdown",
+    Exercise_Name: "Cable Tricep Pushdown",
     Muscle_Group: "Triceps",
-    Comment: "A great isolation exercise for triceps development."
+    Comment: null
 }
 
 const ex17: Exercise = {
-    Exercise_Name: "Close-grip bench press",
+    Exercise_Name: "Close-grip Barbell Bench Press",
     Muscle_Group: "Triceps",
-    Comment: "A compound movement that heavily targets the triceps."
+    Comment: "Compound that targets triceps. Secondarily trains front delts and chest"
 }
 
 const ex18: Exercise = {
-    Exercise_Name: "Dips",
+    Exercise_Name: "Overhead dumbbell extension",
     Muscle_Group: "Triceps",
-    Comment: "Works the entire triceps muscle along with the chest and shoulders."
+    Comment: null
 }
 
 const ex19: Exercise = {
-    Exercise_Name: "Overhead dumbbell extension",
-    Muscle_Group: "Triceps",
-    Comment: "Focuses on the long head of the triceps."
-}
-
-const ex20: Exercise = {
     Exercise_Name: "Skull crushers",
     Muscle_Group: "Triceps",
-    Comment: "A classic triceps builder that emphasizes the long and lateral heads."
+    Comment: null
 }
 
 // Biceps exercises
-const ex21: Exercise = {
-    Exercise_Name: "Dumbbell biceps curl",
+const ex20: Exercise = {
+    Exercise_Name: "Dumbbell Bicep Curl",
     Muscle_Group: "Biceps",
-    Comment: "A staple exercise that builds overall biceps size."
+    Comment: null
+}
+
+const ex21: Exercise = {
+    Exercise_Name: "Barbell Curl",
+    Muscle_Group: "Biceps",
+    Comment: null
 }
 
 const ex22: Exercise = {
-    Exercise_Name: "Barbell curl",
+    Exercise_Name: "Hammer Curl",
     Muscle_Group: "Biceps",
-    Comment: "Allows for heavier loading compared to dumbbell curls."
+    Comment: "Targets biceps, brachialis, and forearms"
 }
 
 const ex23: Exercise = {
-    Exercise_Name: "Hammer curl",
+    Exercise_Name: "Preacher curl",
     Muscle_Group: "Biceps",
-    Comment: "Targets both the biceps and brachialis for arm thickness."
+    Comment: null
 }
 
 const ex24: Exercise = {
-    Exercise_Name: "Preacher curl",
+    Exercise_Name: "Cable Curl",
     Muscle_Group: "Biceps",
-    Comment: "Eliminates momentum to strictly isolate the biceps."
+    Comment: null
 }
 
-const ex25: Exercise = {
-    Exercise_Name: "Concentration curl",
-    Muscle_Group: "Biceps",
-    Comment: "Helps improve peak contraction and mind-muscle connection."
-}
 
 // Shoulders exercises
-const ex26: Exercise = {
-    Exercise_Name: "Dumbbell rear delt fly",
+const ex25: Exercise = {
+    Exercise_Name: "Reverse Pec Deck",
     Muscle_Group: "Shoulders",
-    Comment: "Targets the rear delts for better posture and balanced shoulder development."
+    Comment: "Targets rear delts"
+}
+
+const ex26: Exercise = {
+    Exercise_Name: "Seated Dumbbell Shoudler Press",
+    Muscle_Group: "Shoulders",
+    Comment: "Compound that targets shoulders, primarily front delt. Engages triceps"
 }
 
 const ex27: Exercise = {
-    Exercise_Name: "Seated dumbbell press",
+    Exercise_Name: "Dumbell Lateral Raises",
     Muscle_Group: "Shoulders",
-    Comment: "A fundamental overhead pressing movement for overall shoulder strength."
+    Comment: "Shoulder isolation that biases the lateral (side) delts"
 }
 
 const ex28: Exercise = {
-    Exercise_Name: "Lateral raises",
+    Exercise_Name: "Cable Rear Delt Flyes",
     Muscle_Group: "Shoulders",
-    Comment: "Isolates the lateral delts for a wider shoulder appearance."
+    Comment: "Targets rear delts"
 }
 
 const ex29: Exercise = {
-    Exercise_Name: "Front raises",
+    Exercise_Name: "Barbell Overhead Press (OHP)",
     Muscle_Group: "Shoulders",
-    Comment: "Focuses on the front delts, aiding in pressing strength."
-}
-
-const ex30: Exercise = {
-    Exercise_Name: "Face pulls",
-    Muscle_Group: "Shoulders",
-    Comment: "A great exercise for rear delts and shoulder joint health."
+    Comment: "Performed standing. Compound movement targeting shoulders (primarily front delts) and training triceps"
 }
 
 defaultExercises = [
@@ -195,5 +190,5 @@ defaultExercises = [
     ex11, ex12, ex13, ex14, ex15,
     ex16, ex17, ex18, ex19, ex20,
     ex21, ex22, ex23, ex24, ex25,
-    ex26, ex27, ex28, ex29, ex30
+    ex26, ex27, ex28, ex29
 ]
