@@ -75,7 +75,7 @@ describe('json_db Misc/Rest Tests', () => {
         //const r2 = { uri: ".big-dawg/data/Exercise_List.json", content: JSON.stringify(el) }
         let { db } = setupTest({ file_exists: true, expected_rContents: [JSON.stringify(c1)] })
         jest.spyOn(db, 'getExerciseList').mockImplementation(() => Promise.resolve(
-            { Chest: [ex1], Back: [], Legs: [ex2], Triceps: [], Biceps: [], Shoulders: [] }
+            structuredClone(el)
         ))
 
         let muscleGroups = [
@@ -97,7 +97,7 @@ describe('json_db Misc/Rest Tests', () => {
 
         let { db } = setupTest({ file_exists: true, expected_rContents: [JSON.stringify(c1)] })
         jest.spyOn(db, 'getExerciseList').mockImplementation(() => Promise.resolve(
-            { Chest: [ex1], Back: [], Legs: [ex2], Triceps: [], Biceps: [], Shoulders: [] }
+            structuredClone(el)
         ))
 
         let muscleGroups = [
