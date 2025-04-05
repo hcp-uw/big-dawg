@@ -11,6 +11,12 @@
 export interface DB {
 
     /*
+    *   Initializes database with our exercise presets
+    *   should be done only once at first startup of app
+    */
+    Init: () => void
+
+    /*
     *   save a logged workout for a specific Date
     *   if a workout for that date already exists that workout is replaced
     *   Params:

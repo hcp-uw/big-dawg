@@ -8,12 +8,19 @@ import {
   Set,
   InvalidExerciseException,
 } from './Types'
+import { defaultExercises } from './PresetExercises'
 import * as FS from 'expo-file-system'
 
 const data_dir: string = FS.documentDirectory + '.big-dawg/data/'
 
 // implements interface for json
 export class json_db implements DB {
+
+  Init(): void {
+    for (let ex of defaultExercises) {
+      this.saveExercise(ex)
+    }
+  }
 
   // workouts are saved
   async saveWorkout(w: Workout): Promise<boolean> {

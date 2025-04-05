@@ -1,4 +1,5 @@
-implement db init (with exceptions instead of null for getExerciseList)
+implement db init
 Merge with front end and have them connect front end to db
 Implement Workout plans
+Implement UID's for exercises
 Implement DeleteExercise
