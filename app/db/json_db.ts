@@ -248,6 +248,14 @@ export class json_db implements DB {
     // with a populated Muscle_Group[]
     return monthMuscleGroups
   }
+
+  async getWorkoutPlan(plan_name: string): Promise<Workout[]> {
+    return []
+  }
+
+  async saveWorkoutPlan(plan_name: string, plan: Workout[]): Promise<boolean> {
+    return true
+  }
 }
 
 // checks if a file exists

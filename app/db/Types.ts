@@ -87,6 +87,27 @@ export interface DB {
     *       -- 1d empty array [] if the given month, year has no logged workouts for that month
     */
     getCalendarView: (date: Date) => Promise<Muscle_Group[][]>
+
+    /*
+    *   gets the workout plan
+    *   Params:
+    *      -- name of the workout plan
+    *   Returns:
+    *     -- an array of workouts (workout plan)
+    *     -- exception if the workout plan doesn't exist
+    */
+    getWorkoutPlan: (plan_name: string) => Promise<Workout[]>
+
+    /*
+    *   saves a workout plan ** where do we save this? R we creating a new file per workout plan?**
+    *   Params:
+    *     -- name of the workout plan
+    *     -- workout plan (array of workouts)
+    *   Returns:
+    *     -- true if the workout plan was saved
+    *     -- false if not
+    */
+    saveWorkoutPlan: (plan_name: string, workout_plan: Workout[]) => Promise<boolean>
 }
 
 //export type Muscle_Group = "Chest" | "Back" | "Legs" | "Triceps" | "Biceps" | "Shoulders"
