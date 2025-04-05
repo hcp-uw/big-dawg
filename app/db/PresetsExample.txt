@@ -1,0 +1,29 @@
+// example
+// in presets.tsx
+
+import { Exercise } from "./Types";
+
+const ex1: Exercise = {
+    Exercise_Name: "Bench",
+    Muscle_Group: "Chest",
+    Comment: "Barbell"
+  }
+  const ex2: Exercise = {
+    Exercise_Name: "Squat",
+    Muscle_Group: "Legs",
+    Comment: "Barbell"
+  }
+  /* 
+    ... etc
+  */
+
+const exercises: Exercise[] = [ex1, ex2]
+
+// db.ts
+db.init() {
+    for(ex of exercises) {
+        this.saveWorkout(ex)
+    }
+}
+
+// front end at first start of app calls db.init()

@@ -1,3 +1,3 @@
-Test our current code with JTest
-Implement DeleteExercise 
 Implement Workout plans
+Implement UID's for exercises
+Implement DeleteExercise
