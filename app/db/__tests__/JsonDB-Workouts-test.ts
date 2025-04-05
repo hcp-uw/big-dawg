@@ -2,17 +2,6 @@ import { Exercise, Set, Workout, InvalidExerciseException } from '../Types'
 import { setupTest } from '../Testing-utils'
 
 // consts for tests
-const ex1: Exercise = {
-  Exercise_Name: "Bench",
-  Muscle_Group: "Chest",
-  Comment: "Barbell"
-}
-const ex2: Exercise = {
-  Exercise_Name: "Squat",
-  Muscle_Group: "Legs",
-  Comment: null
-}
-
 const set1: Set = {
   Exercise_Name: "Bench",
   Weight: 225,

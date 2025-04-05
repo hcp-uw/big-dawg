@@ -2,6 +2,7 @@ import { Exercise, Exercise_List, Exercise_Hist } from '../Types'
 import { setupTest } from '../Testing-utils'
 
 // consts for tests
+
 const ex1: Exercise = {
   Exercise_Name: "Bench",
   Muscle_Group: "Chest",
@@ -13,8 +14,22 @@ const ex2: Exercise = {
   Comment: "Barbell"
 }
 
+const ex3: Exercise = {
+  Exercise_Name: "Bench",
+  Muscle_Group: "Back",
+  Comment: "Dumbell"
+}
+
+const el: Exercise_List = {
+  Chest: [ex1], Back: [], Legs: [], Triceps: [], Biceps: [], Shoulders: []
+}
+
 const el2: Exercise_List = {
   Chest: [ex1], Back: [], Legs: [ex2], Triceps: [], Biceps: [], Shoulders: []
+}
+
+const el3: Exercise_List = {
+  Chest: [], Back: [ex3], Legs: [], Triceps: [], Biceps: [], Shoulders: []
 }
 
 const Bench: Exercise_Hist = {
@@ -43,70 +58,48 @@ describe('json_db Exercise Tests', () => {
   // ------ saveExercise() test ------
   // the exercise already exists
   it('saveExercise_alreadyExists', async () => {
-    const el: Exercise_List = {
-      Chest: [ex1], Back: [], Legs: [], Triceps: [], Biceps: [], Shoulders: []
-    }
     //console.log("Test saveExercise_alreadyExists output begin")
     let { db } = setupTest()
     jest.spyOn(db, 'getExerciseList').mockImplementationOnce(() => Promise.resolve(
-      el
+      structuredClone(el)
     ))
     await expect(db.saveExercise(ex1)).resolves.toBe(false)
   })
 
   // the exerciseList doesn't contain that exercise
   it('saveExercise_UpdateList', async () => {
-    const ex_new: Exercise = {
-      Exercise_Name: "Bench",
-      Muscle_Group: "Back",
-      Comment: "Dumbell"
-    }
-    const el: Exercise_List = {
-      Chest: [], Back: [ex_new], Legs: [], Triceps: [], Biceps: [], Shoulders: []
-    }
     //console.log("Test saveExercise_emptyExerciseList output begin")
     const w1 = {
       uri: ".big-dawg/data/Exercise_List.json",
-      content: JSON.stringify(el)
+      content: JSON.stringify(el3)
     }
     // change mock implementation setup
     let { db } = setupTest({ file_exists: true, expected_wContents: [w1] })
-    jest.spyOn(db, 'getExerciseList').mockImplementationOnce(() => Promise.resolve({
-      Chest: [ex1], Back: [], Legs: [], Triceps: [], Biceps: [], Shoulders: []
-    }))
+    jest.spyOn(db, 'getExerciseList').mockImplementationOnce(() => Promise.resolve(
+      structuredClone(el)
+    ))
     // test
-    await expect(db.saveExercise(ex_new)).resolves.toBe(false)
+    await expect(db.saveExercise(ex3)).resolves.toBe(false)
   })
 
   it('saveExercise_UpdateList_andFile', async () => {
-    const ex_new: Exercise = {
-      Exercise_Name: "Bench",
-      Muscle_Group: "Back",
-      Comment: "Dumbell"
-    }
-    const el: Exercise_List = {
-      Chest: [], Back: [ex_new], Legs: [], Triceps: [], Biceps: [], Shoulders: []
-    }
     //console.log("Test saveExercise_emptyExerciseList output begin")
     const w1 = {
       uri: ".big-dawg/data/Exercise_List.json",
-      content: JSON.stringify(el)
+      content: JSON.stringify(el3)
     }
     const w2 = { uri: ".big-dawg/data/Bench.json", content: "{\"Exercise_Name\":\"Bench\",\"Hist\":[]}" }
     // change mock implementation setup
     let { db } = setupTest({ file_exists: false, expected_wContents: [w1, w2] })
-    jest.spyOn(db, 'getExerciseList').mockImplementationOnce(() => Promise.resolve({
-      Chest: [ex1], Back: [], Legs: [], Triceps: [], Biceps: [], Shoulders: []
-    }))
+    jest.spyOn(db, 'getExerciseList').mockImplementationOnce(() => Promise.resolve(
+      structuredClone(el)
+    ))
     // test
-    await expect(db.saveExercise(ex_new)).resolves.toBe(false)
+    await expect(db.saveExercise(ex3)).resolves.toBe(false)
   })
 
   // exerciseList needs to be updated for that exercise
   it('saveExercise_newEx_oldFile', async () => {
-    const el: Exercise_List = {
-      Chest: [ex1], Back: [], Legs: [], Triceps: [], Biceps: [], Shoulders: []
-    }
     //console.log("Test saveExercise_updatedExerciseList output begin")
     const w1 = {
       uri: ".big-dawg/data/Exercise_List.json",
@@ -115,7 +108,9 @@ describe('json_db Exercise Tests', () => {
     //const w2 = { uri: ".big-dawg/data/Squat.json", content: "{\"Exercise_Name\":\"Squat\",\"Hist\":[]}" }
     //  change mock implementation setup
     let { db } = setupTest({ file_exists: true, expected_wContents: [w1] })
-    jest.spyOn(db, 'getExerciseList').mockImplementationOnce(() => Promise.resolve(el))
+    jest.spyOn(db, 'getExerciseList').mockImplementationOnce(() => Promise.resolve(
+      structuredClone(el)
+    ))
     // test
     await expect(db.saveExercise(ex2)).resolves.toBe(false)
   })
