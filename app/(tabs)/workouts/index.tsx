@@ -63,11 +63,6 @@ export default function WorkoutPreset() {
         keyboardShouldPersistTaps="handled"
         ListHeaderComponent={
           <>
-            {/* Back Button */}
-            <TouchableOpacity style={localStyles.backButton} onPress={router.back}>
-              <Text style={localStyles.backButtonText}>←</Text>
-            </TouchableOpacity>
-
             {/* Title */}
             <Text style={localStyles.title}>Select a workout plan:</Text>
             {/* Search Bar & Filters */}
@@ -134,7 +129,7 @@ export default function WorkoutPreset() {
             // Pass the preset's data as route params
             onPress={() => {
               router.push({
-                pathname: "/(tabs)/(workouts)/edit_workout",
+                pathname: "/workouts/edit_workout",
                 params: {
                   workoutId: item.id,
                   name: item.name,
@@ -166,7 +161,7 @@ export default function WorkoutPreset() {
       {/* Create New Workout Button (positioned above bottom tab) */}
       <TouchableOpacity
         style={[localStyles.createButton, { bottom: insets.bottom + 60 }]}
-        onPress={() => router.push({ pathname: "/(tabs)/(workouts)/add_workout" })}
+        onPress={() => router.push({ pathname: "/workouts/add_workout" })}
       >
         <Text style={localStyles.createButtonText}>Create New Workout</Text>
       </TouchableOpacity>

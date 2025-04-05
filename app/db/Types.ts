@@ -1,5 +1,20 @@
 // Public interface and types for DB
+
+/*
+*   Note: If ui/front end is immplemented corectly, InvalidExerciseException shouldn't happen
+*         however in nightmare scenario that the disk is corrupted/files are deleted, if it
+*         happens, turn exception into an error message for user to re-add the exercises. 
+*         Ex: If caught Invalid exercise: Bench Squat Deadlift, should pop up message to user in
+*         app saying "There seems to be an error with your storage and some data was lost.
+*                     Please create new exercises for: Bench, Squat, and Deadlift"
+* */
 export interface DB {
+
+    /*
+    *   Initializes database with our exercise presets
+    *   should be done only once at first startup of app
+    */
+    Init: () => void
 
     /*
     *   save a logged workout for a specific Date
@@ -8,7 +23,8 @@ export interface DB {
     *       -- w: the workout to save
     *   Throws: InvalidExerciseException if one of the sets is for an exercise that doesn't exist
     *           in this case saves all sets of this workout to history except the ones for the invalid sets
-    *           returns exception of format InvalidExerciseException("InvalidEx1 InvalidEx2 InvalidEX3")
+    *           returns exception in the format:
+    *           InvalidExerciseException("InvalidEx1 InvalidEx2 InvalidEX3")
     *   Returns:
     *       -- true if a workout for that date was replaced, false otherwise
     */
@@ -35,12 +51,11 @@ export interface DB {
     deleteWorkout: (date: Date) => Promise<boolean>
 
     /*
-    *   gets the list of exercises we have (prebuilt and custom)
+    *   gets the list of exercises we have
     *   Returns:
     *       -- the list of exercises
-    *       -- null if the exercise doesnt exist
     */
-    getExerciseList: () => Promise<Exercise_List | null>
+    getExerciseList: () => Promise<Exercise_List>
 
     /*
     *   gets the entire exercise history for that exercise
@@ -58,34 +73,20 @@ export interface DB {
     *   Params:
     *       -- ex: the exercise to add. Will replace the exercise with the same name
     *   Returns:
-    *       -- true if the exercise was added, false if not
+    *       -- true if the exercise was added, false if it alredy existed
     */
     saveExercise: (ex: Exercise) => Promise<boolean>
 
     /*
-    *   deletes a user-made custom exercise
-    *   Params:
-    *       -- ex_name: the name of the exercise to delete
-    *   Throws:
-    *       -- InvalidExerciseException: if the given exercise name does not exist
-    *   Returns:
-    *       -- true if the exercise was deleted, false if not
-    */
-    //deleteExercise: (ex_name: string) => boolean
-
-    /*
     *   gets the muscle group information for the workout calendar
     *   Params:
-    *       -- month: from 1-12 indicating the month from which to get muscle group data
-    *       -- year: the year
-    *   Throws:
-    *       -- InvalidDateException: if the given month, year is not valid
+    *       -- date: a Date object, will return the calendar view for the month that
+    *                date is in. Ignores day of month
     *   Returns:
-    *       -- an array of length 30, 31, or 28 (number of days in that month)
-    *            that holds an array of muscle groups trained in that day
+    *       -- an array of length 31 which holds an array of muscle groups trained each day
     *       -- 1d empty array [] if the given month, year has no logged workouts for that month
     */
-    getCalendarView: (month: bigint, year: bigint) => Promise<Muscle_Group[][]>
+    getCalendarView: (date: Date) => Promise<Muscle_Group[][]>
 
     /*
     *   gets the workout plan
@@ -161,21 +162,5 @@ export class InvalidExerciseException extends Error {
     constructor(exerciseName: string) {
         super(`Invalid exercise: ${exerciseName}`)
         this.name = "InvalidExerciseException"
-    }
-}
-
-// Exception class that creates InvalidDateException
-export class InvalidDateException extends Error {
-    constructor(month: bigint, year: bigint) {
-        super(`Invalid date: ${year}, ${month}`)
-        this.name = "InvalidDateException"
-    }
-}
-
-export class InvalidInternalExerciseListException extends Error {
-    constructor() {
-        super('Internal .getExerciseList returned null, most likely the exercise list DB file was not initialized prior ' +
-            'to function call')
-        this.name = "InvalidInternalExerciseListException"
     }
 }

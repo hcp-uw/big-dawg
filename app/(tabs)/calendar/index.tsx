@@ -15,7 +15,7 @@ import {
 import { createStackNavigator } from "@react-navigation/stack";
 import Calendar from "@/src/styles/calendar/calendar-comp";
 import colors from "@/src/styles/themes/colors";
-import DayWorkout from "@/app/(tabs)/(calendar)/DayWorkout";
+import DayWorkout from "@/app/(tabs)/calendar/DayWorkout";
 
 const Stack = createStackNavigator();
 

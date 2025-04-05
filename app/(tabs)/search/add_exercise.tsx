@@ -3,12 +3,13 @@ import { View, Text, TouchableOpacity, ScrollView, StyleSheet, TextInput, Keyboa
 import { styles } from '@/src/styles/globalStyles';
 import colors from '@/src/styles/themes/colors';
 import { useState, useRef } from 'react';
+import BackButton from '@/components/back_button';
 
 const WorkoutInput = () => {
   type SetField = 'reps' | 'weight';
   const [sets, setSets] = useState([{ id: 1, reps: "", weight: "", key:""}]); // Initial set
   const scrollViewRef = useRef<ScrollView>(null);
-  const { exerciseName } = useLocalSearchParams();
+  const { item } = useLocalSearchParams();
   const router = useRouter();
 
   // Function to handle input changes
@@ -33,18 +34,28 @@ const WorkoutInput = () => {
     setSets(newSets);
   };
 
+  const saveSet = () => {
+    console.log('Save Set pressed!');
+  };
+
   return (
     <KeyboardAvoidingView 
       behavior={Platform.OS === "ios" ? "padding" : "height"} 
       style={[localStyles.container]}
     >
+      <View style={styles.backContainer}>
+          <BackButton/>
+          <Text style={styles.headerText}>{item}</Text>
+          <TouchableOpacity style={[styles.button, {backgroundColor: colors.PURPLE, padding: 7,}]} onPress={() => saveSet()}>
+            <Text style={[styles.buttonText, {fontWeight: 'bold',}]}>Save</Text>
+          </TouchableOpacity>
+      </View>
       <ScrollView 
         ref={scrollViewRef} 
         style={localStyles.scrollContainer} 
         contentContainerStyle={{ paddingBottom: '20%' }}
         keyboardShouldPersistTaps='handled'  
       >
-        <Text style={styles.headerText}>{exerciseName}</Text>
 
         {sets.map((set, index) => (
           <View key={set.key} style={styles.container}>
