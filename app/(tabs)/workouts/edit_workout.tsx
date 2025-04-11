@@ -94,7 +94,7 @@ export default function EditWorkoutScreen() {
     Alert.alert("Success", "Workout updated successfully!", [
       {
         text: "OK",
-        onPress: () => router.replace("./workout_preset"),
+        onPress: () => router.replace("/(tabs)/workouts"),
       },
     ]);
   };
