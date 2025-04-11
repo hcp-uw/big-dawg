@@ -5,7 +5,7 @@ import { styles } from '@/src/styles/globalStyles';
 import { useRouter } from 'expo-router';
 import BackButton from '@/components/back_button';
 
-const AddExercise = () => {
+export default function newExercise() {
     const router = useRouter();
     const [exerciseName, setExerciseName] = useState('');
     const [description, setDescription] = useState('');
@@ -78,5 +78,3 @@ const localStyles = StyleSheet.create({
         marginTop: 20,
     },
 });
-
-export default AddExercise;

@@ -39,7 +39,7 @@ export default function SearchScreen() {
             data={filteredExercises}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => (
-              <Pressable style ={styles.button} onPress={() => router.push({ pathname: '/search/add_exercise', params: { item } })} >
+              <Pressable style ={styles.button} onPress={() => router.push({ pathname: './search/add_exercise', params: { item } })} >
                 <Text style={styles.buttonText}>{item}</Text>
               </Pressable>
             )}
@@ -50,7 +50,7 @@ export default function SearchScreen() {
       </View>
 
       <View style={localStyles.addButtonContainer}>
-        <Pressable style={localStyles.addButton} onPress={() => router.push('/search/new_exercise')}>
+        <Pressable style={localStyles.addButton} onPress={() => router.push('./search/new_exercise')}>
           <Text style={localStyles.addButtonText}>+ New exercise</Text>
         </Pressable>
       </View>

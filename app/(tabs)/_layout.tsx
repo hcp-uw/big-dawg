@@ -9,6 +9,7 @@ import { StatusBar } from "expo-status-bar";
 import { useRouter, usePathname, useSegments } from 'expo-router';
 import { Platform } from 'react-native';
 import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
+import { useWorkoutState } from "./useWorkoutState";
 
 const logo = require("@/assets/images/logo.png");
 
@@ -41,6 +42,8 @@ export default function TabLayout() {
     const routeName = pathname.split("/").pop();
     return routeAliases[String(routeName)] || "Big Dawg";
   };
+
+  const startWorkout = useWorkoutState((state) => state.startWorkout);
 
   return (
       console.log(JSON.stringify(segments)), 
@@ -147,14 +150,14 @@ export default function TabLayout() {
           <View style={localStyles.modalOverlay}>
             <View style={localStyles.modalContent}>
               {/* Dropdown Buttons */}
-              <Pressable style={localStyles.modalButton} onPress={() => { closeModal(); router.push('/(tabs)/workouts'); }}>
-                <Text style={localStyles.modalButtonText}>Choose workout preset</Text>
+              <Pressable style={localStyles.modalButton} onPress={() => { closeModal(); router.push('./(tabs)/workouts/add_workout'); }}>
+                <Text style={localStyles.modalButtonText}>Choose Workout Preset</Text>
               </Pressable>
-              <Pressable style={localStyles.modalButton} onPress={() => {closeModal(); router.push('/search/new_exercise')}}>
-                <Text style={localStyles.modalButtonText}>New exercise</Text>
+              <Pressable style={localStyles.modalButton} onPress={() => {closeModal(); router.push('./search/new_exercise')}}>
+                <Text style={localStyles.modalButtonText}>New Exercise</Text>
               </Pressable>
-              <Pressable style={localStyles.modalButton} onPress={() => console.log("New timer")}>
-                <Text style={localStyles.modalButtonText}>New timer</Text>
+              <Pressable style={localStyles.modalButton} onPress={() => { closeModal(); startWorkout(); router.push('/'); }}>
+                <Text style={localStyles.modalButtonText}>Start New Workout</Text>
               </Pressable>
   
               {/* Close Button */}

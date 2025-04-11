@@ -1,4 +1,5 @@
 {
+  "icon": "./assets/images/icon.png",
   "expo": {
     "name": "proj",
     "slug": "proj",
@@ -34,7 +35,7 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#232323"
         }
       ],
       "expo-asset",
