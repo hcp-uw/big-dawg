@@ -8,7 +8,7 @@ const WorkoutInput = () => {
   type SetField = 'reps' | 'weight';
   const [sets, setSets] = useState([{ id: 1, reps: "", weight: "", key:""}]); // Initial set
   const scrollViewRef = useRef<ScrollView>(null);
-  const { exerciseName } = useLocalSearchParams();
+  const { item } = useLocalSearchParams();
   const router = useRouter();
 
   // Function to handle input changes
@@ -44,7 +44,7 @@ const WorkoutInput = () => {
         contentContainerStyle={{ paddingBottom: '20%' }}
         keyboardShouldPersistTaps='handled'  
       >
-        <Text style={styles.headerText}>{exerciseName}</Text>
+        <Text style={styles.headerText}>{item}</Text>
 
         {sets.map((set, index) => (
           <View key={set.key} style={styles.container}>

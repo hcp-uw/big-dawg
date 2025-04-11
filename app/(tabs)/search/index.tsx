@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Text, View, TextInput, FlatList, StyleSheet, Pressable, } from "react-native";
 import colors from "@/src/styles/themes/colors";
 import { styles } from "@/src/styles/globalStyles";
-import { useRouter, Link } from "expo-router";
+import { useRouter } from "expo-router";
 
 export default function SearchScreen() {
   const [query, setQuery] = useState("");
@@ -23,14 +23,6 @@ export default function SearchScreen() {
     setFilteredWorkouts(filteredWorkouts);
   };
 
-  // handle when someone presses a workout
-  const handleExercisePress = (exercise: string) => {
-    router.push({
-      pathname: '/(tabs)/(exercises)/add_exercise', 
-      params: { exerciseName: exercise },
-    });
-  };
-
   return (
     <View style={styles.container}>
       <TextInput
@@ -47,7 +39,7 @@ export default function SearchScreen() {
             data={filteredExercises}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => (
-              <Pressable style ={styles.button} onPress={() => handleExercisePress(item)} >
+              <Pressable style ={styles.button} onPress={() => router.push({ pathname: './search/add_exercise', params: { item } })} >
                 <Text style={styles.buttonText}>{item}</Text>
               </Pressable>
             )}
@@ -58,11 +50,9 @@ export default function SearchScreen() {
       </View>
 
       <View style={localStyles.addButtonContainer}>
-        <Link href="/(tabs)/(exercises)/new_exercise" asChild>
-          <Pressable style={localStyles.addButton}>
-            <Text style={localStyles.addButtonText}>+ New exercise</Text>
-          </Pressable>
-        </Link>
+        <Pressable style={localStyles.addButton} onPress={() => router.push('./search/new_exercise')}>
+          <Text style={localStyles.addButtonText}>+ New exercise</Text>
+        </Pressable>
       </View>
     </View>
   );

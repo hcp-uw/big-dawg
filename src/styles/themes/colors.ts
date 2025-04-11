@@ -8,6 +8,7 @@ const colors = {
     DARK_PINK: '#b800b8',
     GRAY: 'rgb(170, 170, 170)',
     PINK_BROUND: 'rgb(107, 0, 107)',
+    DARK_GRAY: 'rgb(60, 50, 60)',
 };
 
 export default colors;
@@ -21,4 +22,5 @@ export default colors;
     Pink Background:rgb(107, 0, 107)
     Dark Pink: #b800b8
     Gray:rgb(170, 170, 170)
+    Dark Gray: rgb(60, 50, 60)
 */

@@ -21,11 +21,6 @@ export const styles = StyleSheet.create({
     marginBottom: 0,
     marginHorizontal: 5,
   },
-  buttonText: {
-    fontSize: 16,
-    color: colors.WHITE,
-    textAlign: 'center',
-  },
 
   // containers for the dual search function
   searchContainer: {
@@ -100,7 +95,12 @@ export const styles = StyleSheet.create({
     fontWeight: "bold",
     color: colors.WHITE,
   },
-
+  // BUTTON TEXT
+  buttonText: {
+    fontSize: 22,
+    color: colors.WHITE,
+    textAlign: "center",
+  },
   // BACK BUTTON CONTAINER
   backContainer: {
     backgroundColor: colors.BLACK,

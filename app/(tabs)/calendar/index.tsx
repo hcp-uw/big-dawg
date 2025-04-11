@@ -15,7 +15,7 @@ import {
 import { createStackNavigator } from "@react-navigation/stack";
 import Calendar from "@/src/styles/calendar/calendar-comp";
 import colors from "@/src/styles/themes/colors";
-import DayWorkout from "@/app/(tabs)/(calendar)/DayWorkout";
+import DayWorkout from "@/app/(tabs)/calendar/DayWorkout";
 
 const Stack = createStackNavigator();
 
@@ -52,7 +52,7 @@ export default function CalendarNavigator() {
           <Stack.Screen
             name="DayWorkout"
             component={DayWorkout}
-            options={{ title: "Day Workout" }}
+            options={{ title: "Day Workout", headerShown: false }}
           />
         </Stack.Navigator>
       </NavigationContainer>

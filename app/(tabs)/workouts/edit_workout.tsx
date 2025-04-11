@@ -1,15 +1,9 @@
 import React, { useState, useEffect, useMemo } from "react";
-import {
-  Text,
-  View,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-  Alert,
-} from "react-native";
+import { Text, View, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import colors from "@/src/styles/themes/colors";
+import { useWorkoutState } from "../useWorkoutState";
+import { styles } from "@/src/styles/globalStyles";
 
 export default function EditWorkoutScreen() {
   const router = useRouter();
@@ -49,6 +43,8 @@ export default function EditWorkoutScreen() {
   const [workoutComment, setWorkoutComment] = useState("");
 
   const daysOfWeek = ["S", "M", "T", "W", "Th", "F", "Sa"];
+
+  const startWorkout = useWorkoutState((state) => state.startWorkout);
 
   // On mount, pre-populate with existing data
   useEffect(() => {
@@ -98,28 +94,28 @@ export default function EditWorkoutScreen() {
     Alert.alert("Success", "Workout updated successfully!", [
       {
         text: "OK",
-        onPress: () => router.replace("/workout_preset"),
+        onPress: () => router.replace("./workout_preset"),
       },
     ]);
   };
 
   return (
-    <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+    <View style={localStyles.container}>
+      <ScrollView contentContainerStyle={localStyles.scrollContainer}>
         {/* Back Button */}
         <TouchableOpacity
-          style={styles.backButton}
+          style={localStyles.backButton}
           onPress={() => router.back()}
         >
-          <Text style={styles.backButtonText}>←</Text>
+          <Text style={localStyles.backButtonText}>←</Text>
         </TouchableOpacity>
 
         {/* Header */}
-        <Text style={styles.header}>Edit Workout</Text>
+        <Text style={localStyles.header}>Edit Workout</Text>
 
         {/* Workout Name Input */}
         <TextInput
-          style={styles.input}
+          style={localStyles.input}
           placeholder="Workout Name"
           placeholderTextColor={colors.WHITE}
           value={workoutName}
@@ -127,45 +123,45 @@ export default function EditWorkoutScreen() {
         />
 
         {/* Auto-repetition Days */}
-        <Text style={styles.subHeader}>Auto-repetition:</Text>
-        <View style={styles.daysContainer}>
+        <Text style={localStyles.subHeader}>Auto-repetition:</Text>
+        <View style={localStyles.daysContainer}>
           {daysOfWeek.map((day) => (
             <TouchableOpacity
               key={day}
               style={[
-                styles.dayButton,
-                selectedDays.includes(day) && styles.dayButtonSelected,
+                localStyles.dayButton,
+                selectedDays.includes(day) && localStyles.dayButtonSelected,
               ]}
               onPress={() => toggleDay(day)}
             >
-              <Text style={styles.dayText}>{day}</Text>
+              <Text style={localStyles.dayText}>{day}</Text>
             </TouchableOpacity>
           ))}
         </View>
 
         {/* Add Exercise Section */}
-        <Text style={styles.subHeader}>Exercises:</Text>
+        <Text style={localStyles.subHeader}>Exercises:</Text>
         <TouchableOpacity
-          style={styles.addExerciseButton}
+          style={localStyles.addExerciseButton}
           onPress={addExercise}
         >
-          <Text style={styles.addExerciseText}>+ Add Exercise</Text>
+          <Text style={localStyles.addExerciseText}>+ Add Exercise</Text>
         </TouchableOpacity>
 
         {/* List of Exercises */}
         {exercises.map((exercise, index) => (
-          <View key={index} style={styles.exerciseItem}>
-            <Text style={styles.exerciseText}>{exercise.Exercise_Name}</Text>
-            <Text style={styles.exerciseDetails}>
+          <View key={index} style={localStyles.exerciseItem}>
+            <Text style={localStyles.exerciseText}>{exercise.Exercise_Name}</Text>
+            <Text style={localStyles.exerciseDetails}>
               {exercise.Reps} reps - {exercise.Weight} lbs
             </Text>
           </View>
         ))}
 
         {/* Workout Comment */}
-        <Text style={styles.subHeader}>Workout Notes:</Text>
+        <Text style={localStyles.subHeader}>Workout Notes:</Text>
         <TextInput
-          style={styles.commentInput}
+          style={localStyles.commentInput}
           placeholder="Add any notes..."
           placeholderTextColor={colors.WHITE}
           value={workoutComment}
@@ -175,16 +171,19 @@ export default function EditWorkoutScreen() {
       </ScrollView>
 
       {/* Update Workout Button */}
-      <View style={styles.saveButtonContainer}>
-        <TouchableOpacity style={styles.saveButton} onPress={updateWorkout}>
-          <Text style={styles.saveButtonText}>Update Workout</Text>
+      <View style={localStyles.buttonContainer}>
+        <TouchableOpacity style={localStyles.button} onPress={() => { startWorkout(); router.push('/'); }}>
+          <Text style={styles.buttonText}>Start Workout</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={localStyles.button} onPress={updateWorkout}>
+          <Text style={styles.buttonText}>Update Workout</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const localStyles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.BLACK,
@@ -294,20 +293,20 @@ const styles = StyleSheet.create({
     color: colors.WHITE,
     marginBottom: 15,
   },
-  saveButtonContainer: {
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginBottom: 100,
   },
-  saveButton: {
+  button: {
     backgroundColor: colors.PURPLE,
     borderWidth: 1,
     borderColor: colors.WHITE,
     paddingVertical: 12,
+    paddingHorizontal: 20,
     borderRadius: 10,
     alignItems: "center",
-  },
-  saveButtonText: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: colors.WHITE,
+    flex: 1,
+    marginHorizontal: 5,
   },
 });
