@@ -1,13 +1,15 @@
+/** @format */
+
 import { Tabs } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { View, Text, StyleSheet, Pressable, Modal } from "react-native";
 import { Image } from "expo-image";
-import { useState } from 'react';
-import colors from '@/src/styles/themes/colors';
+import { useState } from "react";
+import colors from "@/src/styles/themes/colors";
 import { styles } from "@/src/styles/globalStyles";
 import { StatusBar } from "expo-status-bar";
-import { useRouter, usePathname, useSegments } from 'expo-router';
-import { Platform } from 'react-native';
+import { useRouter, usePathname, useSegments } from "expo-router";
+import { Platform } from "react-native";
 import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 import { useWorkoutState } from "./useWorkoutState";
 
@@ -46,7 +48,8 @@ export default function TabLayout() {
   const startWorkout = useWorkoutState((state) => state.startWorkout);
 
   return (
-      console.log(JSON.stringify(segments)), 
+    console.log(JSON.stringify(segments)),
+    (
       <>
         <Tabs
           screenOptions={{
@@ -65,116 +68,142 @@ export default function TabLayout() {
                   </View>
                 </View>
               </View>
-          ),
-          tabBarStyle: {
-            backgroundColor: colors.BLACK,
-            borderTopRightRadius: 20,
-            borderTopLeftRadius: 20,
-            overflow: "hidden",
-            position: "absolute",
-          },
-        }}
-      >
-        <Tabs.Screen
-          name="index"
-          options={{
-            tabBarIcon: ({ color, focused }) => (
-              <Ionicons
-                name={focused ? "home-sharp" : "home-outline"}
-                color={color}
-                size={24}
-              />
             ),
-            title: "Home",
-          }}
-        />
-        <Tabs.Screen
-          name="search"
-          options={{
-            tabBarIcon: ({ color, focused }) => (
-              <Ionicons
-                name={focused ? "search-sharp" : "search-outline"}
-                color={color}
-                size={24}
-                style={{ marginRight: 10 }}
-              />
-            ),
-            title: "Search",
-            tabBarItemStyle: {
-              marginRight: 35,
+            tabBarStyle: {
+              backgroundColor: colors.BLACK,
+              borderTopRightRadius: 20,
+              borderTopLeftRadius: 20,
+              overflow: "hidden",
+              position: "absolute",
             },
           }}
-        />
+        >
+          <Tabs.Screen
+            name="index"
+            options={{
+              tabBarIcon: ({ color, focused }) => (
+                <Ionicons
+                  name={focused ? "home-sharp" : "home-outline"}
+                  color={color}
+                  size={24}
+                />
+              ),
+              title: "Home",
+            }}
+          />
+          <Tabs.Screen
+            name="search"
+            options={{
+              tabBarIcon: ({ color, focused }) => (
+                <Ionicons
+                  name={focused ? "search-sharp" : "search-outline"}
+                  color={color}
+                  size={24}
+                  style={{ marginRight: 10 }}
+                />
+              ),
+              title: "Search",
+              tabBarItemStyle: {
+                marginRight: 35,
+              },
+            }}
+          />
 
-        <Tabs.Screen
-          name="calendar"
-          options={{
-            tabBarIcon: ({ color, focused }) => (
-              <Ionicons
-                name={focused ? "calendar-sharp" : "calendar-outline"}
-                size={24}
-                color={color}
-              />
-            ),
-            title: "Calendar",
-            tabBarItemStyle: {
-              marginLeft: 35,
-            },
-          }}
-        />
-        <Tabs.Screen
-          name="workouts"
-          options={{
-            tabBarIcon: ({ color, focused }) => (
-              <Ionicons
-                name={focused ? "fitness-sharp" : "fitness-outline"}
-                size={24}
-                color={color}
-                style={{}}
-              />
-            ),
-            title: "Presets",
-          }}
-        />
-      </Tabs>
-        
-      <View style={localStyles.plusButtonContainer}>
-        <Pressable style={localStyles.plusButton} onPress={doPlusClick}>
-          <Ionicons name="add-outline" size={55} color={colors.WHITE}/>
-        </Pressable>
-      </View>
+          <Tabs.Screen
+            name="calendar"
+            options={{
+              tabBarIcon: ({ color, focused }) => (
+                <Ionicons
+                  name={focused ? "calendar-sharp" : "calendar-outline"}
+                  size={24}
+                  color={color}
+                />
+              ),
+              title: "Calendar",
+              tabBarItemStyle: {
+                marginLeft: 35,
+              },
+            }}
+          />
+          <Tabs.Screen
+            name="workouts"
+            options={{
+              tabBarIcon: ({ color, focused }) => (
+                <Ionicons
+                  name={focused ? "fitness-sharp" : "fitness-outline"}
+                  size={24}
+                  color={color}
+                  style={{}}
+                />
+              ),
+              title: "Presets",
+            }}
+          />
+        </Tabs>
 
-  
+        <View style={localStyles.plusButtonContainer}>
+          <Pressable style={localStyles.plusButton} onPress={doPlusClick}>
+            <Ionicons name="add-outline" size={55} color={colors.WHITE} />
+          </Pressable>
+        </View>
+
         {/* Dropdown Menu Modal */}
         <Modal visible={isModalVisible} transparent animationType="fade">
           <View style={localStyles.modalOverlay}>
             <View style={localStyles.modalContent}>
               {/* Dropdown Buttons */}
-              <Pressable style={localStyles.modalButton} onPress={() => { closeModal(); router.push('./(tabs)/workouts/add_workout'); }}>
-                <Text style={localStyles.modalButtonText}>Choose Workout Preset</Text>
+              <Pressable
+                style={localStyles.modalButton}
+                onPress={() => {
+                  closeModal();
+                  router.push("./(tabs)/workouts/add_workout");
+                }}
+              >
+                <Text style={localStyles.modalButtonText}>
+                  Choose Workout Preset
+                </Text>
               </Pressable>
-              <Pressable style={localStyles.modalButton} onPress={() => {closeModal(); router.push('./search/new_exercise')}}>
+              <Pressable
+                style={localStyles.modalButton}
+                onPress={() => {
+                  closeModal();
+                  router.push("./search/new_exercise");
+                }}
+              >
                 <Text style={localStyles.modalButtonText}>New Exercise</Text>
               </Pressable>
-              <Pressable style={localStyles.modalButton} onPress={() => { closeModal(); startWorkout(); router.push('/'); }}>
-                <Text style={localStyles.modalButtonText}>Start New Workout</Text>
+              <Pressable
+                style={localStyles.modalButton}
+                onPress={() => {
+                  closeModal();
+                  startWorkout();
+                  router.push("/");
+                }}
+              >
+                <Text style={localStyles.modalButtonText}>
+                  Start New Workout
+                </Text>
               </Pressable>
-  
+
               {/* Close Button */}
-              <Pressable style={localStyles.closeButtonContainer} onPress={closeModal}>
-                <Ionicons name='close' style={localStyles.closeIcon} />
+              <Pressable
+                style={localStyles.closeButtonContainer}
+                onPress={closeModal}
+              >
+                <Ionicons name="close" style={localStyles.closeIcon} />
               </Pressable>
             </View>
           </View>
-      </Modal>
-    </>
+        </Modal>
+      </>
+    )
   );
 }
 
 const localStyles = StyleSheet.create({
   plusButtonContainer: {
     position: "absolute",
-    bottom: Platform.OS === 'ios' ? 40 : 10,
+    bottom: Platform.OS === "ios" ? 40 : 10,
     alignSelf: "center",
     zIndex: 10,
   },
@@ -185,8 +214,8 @@ const localStyles = StyleSheet.create({
     elevation: 5,
     borderWidth: 3,
     borderColor: colors.WHITE,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   modalOverlay: {
     flex: 1,
@@ -202,7 +231,7 @@ const localStyles = StyleSheet.create({
     paddingBottom: 20,
     paddingHorizontal: 5,
     alignItems: "center",
-    position: 'relative',
+    position: "relative",
   },
   modalButton: {
     backgroundColor: colors.BLACK,
@@ -220,7 +249,7 @@ const localStyles = StyleSheet.create({
     fontSize: 18,
   },
   closeButtonContainer: {
-    position: 'absolute',
+    position: "absolute",
     top: 15,
     right: 15,
   },
