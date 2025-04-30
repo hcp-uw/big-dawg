@@ -9,11 +9,13 @@ import {
   WorkoutSchema,
   WorkoutPlan,
   InvalidExerciseException,
+  WorkoutPreset,
 } from './Types'
 import { defaultExercises } from './PresetExercises'
 import * as FS from 'expo-file-system'
 
 const data_dir: string = FS.documentDirectory + '.big-dawg/data/'
+const wp_file: string = "WorkoutPresets.json"
 
 // implements interface for json
 export class json_db implements DB {
@@ -251,33 +253,68 @@ export class json_db implements DB {
     return monthMuscleGroups
   }
 
-  async getWorkoutPlan(plan_name: string): Promise<WorkoutPlan> {
-    const file_name: string = plan_name + ".json" // so like push.json
-    const uri: string = data_dir + file_name
-    if (!(await checkFile(file_name))) {
-      throw new InvalidExerciseException(plan_name)  // fix because its not really invalid exercise...
+  async getWorkoutPreset(name: string): Promise<WorkoutPreset | null> {
+    const uri: string = data_dir + wp_file
+    if (!(await checkFile(wp_file))) {
+      return null
     }
-    let content: WorkoutPlan = JSON.parse(await FS.readAsStringAsync(uri), dateReviver)
-    return content
+    let content: WorkoutPreset[] = JSON.parse(await FS.readAsStringAsync(uri))
+    let result: WorkoutPreset | null = null;
+    for (let wp of content) {
+      if (wp.Name === name) {
+        result = wp
+        break;
+      }
+    }
+    return result
   }
 
-  // btw this function doesnt update the already existing workout plan
-  async saveWorkoutPlan(schema: WorkoutSchema, days: string[]): Promise<boolean> {
-    // it should take the WorkoutSchema and days and save it as WorkoutPlan
-    const file_name: string = schema.name + ".json"
-    const uri: string = data_dir + file_name;
-    if(await checkFile(file_name)){
-      return false; // plan already exists
+  async saveWorkoutPreset(wp: WorkoutPreset): Promise<boolean> {
+    const uri: string = data_dir + wp_file
+    if (!(await checkFile(wp_file))) {
+      return false
     }
-    const workoutPlan: WorkoutPlan = {plan: schema, days: days}
-    const updatedContent: string = JSON.stringify(workoutPlan)
-    await FS.writeAsStringAsync(uri, updatedContent)
-    return true
+    let content: WorkoutPreset[] = JSON.parse(await FS.readAsStringAsync(uri))
+    let result: boolean = false
+    for (let i = 0; i < content.length; i++) {
+      if (content[i].Name === wp.Name) {
+        content.splice(i, 1);
+        result = true;
+        break;
+      }
+    }
+    content.push(wp)
+    if (result) {
+      const updatedContent: string = JSON.stringify(content)
+      await FS.writeAsStringAsync(uri, updatedContent)
+    }
+    return result
+  }
+
+  async deleteWorkoutPreset(name: string): Promise<boolean> {
+    const uri: string = data_dir + wp_file
+    if (!(await checkFile(wp_file))) {
+      return false
+    }
+    let content: WorkoutPreset[] = JSON.parse(await FS.readAsStringAsync(uri))
+    let result: boolean = false
+    for (let i = 0; i < content.length; i++) {
+      if (content[i].Name === name) {
+        content.splice(i, 1);
+        result = true;
+        break;
+      }
+    }
+    if (result) {
+      const updatedContent: string = JSON.stringify(content)
+      await FS.writeAsStringAsync(uri, updatedContent)
+    }
+    return result
   }
 
   // prob need a way to add exercises to workoutSchema. Useful when the user wants to 
   // create workoutSchema or add to an existing workoutSchema
-  
+
 }
 
 // checks if a file exists

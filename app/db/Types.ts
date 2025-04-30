@@ -89,26 +89,34 @@ export interface DB {
     getCalendarView: (date: Date) => Promise<Muscle_Group[][]>
 
     /*
-    *   gets the workout plan
+    *   gets a workout preset with the given name, returns null if it doesn't exist
     *   Params:
-    *      -- name of the workout plan
+    *      -- name of the workout preset
     *   Returns:
-    *     -- the WorkoutPlan
-    *     -- exception if the workout plan doesn't exist
+    *     WorkoutPreset if it exists, null otherwise
     */
-    getWorkoutPlan: (plan_name: string) => Promise<WorkoutPlan>
+    getWorkoutPreset: (name: string) => Promise<WorkoutPreset | null>
 
     /*
-    *   saves a workout plan. Save it as --> "plan_name.json"
+    *   saves a workout preset, if a workout with that name exists replaces it
     *   Params:
-    *     -- name of the workout plan
-    *     -- workout plan (array of workouts)
+    *     -- name of the workout preset
+    *     -- workout preset
     *   Returns:
-    *     -- true if the workout plan was saved
-    *     -- false if not
+    *     -- true if a preset with that name was replaced
+    *     -- false otherwise
     */
-    saveWorkoutPlan: (schema: WorkoutSchema, days: string[]) => Promise<boolean>
+    saveWorkoutPreset: (wp: WorkoutPreset) => Promise<boolean>
 
+    /*
+    *   Delete the workout preset with the given name
+    *   doesn't do anything if no preset with that exists
+    *   Params:
+    *       -- date: date of workout to delete
+    *   Returns:
+    *       -- true if a workout preset was succesfully deleted, false otherwise
+    */
+    deleteWorkoutPreset: (name: string) => Promise<boolean>
 }
 
 //export type Muscle_Group = "Chest" | "Back" | "Legs" | "Triceps" | "Biceps" | "Shoulders"
@@ -156,14 +164,10 @@ export type Workout = {
     WorkoutComment: string | null
 }
 
-export type WorkoutSchema = {
-    name: string
-    exercises: Set[] // or Exercise[]?
-}
-
-export type WorkoutPlan = {
-    plan: WorkoutSchema
-    days: string[] // array of days to repeat --> ex) ['Tuesday', 'Wednesday']
+export type WorkoutPreset = {
+    Name: string
+    Comment: string | null
+    Sets: Set[]
 }
 
 // exceptions
