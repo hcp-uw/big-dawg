@@ -102,6 +102,8 @@ export interface DB {
     *   Params:
     *     -- name of the workout preset
     *     -- workout preset
+    *   Throws: InvalidExerciseException if one of the sets in the wp has an exercise that doesn't exist
+    *           in the exercise list
     *   Returns:
     *     -- true if a preset with that name was replaced
     *     -- false otherwise

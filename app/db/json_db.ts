@@ -269,8 +269,11 @@ export class json_db implements DB {
 
   async saveWorkoutPreset(wp: WorkoutPreset): Promise<boolean> {
     const uri: string = data_dir + wp_file
-    if (!(await checkFile(wp_file))) {
-      return false
+    let exl: Exercise[] = Object.values(await this.getExerciseList()).flat();
+    for (let s of wp.Sets) {
+      if (!exl.some(ex => ex.Exercise_Name === s.Exercise_Name)) {
+        throw new InvalidExerciseException(s.Exercise_Name)
+      }
     }
     let content: WorkoutPreset[] = JSON.parse(await FS.readAsStringAsync(uri))
     let result: boolean = false
