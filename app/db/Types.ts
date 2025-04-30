@@ -89,7 +89,7 @@ export interface DB {
     getCalendarView: (date: Date) => Promise<Muscle_Group[][]>
 
     /*
-    *   gets a workout preset with the given name, returns null if it doesn't exist
+    *   gets the workout preset with the given name, returns null if it doesn't exist
     *   Params:
     *      -- name of the workout preset
     *   Returns:
@@ -98,7 +98,7 @@ export interface DB {
     getWorkoutPreset: (name: string) => Promise<WorkoutPreset | null>
 
     /*
-    *   saves a workout preset, if a workout with that name exists replaces it
+    *   saves the workout preset, if a workout with that name exists replaces it
     *   Params:
     *     -- name of the workout preset
     *     -- workout preset
