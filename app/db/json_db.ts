@@ -312,9 +312,6 @@ export class json_db implements DB {
     return result
   }
 
-  // prob need a way to add exercises to workoutSchema. Useful when the user wants to 
-  // create workoutSchema or add to an existing workoutSchema
-
 }
 
 // checks if a file exists
