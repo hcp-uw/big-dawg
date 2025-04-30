@@ -169,7 +169,7 @@ export type Workout = {
 export type WorkoutPreset = {
     Name: string
     Comment: string | null
-    Sets: Set[]
+    Preset: Set[]
 }
 
 // exceptions

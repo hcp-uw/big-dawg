@@ -66,7 +66,7 @@ export class json_db implements DB {
         //console.log(error)
         //if (error instanceof InvalidExerciseException) {
         //throw new InvalidExerciseException("")
-        //invalidExercises.push(error.message.slice(18))
+        invalidExercises.push(error.message.slice(18))
         continue
         //}
       }
@@ -270,12 +270,15 @@ export class json_db implements DB {
   async saveWorkoutPreset(wp: WorkoutPreset): Promise<boolean> {
     const uri: string = data_dir + wp_file
     let exl: Exercise[] = Object.values(await this.getExerciseList()).flat();
-    for (let s of wp.Sets) {
+    for (let s of wp.Preset) {
       if (!exl.some(ex => ex.Exercise_Name === s.Exercise_Name)) {
         throw new InvalidExerciseException(s.Exercise_Name)
       }
     }
-    let content: WorkoutPreset[] = JSON.parse(await FS.readAsStringAsync(uri))
+    let content: WorkoutPreset[] = []
+    if (await checkFile(wp_file)) {
+      content = JSON.parse(await FS.readAsStringAsync(uri))
+    }
     let result: boolean = false
     for (let i = 0; i < content.length; i++) {
       if (content[i].Name === wp.Name) {
