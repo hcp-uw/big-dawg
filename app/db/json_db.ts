@@ -6,8 +6,6 @@ import {
   Muscle_Group,
   Exercise,
   Set,
-  WorkoutSchema,
-  WorkoutPlan,
   InvalidExerciseException,
   WorkoutPreset,
 } from './Types'
