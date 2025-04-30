@@ -142,5 +142,42 @@ describe('json_db Exercise Tests', () => {
         let { db } = setupTest({ file_exists: true, expected_rContents: [JSON.stringify([wp2, wp])] })
         await expect(db.getWorkoutPreset("My preset")).resolves.toStrictEqual(wp)
     })
+
     // ------ deleteWorkoutPreset() tests ------
+    it('deleteWorkoutPreset_noFile', async () => {
+        //console.log("Test deleteWorkoutPreset_noFile output begin")
+        let { db } = setupTest({ file_exists: false })
+        await expect(db.deleteWorkoutPreset("Test")).resolves.toBe(false)
+    })
+    it('deleteWorkoutPreset_noWorkout', async () => {
+        const wp = {
+            Name: "My preset",
+            Comment: "This is my preset",
+            Preset: [set1, set1, set2, set3, set2]
+        }
+        const wp2 = {
+            Name: "My prese",
+            Comment: "This is my preset",
+            Preset: [set1, set1, set2, set3, set2]
+        }
+        let { db } = setupTest({ expected_rContents: [JSON.stringify([wp, wp2])] })
+        await expect(db.deleteWorkoutPreset("test")).resolves.toBe(false)
+    })
+    it('deleteWorkoutPreset', async () => {
+        const wp = {
+            Name: "My preset",
+            Comment: "This is my preset",
+            Preset: [set1, set1, set2, set3, set2]
+        }
+        const wp2 = {
+            Name: "My prese",
+            Comment: "This is my preset",
+            Preset: [set1, set1, set2, set3, set2]
+        }
+        let { db } = setupTest({
+            expected_rContents: [JSON.stringify([wp2, wp])],
+            expected_wContents: [{ uri: ".big-dawg/data/WorkoutPresets.json", content: JSON.stringify([wp2]) }]
+        })
+        await expect(db.deleteWorkoutPreset("My preset")).resolves.toBe(true)
+    })
 })
