@@ -288,10 +288,8 @@ export class json_db implements DB {
       }
     }
     content.push(wp)
-    if (result) {
-      const updatedContent: string = JSON.stringify(content)
-      await FS.writeAsStringAsync(uri, updatedContent)
-    }
+    const updatedContent: string = JSON.stringify(content)
+    await FS.writeAsStringAsync(uri, updatedContent)
     return result
   }
 
