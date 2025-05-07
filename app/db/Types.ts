@@ -87,6 +87,38 @@ export interface DB {
     *       -- 1d empty array [] if the given month, year has no logged workouts for that month
     */
     getCalendarView: (date: Date) => Promise<Muscle_Group[][]>
+
+    /*
+    *   gets the workout preset with the given name, returns null if it doesn't exist
+    *   Params:
+    *      -- name of the workout preset
+    *   Returns:
+    *     WorkoutPreset if it exists, null otherwise
+    */
+    getWorkoutPreset: (name: string) => Promise<WorkoutPreset | null>
+
+    /*
+    *   saves the workout preset, if a workout with that name exists replaces it
+    *   Params:
+    *     -- name of the workout preset
+    *     -- workout preset
+    *   Throws: InvalidExerciseException if one of the sets in the wp has an exercise that doesn't exist
+    *           in the exercise list
+    *   Returns:
+    *     -- true if a preset with that name was replaced
+    *     -- false otherwise
+    */
+    saveWorkoutPreset: (wp: WorkoutPreset) => Promise<boolean>
+
+    /*
+    *   Delete the workout preset with the given name
+    *   doesn't do anything if no preset with that exists
+    *   Params:
+    *       -- date: date of workout to delete
+    *   Returns:
+    *       -- true if a workout preset was succesfully deleted, false otherwise
+    */
+    deleteWorkoutPreset: (name: string) => Promise<boolean>
 }
 
 //export type Muscle_Group = "Chest" | "Back" | "Legs" | "Triceps" | "Biceps" | "Shoulders"
@@ -132,6 +164,12 @@ export type Workout = {
     TimeEnded: number
     Sets: Set[]
     WorkoutComment: string | null
+}
+
+export type WorkoutPreset = {
+    Name: string
+    Comment: string | null
+    Preset: Set[]
 }
 
 // exceptions

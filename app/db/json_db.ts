@@ -7,11 +7,13 @@ import {
   Exercise,
   Set,
   InvalidExerciseException,
+  WorkoutPreset,
 } from './Types'
 import { defaultExercises } from './PresetExercises'
 import * as FS from 'expo-file-system'
 
 const data_dir: string = FS.documentDirectory + '.big-dawg/data/'
+const wp_file: string = "WorkoutPresets.json"
 
 // implements interface for json
 export class json_db implements DB {
@@ -248,6 +250,63 @@ export class json_db implements DB {
     // with a populated Muscle_Group[]
     return monthMuscleGroups
   }
+
+  async getWorkoutPreset(name: string): Promise<WorkoutPreset | null> {
+    const uri: string = data_dir + wp_file
+    if (!(await checkFile(uri))) {
+      return null
+    }
+    let content: WorkoutPreset[] = JSON.parse(await FS.readAsStringAsync(uri))
+    return content.find(wp => wp.Name === name) ?? null;
+  }
+
+  async saveWorkoutPreset(wp: WorkoutPreset): Promise<boolean> {
+    const uri: string = data_dir + wp_file
+    let exl: Exercise[] = Object.values(await this.getExerciseList()).flat();
+    for (let s of wp.Preset) {
+      if (!exl.some(ex => ex.Exercise_Name === s.Exercise_Name)) {
+        throw new InvalidExerciseException(s.Exercise_Name)
+      }
+    }
+    let content: WorkoutPreset[] = []
+    if (await checkFile(wp_file)) {
+      content = JSON.parse(await FS.readAsStringAsync(uri))
+    }
+    let result: boolean = false
+    for (let i = 0; i < content.length; i++) {
+      if (content[i].Name === wp.Name) {
+        content.splice(i, 1);
+        result = true;
+        break;
+      }
+    }
+    content.push(wp)
+    const updatedContent: string = JSON.stringify(content)
+    await FS.writeAsStringAsync(uri, updatedContent)
+    return result
+  }
+
+  async deleteWorkoutPreset(name: string): Promise<boolean> {
+    const uri: string = data_dir + wp_file
+    if (!(await checkFile(wp_file))) {
+      return false
+    }
+    let content: WorkoutPreset[] = JSON.parse(await FS.readAsStringAsync(uri))
+    let result: boolean = false
+    for (let i = 0; i < content.length; i++) {
+      if (content[i].Name === name) {
+        content.splice(i, 1);
+        result = true;
+        break;
+      }
+    }
+    if (result) {
+      const updatedContent: string = JSON.stringify(content)
+      await FS.writeAsStringAsync(uri, updatedContent)
+    }
+    return result
+  }
+
 }
 
 // checks if a file exists
