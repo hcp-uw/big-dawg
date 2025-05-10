@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import {json_db} from '../db/json_db' // Adjusted path to match the correct location
-import {DB, Workout, Set, Exercise} from '../db/Types'
+import {DB, Workout, Set} from '../db/Types'
 
 const db: DB = new json_db();
 
@@ -9,12 +9,13 @@ interface WorkoutState {
   workoutStartTime: number | null;
   elapsedTime: number;
   isPaused: boolean;
-  exerciseList: Array<Exercise>;
+  exerciseList: Array<Set>;
   setIsWorkoutActive: (active: boolean) => void;
   startWorkout: () => void;
   pauseWorkout: () => void;
   resumeWorkout: () => void;
   endWorkout: () => void;
+  addExercise: (ex: Set) => void;
   updateElapsedTime: (time: number) => void;
 }
 
@@ -55,8 +56,8 @@ export const useWorkoutState = create<WorkoutState>((set) => ({
     isPaused: false 
   }),
 
-  addExercise: () => {
-
+  addExercise: (ex: Set) => {
+    set((state) => ({ exerciseList: [...state.exerciseList, ex] }));
   },
   
   updateElapsedTime: (time: number) => set({ elapsedTime: time })
