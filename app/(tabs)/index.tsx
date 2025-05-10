@@ -100,7 +100,7 @@ const seconds = displayTime % 60;
                     <Text style={styles.buttonText}>Pause</Text>
                   </TouchableOpacity>
                   {/* TODO: change functionality of button to navigate to list of exercises */}
-                  <TouchableOpacity style={localStyles.addButton} onPress={() => console.log('add a new exercise to current workout')}>
+                  <TouchableOpacity style={localStyles.addButton} onPress={() => router.push('/(tabs)/workouts/add_exercise/add_workout_exercise')}>
                     <Text style={styles.buttonText}>Add Exercise</Text>
                   </TouchableOpacity>
                   </>
