@@ -32,6 +32,7 @@ export default function Index() {
   const isPaused = useWorkoutState((state) => state.isPaused);
   const workoutStartTime = useWorkoutState((state) => state.workoutStartTime);
   const elapsedTime = useWorkoutState((state) => state.elapsedTime);
+  const currWorkout = useWorkoutState((state) => state.exerciseList);
   const pauseWorkout = useWorkoutState((state) => state.pauseWorkout);
   const resumeWorkout = useWorkoutState((state) => state.resumeWorkout);
   const endWorkout = useWorkoutState((state) => state.endWorkout);
@@ -90,40 +91,59 @@ const seconds = displayTime % 60;
             {seconds.toString().padStart(2, "0")}
           </Text>
           <View style={localStyles.activeWorkoutContainer}>
+            {/* Button Container */}
             <View style={localStyles.buttonContainer}>
               {!isPaused ? (
-                  <>
+                <>
                   <TouchableOpacity
                     style={[styles.button, localStyles.pauseButton]}
                     onPress={pauseWorkout}
                   >
                     <Text style={styles.buttonText}>Pause</Text>
                   </TouchableOpacity>
-                  {/* TODO: change functionality of button to navigate to list of exercises */}
-                  <TouchableOpacity style={localStyles.addButton} onPress={() => router.push('/(tabs)/workouts/add_exercise/add_workout_exercise')}>
+                  <TouchableOpacity
+                    style={localStyles.addButton}
+                    onPress={() => router.push('/(tabs)/workouts/add_exercise/add_workout_exercise')}
+                  >
                     <Text style={styles.buttonText}>Add Exercise</Text>
                   </TouchableOpacity>
-                  </>
-                  
+                </>
               ) : (
-                  <>
-                      <TouchableOpacity
-                          style={[localStyles.button, localStyles.resumeButton]}
-                          onPress={resumeWorkout}
-                      >
-                          <Text style={styles.buttonText}>Resume</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                          style={[localStyles.button, localStyles.endButton]}
-                          onPress={endWorkout}
-                      >
-                          <Text style={styles.buttonText}>
-                              End Workout
-                          </Text>
-                      </TouchableOpacity>
-                  </>
+                <>
+                  <TouchableOpacity
+                    style={[localStyles.button, localStyles.resumeButton]}
+                    onPress={resumeWorkout}
+                  >
+                    <Text style={styles.buttonText}>Resume</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[localStyles.button, localStyles.endButton]}
+                    onPress={endWorkout}
+                  >
+                    <Text style={styles.buttonText}>End Workout</Text>
+                  </TouchableOpacity>
+                </>
               )}
             </View>
+
+            {/* Current Exercises List */}
+            {currWorkout.length > 0 && (
+              <View style={localStyles.exerciseListContainer}>
+                <Text style={localStyles.title}>Current Exercises:</Text>
+                {currWorkout.map((exercise, index) => (
+                  <View key={index} style={{ marginBottom: 10 }}>
+                    <Text style={{ color: 'white', fontSize: 18 }}>
+                      {exercise.Exercise_Name} - {exercise.Reps} reps {`@ ${exercise.Weight} lbs`}
+                    </Text>
+                    {exercise.Comment && (
+                      <Text style={{ color: 'white', fontSize: 14, fontStyle: 'italic', marginLeft: 20, opacity: 0.8 }}>
+                        {exercise.Comment}
+                      </Text>
+                    )}
+                  </View>
+                ))}
+              </View>
+            )}
           </View>
         </>
       ) : (
@@ -209,7 +229,7 @@ const localStyles = StyleSheet.create({
     flexDirection: 'row', // Align items horizontally
     alignItems: 'center', // Vertically align items in the center
     justifyContent: 'space-between', // Add spacing between text and progress
-    marginBottom: 20, // Add spacing below the row
+    marginBottom: 20, // Add spacing below the rowr
   },
   noActiveWorkoutContainer: {
     justifyContent: 'center',
@@ -302,5 +322,9 @@ const localStyles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
+  },
+  exerciseListContainer: {
+    marginTop: 5, // Add spacing between the buttons and the list
+    width: '100%',
   },
 });
