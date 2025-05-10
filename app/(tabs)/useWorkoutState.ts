@@ -24,8 +24,8 @@ export const useWorkoutState = create<WorkoutState>((set) => ({
   workoutStartTime: null,
   elapsedTime: 0,
   isPaused: false,
-  exerciseList: [],
-  
+  exerciseList: [ {Exercise_Name: "test", Weight: 4, Reps: 4, Comment: null}, {Exercise_Name: "test2", Weight: 4, Reps: 4, Comment: "hellooo"} ],
+  // {Exercise_Name: "test", Weight: 4, Reps: 4, Comment: null}, {Exercise_Name: "test2", Weight: 4, Reps: 4, Comment: "hellooo"}
   setIsWorkoutActive: (active: boolean) => set({ isWorkoutActive: active }),
   
   startWorkout: () => set({
