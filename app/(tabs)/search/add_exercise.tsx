@@ -1,107 +1,113 @@
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
-import { styles } from '@/src/styles/globalStyles';
-import colors from '@/src/styles/themes/colors';
-import { useState, useRef } from 'react';
-import BackButton from '@/components/back_button';
+import { useRouter, useLocalSearchParams } from "expo-router";
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, TextInput, KeyboardAvoidingView, Platform } from "react-native";
+import { styles } from "@/src/styles/globalStyles";
+import colors from "@/src/styles/themes/colors";
+import { useState, useRef } from "react";
+import BackButton from "@/components/back_button";
+import { useWorkoutState } from "../useWorkoutState";
+import { Set } from "../../db/Types"; // Import the Set type
 
 const WorkoutInput = () => {
-  type SetField = 'reps' | 'weight';
-  const [sets, setSets] = useState([{ id: 1, reps: "", weight: "", key:""}]); // Initial set
   const scrollViewRef = useRef<ScrollView>(null);
   const { item } = useLocalSearchParams();
   const router = useRouter();
+  const { addExercise } = useWorkoutState();
+  const [sets, setSets] = useState<Set[]>([
+    { Exercise_Name: item as string, Reps: 0, Weight: 0, Comment: "1-0" }, // Initial set
+  ]);
 
-  // Function to handle input changes
-  const handleInputChange = (text: string, index: number, field: string, key: string) => {
+  const handleInputChange = (text: string, index: number, field: keyof Set) => {
     const newSets = [...sets];
-    newSets[index][field as SetField] = text.replace(/[^0-9]/g, ""); // Only allow numbers
-    setSets(newSets);
-
-    scrollViewRef.current?.scrollToEnd({ animated: true });
+    const numericValue = parseInt(text.replace(/[^0-9]/g, ""), 10) || 0; // Allow only numbers
+    if(field === "Reps") {
+      newSets[index].Reps = numericValue;
+    } else if(field === "Weight") {
+      newSets[index].Weight = numericValue;
+    }
+    setSets(newSets); // Update the state
   };
 
-  // Function to add a new set
   const addSet = () => {
-    setSets([...sets, { id: sets.length + 1, reps: "", weight: "", key: `${sets.length + 1}-${Date.now()}`}]);
+    setSets([
+      ...sets,
+      { Exercise_Name: `${sets.length + 1}`, Reps: 0, Weight: 0, Comment: `${sets.length + 1}-${Date.now()}` } as Set,
+    ]);
 
     setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 100);
   };
 
-  // Function to remove a set
   const removeSet = (index: number) => {
     const newSets = sets.filter((_, i) => i !== index);
     setSets(newSets);
   };
 
   const saveSet = () => {
-    console.log('Save Set pressed!');
+    for(const set of sets) {
+      addExercise(set);
+    }
+    router.back();
   };
 
   return (
-    <KeyboardAvoidingView 
-      behavior={Platform.OS === "ios" ? "padding" : "height"} 
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={[localStyles.container]}
     >
       <View style={styles.backContainer}>
-          <BackButton/>
-          <Text style={styles.headerText}>{item}</Text>
-          <TouchableOpacity style={[styles.button, {backgroundColor: colors.PURPLE, padding: 7,}]} onPress={() => saveSet()}>
-            <Text style={[styles.buttonText, {fontWeight: 'bold',}]}>Save</Text>
-          </TouchableOpacity>
+        <BackButton />
+        <Text style={styles.headerText}>{item}</Text>
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: colors.PURPLE, padding: 7 }]}
+          onPress={() => saveSet()}
+        >
+          <Text style={[styles.buttonText]}>Add Exercise</Text>
+        </TouchableOpacity>
       </View>
-      <ScrollView 
-        ref={scrollViewRef} 
-        style={localStyles.scrollContainer} 
-        contentContainerStyle={{ paddingBottom: '20%' }}
-        keyboardShouldPersistTaps='handled'  
+      <ScrollView
+        ref={scrollViewRef}
+        style={localStyles.scrollContainer}
+        contentContainerStyle={{ paddingBottom: "20%" }}
+        keyboardShouldPersistTaps="handled"
       >
-
         {sets.map((set, index) => (
-          <View key={set.key} style={styles.container}>
+          <View key={set.Comment} style={styles.container}>
             <Text style={styles.headerText}>Set {index + 1}</Text>
 
-            {/* Reps Input */}
             <TextInput
               style={styles.input}
               placeholder="Reps..."
               placeholderTextColor={colors.WHITE}
-              value={set.reps}
+              value={set.Reps ? set.Reps.toString() : ""} // Convert Reps to string for display
               keyboardType="numeric"
-              returnKeyType = 'done'
-              onChangeText={(text) => handleInputChange(text, index, "reps", set.key)}
+              returnKeyType="done"
+              onChangeText={(text) => handleInputChange(text, index, "Reps")}
             />
 
-            {/* Weight Input */}
             <TextInput
               style={styles.input}
               placeholder="Weight..."
               placeholderTextColor={colors.WHITE}
-              value={set.weight}
+              value={set.Weight ? set.Weight.toString() : ""} // Convert Weight to string for display
               keyboardType="numeric"
-              returnKeyType = 'done'
-              onChangeText={(text) => handleInputChange(text, index, "weight", set.key)}
+              returnKeyType="done"
+              onChangeText={(text) => handleInputChange(text, index, "Weight")}
             />
 
-            {/* Remove Button (Only show if there's more than one set) */}
             {sets.length > 1 && (
-              <TouchableOpacity style={[styles.button, {width: '96%'}]} onPress={() => removeSet(index)}>
+              <TouchableOpacity style={[styles.button, { width: "96%" }]} onPress={() => removeSet(index)}>
                 <Text style={styles.buttonText}>Remove Set</Text>
               </TouchableOpacity>
             )}
           </View>
         ))}
 
-        {/* Add Set Button */}
-        <TouchableOpacity style={[styles.button, {marginTop: 10, backgroundColor: colors.PURPLE,}]} onPress={addSet}>
-          <Text style={[styles.buttonText, {fontWeight: 'bold',}]}>+ Add Another Set</Text>
+        <TouchableOpacity
+          style={[styles.button, { marginTop: 10, backgroundColor: colors.PURPLE }]}
+          onPress={addSet}
+        >
+          <Text style={[styles.buttonText, { fontWeight: "bold" }]}>+ Add Another Set</Text>
         </TouchableOpacity>
       </ScrollView>
-      <View style={[styles.backContainer]}>
-        <TouchableOpacity style={[styles.button, {backgroundColor: colors.PURPLE, marginRight: 20}]} onPress={() => router.back()}>
-            <Text style={[styles.buttonText, {fontWeight: 'bold',}]}>← Back</Text>
-        </TouchableOpacity>
-      </View>
     </KeyboardAvoidingView>
   );
 };
@@ -112,20 +118,8 @@ const localStyles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.BLACK,
-    justifyContent: 'center',
-    paddingBottom: '20%',
-  },
-  setContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  subSetContainer: {
-    flex: 1,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10,
+    justifyContent: "center",
+    paddingBottom: "20%",
   },
   scrollContainer: {
     flex: 1,
