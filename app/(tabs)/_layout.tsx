@@ -150,7 +150,7 @@ export default function TabLayout() {
           <View style={localStyles.modalOverlay}>
             <View style={localStyles.modalContent}>
               {/* Dropdown Buttons */}
-              <Pressable style={localStyles.modalButton} onPress={() => { closeModal(); router.push('./(tabs)/workouts/add_workout'); }}>
+              <Pressable style={localStyles.modalButton} onPress={() => { closeModal(); router.push('./(tabs)/workouts'); }}>
                 <Text style={localStyles.modalButtonText}>Choose Workout Preset</Text>
               </Pressable>
               <Pressable style={localStyles.modalButton} onPress={() => {closeModal(); router.push('./search/new_exercise')}}>
