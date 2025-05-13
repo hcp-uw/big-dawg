@@ -14,7 +14,8 @@
       "resizeMode": "contain"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anonymous.proj"
     },
     "android": {
       "adaptiveIcon": {
