@@ -14,29 +14,20 @@ const R = CIRCLE_LENGTH / (1.6 * Math.PI);
 export default function Index() {
 
   const router = useRouter();
-
-  const [progress, setProgress] = useState(0);
-  const [LEFT_MARGIN, setLeftMargin] = useState(-45);
-
-  const doProgressChange = () => {
-    setProgress(prev => Math.min(prev + Math.floor(Math.random() * 25) + 1, 100));
-
-    if(progress > 9 && progress < 100) {
-      setLeftMargin(-35);
-    } else {
-      setLeftMargin(-30);
-    }
-  };
-
+  
   const isWorkoutActive = useWorkoutState((state) => state.isWorkoutActive);
   const isPaused = useWorkoutState((state) => state.isPaused);
   const workoutStartTime = useWorkoutState((state) => state.workoutStartTime);
   const elapsedTime = useWorkoutState((state) => state.elapsedTime);
   const currWorkout = useWorkoutState((state) => state.exerciseList);
+  const goalCompletion = useWorkoutState((state) => state.goalCompletion);
+  const percentMargin = useWorkoutState((state) => state.percentMargin);
   const pauseWorkout = useWorkoutState((state) => state.pauseWorkout);
   const resumeWorkout = useWorkoutState((state) => state.resumeWorkout);
   const endWorkout = useWorkoutState((state) => state.endWorkout);
   const updateElapsedTime = useWorkoutState((state) => state.updateElapsedTime);
+  const removeExercise = useWorkoutState((state) => state.removeExercise);
+  const updateExercise = useWorkoutState((state) => state.updateExercise);
 
   // Local state for displaying time
   const [displayTime, setDisplayTime] = useState(0);
@@ -132,14 +123,23 @@ const seconds = displayTime % 60;
                 <Text style={localStyles.title}>Current Exercises:</Text>
                 {currWorkout.map((exercise, index) => (
                   <View key={index} style={{ marginBottom: 10 }}>
-                    <Text style={{ color: 'white', fontSize: 18 }}>
-                      {exercise.Exercise_Name} - {exercise.Reps} reps {`@ ${exercise.Weight} lbs`}
+                    <Text style={{ color: 'white', fontSize: 20 }}>
+                      {exercise.Exercise_Name}: {exercise.Reps} reps {`@ ${exercise.Weight} lbs`}
                     </Text>
                     {exercise.Comment && (
-                      <Text style={{ color: 'white', fontSize: 14, fontStyle: 'italic', marginLeft: 20, opacity: 0.8 }}>
+                      <Text style={{ color: 'white', fontSize: 16, fontStyle: 'italic', marginLeft: 20, opacity: 0.8 }}>
                         {exercise.Comment}
                       </Text>
                     )}
+                    <View style={{ flexDirection: 'row', gap: 10, marginTop: 5 }}>
+                      <Pressable onPress={() => removeExercise(index)}>
+                        <Text style={localStyles.removeAndEditButton}>Remove</Text>
+                      </Pressable>
+
+                      <Pressable onPress={() => { console.log("todo: update with new edited exercise"); }}>
+                        <Text style={localStyles.removeAndEditButton}>Edit</Text>
+                      </Pressable>
+                    </View>
                   </View>
                 ))}
               </View>
@@ -153,7 +153,7 @@ const seconds = displayTime % 60;
             <Text style={localStyles.progressLabel}>Workout completion:</Text>
             <CircularProgress
               radius={R}
-              value={progress}
+              value={goalCompletion * 100}
               progressValueFontSize={30}
               progressValueColor={colors.WHITE}
               maxValue={100}
@@ -170,13 +170,13 @@ const seconds = displayTime % 60;
                 return Math.round(value).toString();
               }}
               progressValueStyle={{
-                width: 70, // Allows space for 3 digits + % symbol
+                width: percentMargin, // changes dynamically ? i hope ?
                 fontWeight: 'bold',
                 textAlign: 'center',
               }}
               valueSuffixStyle={{
                 fontSize: 22,
-                marginLeft: LEFT_MARGIN,
+                marginLeft: -45,
                 color: colors.WHITE,
                 textAlign: 'center',
               }}
@@ -262,7 +262,7 @@ const localStyles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 100,
+    marginBottom: 20,
   },
   timerText: {
     fontSize: 60,
@@ -327,4 +327,11 @@ const localStyles = StyleSheet.create({
     marginTop: 5, // Add spacing between the buttons and the list
     width: '100%',
   },
+  removeAndEditButton: {
+    color: colors.WHITE,
+    textDecorationLine: 'underline',
+    fontSize: 16,
+    paddingVertical: 4,
+    paddingHorizontal: 0,
+  }
 });
