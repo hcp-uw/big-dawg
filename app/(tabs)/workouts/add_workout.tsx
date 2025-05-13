@@ -87,6 +87,7 @@ export default function AddWorkoutScreen() {
         />
 
         {/* Auto-repetition Days */}
+        {/* Commented out auto-repetition feature
         <Text style={styles.subHeader}>Auto-repetition:</Text>
         <View style={styles.daysContainer}>
           {daysOfWeek.map((day) => (
@@ -102,6 +103,7 @@ export default function AddWorkoutScreen() {
             </TouchableOpacity>
           ))}
         </View>
+        */}
 
         {/* Add Exercise Section */}
         <Text style={styles.subHeader}>Exercises:</Text>
