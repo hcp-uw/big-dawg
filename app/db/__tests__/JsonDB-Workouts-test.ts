@@ -1,4 +1,4 @@
-import { Exercise, Set, Workout, InvalidExerciseException } from '../Types'
+import { Set, Workout, InvalidExerciseException } from '../Types'
 import { setupTest } from '../Testing-utils'
 
 // consts for tests

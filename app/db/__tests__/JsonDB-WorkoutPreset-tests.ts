@@ -1,4 +1,4 @@
-import { WorkoutPreset, Set, Exercise, Exercise_List, InvalidExerciseException } from '../Types'
+import { Set, Exercise_List, InvalidExerciseException } from '../Types'
 import { setupTest } from '../Testing-utils'
 
 const set1: Set = {
