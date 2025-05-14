@@ -127,9 +127,12 @@ const DayWorkout = () => {
     }
 
     return muscleGroups.map((group, idx) => (
-      <Text key={idx} style={styles.setText}>
-        {group}
-      </Text>
+      <View style={styles.outBox}>
+        <Text key={idx} style={styles.groupText}>
+          {group}
+        </Text>
+        {renderWorkoutSets()}
+      </View>
     ));
   };
 
@@ -137,9 +140,12 @@ const DayWorkout = () => {
     if (!workout) return null;
 
     return workout.Sets.map((set, idx) => (
-      <Text key={idx} style={styles.setText}>
-        {set.Exercise_Name} — {set.Reps} reps @ {set.Weight} lbs
-      </Text>
+      <View key={idx} style={styles.inBox}>
+        <Text style={styles.setText}>{set.Exercise_Name}</Text>
+        <Text style={styles.setSubText}>
+          {set.Reps} reps @ {set.Weight} lbs
+        </Text>
+      </View>
     ));
   };
 
@@ -176,7 +182,6 @@ const DayWorkout = () => {
         </View>
       </View>
       {renderContent()}
-      {renderWorkoutSets()}
     </View>
   );
 };
@@ -219,10 +224,51 @@ const styles = StyleSheet.create({
     color: colors.WHITE,
   },
 
+  outBox: {
+    backgroundColor: colors.DARK_GRAY, // fallback dark shade
+    borderRadius: 12,
+    padding: 12,
+    marginTop: 15,
+    width: "100%",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+    elevation: 5, // for Android shadow
+  },
+
+  inBox: {
+    backgroundColor: colors.DARK_GRAY, // fallback dark shade
+    borderRadius: 12,
+    padding: 12,
+    marginTop: 15,
+    width: "100%",
+    borderWidth: 1,
+    borderColor: "#C3B1E1",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+    elevation: 5, // for Android shadow
+  },
+
+  groupText: {
+    fontSize: 18,
+    marginRight: 200,
+    fontWeight: "bold",
+    color: colors.WHITE,
+  },
+
   setText: {
     fontSize: 16,
+    fontWeight: "bold",
     color: colors.WHITE,
-    marginTop: 50,
+  },
+
+  setSubText: {
+    fontSize: 14,
+    color: colors.WHITE,
+    marginTop: 4,
   },
 
   detailText: {
