@@ -6,7 +6,7 @@ const db: DB = new json_db();
 
 interface WorkoutState {
   isWorkoutActive: boolean;
-  workoutStartTime: number | null;
+  workoutStartTime: number;
   elapsedTime: number;
   isPaused: boolean;
   totalWorkoutMinutes: number;
@@ -27,7 +27,7 @@ interface WorkoutState {
 
 export const useWorkoutState = create<WorkoutState>((set, get) => ({
   isWorkoutActive: false,
-  workoutStartTime: null,
+  workoutStartTime: 0,
   elapsedTime: 0,
   isPaused: false,
   totalWorkoutMinutes: 0,
@@ -75,13 +75,25 @@ export const useWorkoutState = create<WorkoutState>((set, get) => ({
 
     set({
       isWorkoutActive: false,
-      workoutStartTime: null,
+      workoutStartTime: 0,
       elapsedTime: 0,
       isPaused: false,
       totalWorkoutMinutes: newTotal,
       goalCompletion: newGoalCompletion,
       percentMargin: newPercentMargin,
     });
+
+    const date = new Date();
+
+    const newWorkout: Workout = {
+      Date: date,
+      TimeStarted: state.workoutStartTime,
+      TimeEnded: state.workoutStartTime + state.elapsedTime,
+      Sets: state.exerciseList,
+      WorkoutComment: null,
+    }
+
+    db.saveWorkout(newWorkout);
   },
 
   addExercise: (ex: Set) => {
