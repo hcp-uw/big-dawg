@@ -12,10 +12,11 @@ import { useRoute, RouteProp, useNavigation } from "@react-navigation/native";
 import colors from "@/src/styles/themes/colors";
 import { json_db } from "@/app/db/json_db";
 import { DB, Muscle_Group, Workout } from "@/app/db/Types";
+import { Ionicons } from "@expo/vector-icons";
 
 const db: DB = new json_db();
 
-// testing
+// testing;
 // const db: DB = {
 //   getCalendarView: async (date: Date) => {
 //     return [["Chest"], ["Back"], [], [], ["Legs"]];
@@ -74,6 +75,12 @@ const DayWorkout = () => {
   const selectedDate = isNaN(currDate.getTime())
     ? "No date selected"
     : currDate.toDateString();
+  const weekday = currDate.toLocaleDateString("en-US", { weekday: "long" });
+  const dateString = currDate.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 
   // place to store data
   const [muscleGroups, setMuscleGroups] = useState<Muscle_Group[] | null>(null);
@@ -120,9 +127,12 @@ const DayWorkout = () => {
     }
 
     return muscleGroups.map((group, idx) => (
-      <Text key={idx} style={styles.setText}>
-        {group}
-      </Text>
+      <View style={styles.outBox}>
+        <Text key={idx} style={styles.groupText}>
+          {group}
+        </Text>
+        {renderWorkoutSets()}
+      </View>
     ));
   };
 
@@ -130,22 +140,48 @@ const DayWorkout = () => {
     if (!workout) return null;
 
     return workout.Sets.map((set, idx) => (
-      <Text key={idx} style={styles.setText}>
-        {set.Exercise_Name} — {set.Reps} reps @ {set.Weight} lbs
-      </Text>
+      <View key={idx} style={styles.inBox}>
+        <Text style={styles.setText}>{set.Exercise_Name}</Text>
+        <Text style={styles.setSubText}>
+          {set.Reps} reps @ {set.Weight} lbs
+        </Text>
+      </View>
     ));
   };
+
+  const BackButton = () => {
+    return (
+      <Pressable onPress={goBack}>
+        <Ionicons
+          name="arrow-back-circle-outline"
+          size={32}
+          color={colors.WHITE}
+        />
+      </Pressable>
+    );
+  };
+
+  const localStyles = StyleSheet.create({
+    backButton: {
+      backgroundColor: colors.BLACK,
+      padding: 10,
+      borderRadius: 20,
+      marginHorizontal: 5,
+    },
+  });
 
   return (
     <View style={styles.container}>
       <View style={styles.headerRow}>
-        <TouchableOpacity style={styles.backButton} onPress={goBack}>
-          <Text style={styles.backButtonText}> Back </Text>
-        </TouchableOpacity>
-        <Text style={styles.dateText}>{selectedDate}</Text>
+        <View style={styles.backButtonContainer}>
+          <BackButton />
+        </View>
+        <View style={styles.dateContainer}>
+          <Text style={styles.weekdayText}>{weekday}</Text>
+          <Text style={styles.dateText}>{dateString}</Text>
+        </View>
       </View>
       {renderContent()}
-      {renderWorkoutSets()}
     </View>
   );
 };
@@ -157,43 +193,86 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
   },
-  detailText: {
-    fontSize: 18,
-    color: colors.WHITE,
-    marginTop: 50,
-  },
-  backButton: {
-    borderWidth: 0.5,
-    borderColor: colors.WHITE,
-    marginTop: 8,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    backgroundColor: colors.BLACK,
-    borderRadius: 8,
-    alignSelf: "flex-start",
-  },
-  backButtonText: {
-    color: colors.WHITE,
-    fontSize: 14,
-    fontWeight: "bold",
-  },
-
   headerRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 5,
+    justifyContent: "center",
     width: "100%",
+    marginTop: 0,
+    marginBottom: 30,
+    position: "relative",
+  },
+
+  backButtonContainer: {
+    position: "absolute",
+    left: 0,
+  },
+
+  dateContainer: {
+    alignItems: "center",
+    flex: 1,
+  },
+
+  weekdayText: {
+    fontSize: 24,
+    color: colors.WHITE,
+    fontWeight: "bold",
   },
 
   dateText: {
-    fontSize: 20,
+    fontSize: 18,
     color: colors.WHITE,
+  },
+
+  outBox: {
+    backgroundColor: colors.DARK_GRAY, // fallback dark shade
+    borderRadius: 12,
+    padding: 12,
+    marginTop: 15,
+    width: "100%",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+    elevation: 5, // for Android shadow
+  },
+
+  inBox: {
+    backgroundColor: colors.DARK_GRAY, // fallback dark shade
+    borderRadius: 12,
+    padding: 12,
+    marginTop: 15,
+    width: "100%",
+    borderWidth: 1,
+    borderColor: "#C3B1E1",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+    elevation: 5, // for Android shadow
+  },
+
+  groupText: {
+    fontSize: 18,
+    marginRight: 200,
     fontWeight: "bold",
-    marginLeft: 45, // spacing between button and date
+    color: colors.WHITE,
   },
 
   setText: {
     fontSize: 16,
+    fontWeight: "bold",
+    color: colors.WHITE,
+  },
+
+  setSubText: {
+    fontSize: 14,
+    color: colors.WHITE,
+    marginTop: 4,
+  },
+
+  detailText: {
+    fontSize: 18,
     color: colors.WHITE,
     marginTop: 50,
   },
