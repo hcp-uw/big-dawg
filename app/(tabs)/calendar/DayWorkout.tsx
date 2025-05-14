@@ -12,6 +12,7 @@ import { useRoute, RouteProp, useNavigation } from "@react-navigation/native";
 import colors from "@/src/styles/themes/colors";
 import { json_db } from "@/app/db/json_db";
 import { DB, Muscle_Group, Workout } from "@/app/db/Types";
+import { Ionicons } from "@expo/vector-icons";
 
 const db: DB = new json_db();
 
@@ -136,12 +137,31 @@ const DayWorkout = () => {
     ));
   };
 
+  const BackButton = () => {
+    return (
+      <Pressable onPress={goBack}>
+        <Ionicons
+          name="arrow-back-circle-outline"
+          size={32}
+          color={colors.WHITE}
+        />
+      </Pressable>
+    );
+  };
+
+  const localStyles = StyleSheet.create({
+    backButton: {
+      backgroundColor: colors.BLACK,
+      padding: 10,
+      borderRadius: 20,
+      marginHorizontal: 5,
+    },
+  });
+
   return (
     <View style={styles.container}>
       <View style={styles.headerRow}>
-        <TouchableOpacity style={styles.backButton} onPress={goBack}>
-          <Text style={styles.backButtonText}> Back </Text>
-        </TouchableOpacity>
+        <BackButton />
         <Text style={styles.dateText}>{selectedDate}</Text>
       </View>
       {renderContent()}
@@ -162,26 +182,11 @@ const styles = StyleSheet.create({
     color: colors.WHITE,
     marginTop: 50,
   },
-  backButton: {
-    borderWidth: 0.5,
-    borderColor: colors.WHITE,
-    marginTop: 8,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    backgroundColor: colors.BLACK,
-    borderRadius: 8,
-    alignSelf: "flex-start",
-  },
-  backButtonText: {
-    color: colors.WHITE,
-    fontSize: 14,
-    fontWeight: "bold",
-  },
 
   headerRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 5,
+    marginTop: 0,
     width: "100%",
   },
 
@@ -189,7 +194,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: colors.WHITE,
     fontWeight: "bold",
-    marginLeft: 45, // spacing between button and date
+    marginLeft: 65, // spacing between button and date
   },
 
   setText: {
