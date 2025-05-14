@@ -16,7 +16,7 @@ import { Ionicons } from "@expo/vector-icons";
 
 const db: DB = new json_db();
 
-// testing
+// testing;
 // const db: DB = {
 //   getCalendarView: async (date: Date) => {
 //     return [["Chest"], ["Back"], [], [], ["Legs"]];
@@ -75,6 +75,12 @@ const DayWorkout = () => {
   const selectedDate = isNaN(currDate.getTime())
     ? "No date selected"
     : currDate.toDateString();
+  const weekday = currDate.toLocaleDateString("en-US", { weekday: "long" });
+  const dateString = currDate.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 
   // place to store data
   const [muscleGroups, setMuscleGroups] = useState<Muscle_Group[] | null>(null);
@@ -161,8 +167,13 @@ const DayWorkout = () => {
   return (
     <View style={styles.container}>
       <View style={styles.headerRow}>
-        <BackButton />
-        <Text style={styles.dateText}>{selectedDate}</Text>
+        <View style={styles.backButtonContainer}>
+          <BackButton />
+        </View>
+        <View style={styles.dateContainer}>
+          <Text style={styles.weekdayText}>{weekday}</Text>
+          <Text style={styles.dateText}>{dateString}</Text>
+        </View>
       </View>
       {renderContent()}
       {renderWorkoutSets()}
@@ -177,28 +188,45 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
   },
-  detailText: {
-    fontSize: 18,
-    color: colors.WHITE,
-    marginTop: 50,
-  },
-
   headerRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 0,
+    justifyContent: "center",
     width: "100%",
+    marginTop: 0,
+    marginBottom: 30,
+    position: "relative",
+  },
+
+  backButtonContainer: {
+    position: "absolute",
+    left: 0,
+  },
+
+  dateContainer: {
+    alignItems: "center",
+    flex: 1,
+  },
+
+  weekdayText: {
+    fontSize: 24,
+    color: colors.WHITE,
+    fontWeight: "bold",
   },
 
   dateText: {
-    fontSize: 20,
+    fontSize: 18,
     color: colors.WHITE,
-    fontWeight: "bold",
-    marginLeft: 65, // spacing between button and date
   },
 
   setText: {
     fontSize: 16,
+    color: colors.WHITE,
+    marginTop: 50,
+  },
+
+  detailText: {
+    fontSize: 18,
     color: colors.WHITE,
     marginTop: 50,
   },
