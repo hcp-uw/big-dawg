@@ -259,6 +259,16 @@ export class json_db implements DB {
     let content: WorkoutPreset[] = JSON.parse(await FS.readAsStringAsync(uri))
     return content.find(wp => wp.Name === name) ?? null;
   }
+  async getWorkoutPresetList(): Promise<WorkoutPreset[]> {
+    const uri: string = data_dir + wp_file
+    if (!(await checkFile(uri))) {
+      FS.writeAsStringAsync(uri, JSON.stringify([]))
+      return []
+    }
+    let content: WorkoutPreset[] = JSON.parse(await FS.readAsStringAsync(uri), dateReviver)
+    return content
+  }
+
 
   async saveWorkoutPreset(wp: WorkoutPreset): Promise<boolean> {
     const uri: string = data_dir + wp_file
