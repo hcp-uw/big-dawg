@@ -18,10 +18,14 @@ const wp_file: string = "WorkoutPresets.json"
 // implements interface for json
 export class json_db implements DB {
 
-  Init(): void {
-    for (let ex of defaultExercises) {
-      this.saveExercise(ex)
+  async Init(): Promise<boolean> {
+    if (await !checkFile(data_dir + "Exercise_List.json")) {
+      for (let ex of defaultExercises) {
+        this.saveExercise(ex)
+      }
+      return false;
     }
+    return true;
   }
 
   // workouts are saved
