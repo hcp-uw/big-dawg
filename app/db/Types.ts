@@ -98,6 +98,13 @@ export interface DB {
     getWorkoutPreset: (name: string) => Promise<WorkoutPreset | null>
 
     /*
+    *   gets the list of workoutPresets we have as an array
+    *   Returns:
+    *       -- the array of workoutPresets
+    */
+    getWorkoutPresetList: () => Promise<WorkoutPreset[]>
+
+    /*
     *   saves the workout preset, if a workout with that name exists replaces it
     *   Params:
     *     -- name of the workout preset
