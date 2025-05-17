@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import colors from "@/src/styles/themes/colors";
+import BackButton from "@/components/back_button";
 
 export default function AddWorkoutScreen() {
   const router = useRouter();
@@ -66,16 +67,13 @@ export default function AddWorkoutScreen() {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {/* Back Button */}
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => router.back()}
-        >
-          <Text style={styles.backButtonText}>←</Text>
-        </TouchableOpacity>
-
-        {/* Header */}
-        <Text style={styles.header}>Create a New Workout</Text>
+        {/* Header Section with Back Button */}
+        <View style={styles.headerContainer}>
+          <BackButton />
+          <View style={styles.headerTextContainer}>
+            <Text style={styles.header}>Create a New Workout</Text>
+          </View>
+        </View>
 
         {/* Workout Name Input */}
         <TextInput
@@ -146,7 +144,6 @@ export default function AddWorkoutScreen() {
   );
 }
 
-// Reuse your color styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -158,24 +155,22 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingBottom: 100,
   },
-  backButton: {
-    alignSelf: "flex-start",
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    backgroundColor: colors.BLACK,
-    borderRadius: 8,
-    marginTop: 8,
+  headerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
+    marginTop: 10,
+    marginBottom: 20,
   },
-  backButtonText: {
-    color: colors.WHITE,
-    fontSize: 24,
+  headerTextContainer: {
+    flex: 1,
+    alignItems: "center",
+    marginRight: 35,
   },
   header: {
     fontSize: 24,
     fontWeight: "bold",
     color: colors.WHITE,
-    marginBottom: 20,
-    marginTop: 10,
   },
   subHeader: {
     fontSize: 18,

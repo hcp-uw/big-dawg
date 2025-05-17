@@ -7,7 +7,15 @@ const BackButton = () => {
   const router = useRouter();
 
   return (
-    <Pressable onPress={() => router.back()} style={localStyles.backButton}>
+    <Pressable 
+      onPress={() => router.back()} 
+      style={({ pressed }) => [
+        localStyles.backButton,
+        pressed && localStyles.pressed
+      ]}
+      android_ripple={{ color: colors.PURPLE, borderless: true }}
+      hitSlop={10}
+    >
       <Ionicons name="arrow-back-circle-outline" size={32} color={colors.WHITE} />
     </Pressable>
   );
@@ -19,6 +27,10 @@ const localStyles = StyleSheet.create({
         padding: 10,
         borderRadius: 20,
         marginHorizontal: 5,
+    },
+    pressed: {
+        opacity: 0.7,
+        transform: [{ scale: 0.95 }],
     },
 });
 

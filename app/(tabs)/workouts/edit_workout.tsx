@@ -1,9 +1,18 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Text, View, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from "react-native";
+import {
+  Text,
+  View,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  Alert,
+} from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import colors from "@/src/styles/themes/colors";
 import { useWorkoutState } from "../useWorkoutState";
 import { styles } from "@/src/styles/globalStyles";
+import BackButton from "@/components/back_button";
 
 export default function EditWorkoutScreen() {
   const router = useRouter();
@@ -102,16 +111,13 @@ export default function EditWorkoutScreen() {
   return (
     <View style={localStyles.container}>
       <ScrollView contentContainerStyle={localStyles.scrollContainer}>
-        {/* Back Button */}
-        <TouchableOpacity
-          style={localStyles.backButton}
-          onPress={() => router.back()}
-        >
-          <Text style={localStyles.backButtonText}>←</Text>
-        </TouchableOpacity>
-
-        {/* Header */}
-        <Text style={localStyles.header}>Edit Workout</Text>
+        {/* Header Section with Back Button */}
+        <View style={localStyles.headerContainer}>
+          <BackButton />
+          <View style={localStyles.headerTextContainer}>
+            <Text style={localStyles.header}>Edit Workout</Text>
+          </View>
+        </View>
 
         {/* Workout Name Input */}
         <TextInput
@@ -153,7 +159,9 @@ export default function EditWorkoutScreen() {
         {/* List of Exercises */}
         {exercises.map((exercise, index) => (
           <View key={index} style={localStyles.exerciseItem}>
-            <Text style={localStyles.exerciseText}>{exercise.Exercise_Name}</Text>
+            <Text style={localStyles.exerciseText}>
+              {exercise.Exercise_Name}
+            </Text>
             <Text style={localStyles.exerciseDetails}>
               {exercise.Reps} reps - {exercise.Weight} lbs
             </Text>
@@ -174,7 +182,13 @@ export default function EditWorkoutScreen() {
 
       {/* Update Workout Button */}
       <View style={localStyles.buttonContainer}>
-        <TouchableOpacity style={localStyles.button} onPress={() => { startWorkout(); router.push('/'); }}>
+        <TouchableOpacity
+          style={localStyles.button}
+          onPress={() => {
+            startWorkout();
+            router.push("/");
+          }}
+        >
           <Text style={styles.buttonText}>Start Workout</Text>
         </TouchableOpacity>
         <TouchableOpacity style={localStyles.button} onPress={updateWorkout}>
@@ -196,24 +210,22 @@ const localStyles = StyleSheet.create({
     alignItems: "center",
     paddingBottom: 100,
   },
-  backButton: {
-    alignSelf: "flex-start",
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    backgroundColor: colors.BLACK,
-    borderRadius: 8,
-    marginTop: 8,
+  headerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
+    marginTop: 10,
+    marginBottom: 20,
   },
-  backButtonText: {
-    color: colors.WHITE,
-    fontSize: 24,
+  headerTextContainer: {
+    flex: 1,
+    alignItems: "center",
+    marginRight: 50,
   },
   header: {
     fontSize: 24,
     fontWeight: "bold",
     color: colors.WHITE,
-    marginBottom: 20,
-    marginTop: 10,
   },
   subHeader: {
     fontSize: 18,
@@ -296,8 +308,8 @@ const localStyles = StyleSheet.create({
     marginBottom: 15,
   },
   buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 100,
   },
   button: {
