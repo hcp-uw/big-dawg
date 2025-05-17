@@ -11,10 +11,10 @@
 export interface DB {
 
     /*
-    *   Initializes database with our exercise presets
-    *   should be done only once at first startup of app
+    *   Initializes database with our exercise presets if no exercises in db.
+        Returns true if exercises alredy exist and didn't redo init, false if we had to reinitialize the db 
     */
-    Init: () => void
+    Init: () => Promise<boolean>
 
     /*
     *   save a logged workout for a specific Date
@@ -96,6 +96,13 @@ export interface DB {
     *     WorkoutPreset if it exists, null otherwise
     */
     getWorkoutPreset: (name: string) => Promise<WorkoutPreset | null>
+
+    /*
+    *   gets the list of workoutPresets we have as an array
+    *   Returns:
+    *       -- the array of workoutPresets
+    */
+    getWorkoutPresetList: () => Promise<WorkoutPreset[]>
 
     /*
     *   saves the workout preset, if a workout with that name exists replaces it

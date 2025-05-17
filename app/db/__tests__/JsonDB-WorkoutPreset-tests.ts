@@ -1,4 +1,4 @@
-import { WorkoutPreset, Set, Exercise, Exercise_List, InvalidExerciseException } from '../Types'
+import { Set, Exercise_List, InvalidExerciseException } from '../Types'
 import { setupTest } from '../Testing-utils'
 
 const set1: Set = {
@@ -41,7 +41,7 @@ const el: Exercise_List = {
     Shoulders: []
 }
 
-describe('json_db Exercise Tests', () => {
+describe('json_db WorkoutPreset Tests', () => {
     afterEach(() => {
         // resets mocked funcs created with spy on (used for mocked json_db funcs)
         jest.resetModules()
@@ -49,7 +49,7 @@ describe('json_db Exercise Tests', () => {
     })
     // ------ saveWorkoutPreset() tests ------
     // the exercise already exists
-    it('saveExercise_normal', async () => {
+    it('savePreset_normal', async () => {
         const wp = {
             Name: "My preset",
             Comment: "This is my preset",
@@ -65,7 +65,7 @@ describe('json_db Exercise Tests', () => {
         await expect(db.saveWorkoutPreset(wp)).resolves.toBe(false)
     })
 
-    it('saveExercise_update', async () => {
+    it('savePreset_update', async () => {
         const wp = {
             Name: "My preset",
             Comment: "This is my preset",
@@ -91,7 +91,7 @@ describe('json_db Exercise Tests', () => {
         await expect(db.saveWorkoutPreset(wp)).resolves.toBe(true)
     })
 
-    it('saveExercise_exception', async () => {
+    it('savePreset_exception', async () => {
         const wp = {
             Name: "My preset",
             Comment: "This is my preset",
@@ -141,6 +141,32 @@ describe('json_db Exercise Tests', () => {
         }
         let { db } = setupTest({ file_exists: true, expected_rContents: [JSON.stringify([wp2, wp])] })
         await expect(db.getWorkoutPreset("My preset")).resolves.toStrictEqual(wp)
+    })
+    // ------ getWorkoutPresetList() tests ------
+    it('getWorkoutPresetList_noFile', async () => {
+        //console.log("Test getWorkoutPreset_noMonth output begin")
+        let { db } = setupTest({ file_exists: false })
+        await expect(db.getWorkoutPresetList()).resolves.toStrictEqual([])
+    })
+    it('getWorkoutPreset_empty', async () => {
+        //console.log("Test getWorkoutPreset_exists output begin")
+        let { db } = setupTest({ file_exists: true, expected_rContents: [JSON.stringify([])] })
+        await expect(db.getWorkoutPresetList()).resolves.toStrictEqual([])
+    })
+    it('getWorkoutPreset_exists', async () => {
+        //console.log("Test getWorkoutPreset_exists output begin")
+        const wp = {
+            Name: "My preset",
+            Comment: "This is my preset",
+            Preset: [set1, set1, set2, set3, set2]
+        }
+        const wp2 = {
+            Name: "My prese",
+            Comment: "This is my preset",
+            Preset: [set1, set1, set2, set3, set2]
+        }
+        let { db } = setupTest({ file_exists: true, expected_rContents: [JSON.stringify([wp2, wp])] })
+        await expect(db.getWorkoutPresetList()).resolves.toStrictEqual([wp2, wp])
     })
 
     // ------ deleteWorkoutPreset() tests ------
