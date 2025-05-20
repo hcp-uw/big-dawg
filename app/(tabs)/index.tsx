@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, Pressable, TouchableOpacity } from 'react-native';
+import { Text, View, StyleSheet, Pressable, TouchableOpacity, ScrollView } from 'react-native';
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'expo-router';
 import CircularProgress from 'react-native-circular-progress-indicator';
@@ -119,7 +119,7 @@ const seconds = displayTime % 60;
 
             {/* Current Exercises List */}
             {currWorkout.length > 0 && (
-              <View style={localStyles.exerciseListContainer}>
+              <ScrollView style={localStyles.exerciseListContainer}>
                 <Text style={localStyles.title}>Current Exercises:</Text>
                 {currWorkout.map((exercise, index) => (
                   <View key={index} style={{ marginBottom: 10 }}>
@@ -142,7 +142,7 @@ const seconds = displayTime % 60;
                     </View>
                   </View>
                 ))}
-              </View>
+              </ScrollView>
             )}
           </View>
         </>

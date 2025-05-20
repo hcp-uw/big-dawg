@@ -10,10 +10,11 @@ import { Set } from "../../db/Types"; // Import the Set type
 const WorkoutInput = () => {
   const scrollViewRef = useRef<ScrollView>(null);
   const { item } = useLocalSearchParams();
+  const exerciseName = Array.isArray(item) ? item[0] : item as string;
   const router = useRouter();
   const { addExercise } = useWorkoutState();
   const [sets, setSets] = useState<Set[]>([
-    { Exercise_Name: item as string, Reps: 0, Weight: 0, Comment: "1-0" }, // Initial set
+    { Exercise_Name: exerciseName, Reps: 0, Weight: 0, Comment: "" }, // Initial set
   ]);
 
   const handleInputChange = (text: string, index: number, field: keyof Set) => {
@@ -27,10 +28,16 @@ const WorkoutInput = () => {
     setSets(newSets); // Update the state
   };
 
+  const handleCommentChange = (text: string, index: number) => {
+    const newSets = [...sets];
+    newSets[index].Comment = text;
+    setSets(newSets);
+  }
+
   const addSet = () => {
     setSets([
       ...sets,
-      { Exercise_Name: `${sets.length + 1}`, Reps: 0, Weight: 0, Comment: `${sets.length + 1}-${Date.now()}` } as Set,
+      { Exercise_Name: exerciseName, Reps: 0, Weight: 0, Comment: "" } as Set,
     ]);
 
     setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 100);
@@ -41,8 +48,18 @@ const WorkoutInput = () => {
     setSets(newSets);
   };
 
+  // const saveSet = () => {
+  //   for(const set of sets) {
+  //     addExercise(set);
+  //   }
+  //   router.back();
+  // };
   const saveSet = () => {
-    for(const set of sets) {
+    const setsWithCorrectName = sets.map(set => ({
+      ...set,
+      Exercise_Name: exerciseName
+    }));
+    for (const set of setsWithCorrectName) {
       addExercise(set);
     }
     router.back();
@@ -70,7 +87,7 @@ const WorkoutInput = () => {
         keyboardShouldPersistTaps="handled"
       >
         {sets.map((set, index) => (
-          <View key={set.Comment} style={styles.container}>
+          <View key={index} style={styles.container}>
             <Text style={styles.headerText}>Set {index + 1}</Text>
 
             <TextInput
@@ -91,6 +108,17 @@ const WorkoutInput = () => {
               keyboardType="numeric"
               returnKeyType="done"
               onChangeText={(text) => handleInputChange(text, index, "Weight")}
+            />
+
+            <TextInput
+              style={styles.input}
+              placeholder="Comments..."
+              placeholderTextColor={colors.WHITE}
+              value={set.Comment ?? ""}
+              keyboardType="default"
+              returnKeyType="done"
+              multiline
+              onChangeText={(text) => handleCommentChange(text, index)}
             />
 
             {sets.length > 1 && (
