@@ -13,8 +13,7 @@ const R = CIRCLE_LENGTH / (1.6 * Math.PI);
 export default function Index() {
 
   const router = useRouter();
-  db.Init();
-  
+
   const isWorkoutActive = useWorkoutState((state) => state.isWorkoutActive);
   const isPaused = useWorkoutState((state) => state.isPaused);
   const workoutStartTime = useWorkoutState((state) => state.workoutStartTime);
@@ -194,13 +193,18 @@ const seconds = displayTime % 60;
               {completedWorkouts.map((workout, index) => (
                 <View key={index} style={{ marginVertical: 10 }}>
                   {workout.Sets.map((set, i) => (
-                    <Text key={i} style={localStyles.exerciseList}>
-                      <Text style={{ fontWeight: "600" }}>{set.Exercise_Name}</Text>: {set.Reps} reps @ {set.Weight} lbs
-                   </Text>
+                    <View
+                      key={i}
+                      style={localStyles.exerciseBox}>
+                      <Text style={localStyles.exerciseList}>
+                        <Text style={{ fontWeight: 'bold' }}>{set.Exercise_Name}</Text>: {set.Reps} reps @ {set.Weight} lbs
+                      </Text>
+                    </View>
                   ))}
                 </View>
               ))}
             </ScrollView>
+          
           ) : (
             <View style={localStyles.noActiveWorkoutContainer}>
               <Text style={localStyles.noWorkouts}>No completed workouts today!</Text>
@@ -341,5 +345,11 @@ const localStyles = StyleSheet.create({
   exerciseList : {
     color: colors.WHITE,
     fontSize: 18,
-  }
+  },
+  exerciseBox: {
+    backgroundColor: colors.DARK_GRAY,
+    padding: 12,
+    borderRadius: 15,
+    marginBottom: 10,
+  },
 });
