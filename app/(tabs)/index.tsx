@@ -5,8 +5,7 @@ import CircularProgress from 'react-native-circular-progress-indicator';
 import colors from '@/src/styles/themes/colors';
 import { useWorkoutState } from './useWorkoutState';
 import { styles } from '@/src/styles/globalStyles';
-
-
+import { db } from './useWorkoutState';
 
 const CIRCLE_LENGTH = 400;
 const R = CIRCLE_LENGTH / (1.6 * Math.PI);
@@ -14,6 +13,7 @@ const R = CIRCLE_LENGTH / (1.6 * Math.PI);
 export default function Index() {
 
   const router = useRouter();
+  db.Init();
   
   const isWorkoutActive = useWorkoutState((state) => state.isWorkoutActive);
   const isPaused = useWorkoutState((state) => state.isPaused);

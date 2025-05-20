@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import {json_db} from '../db/json_db' // Adjusted path to match the correct location
 import {DB, Workout, Set} from '../db/Types'
 
-const db: DB = new json_db();
+export const db: DB = new json_db();
 const getTodayDateStr = () => new Date().toDateString();
 
 interface WorkoutState {
