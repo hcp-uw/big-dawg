@@ -1,8 +1,9 @@
 import { create } from 'zustand';
 import {json_db} from '../db/json_db' // Adjusted path to match the correct location
-import {DB, Workout, Set, Exercise} from '../db/Types'
+import {DB, Workout, Set, Exercise, Muscle_Group} from '../db/Types'
+import { defaultExercises } from '../db/PresetExercises';
 
-export const db: DB = new json_db();
+const db: DB = new json_db();
 const getTodayDateStr = () => new Date().toDateString();
 
 interface WorkoutState {
@@ -30,6 +31,7 @@ interface WorkoutState {
   updateExercise: (index: number, updatedSet: Set) => void;
   getAvailableExercises: () => Array<Exercise>;
   addAvailableExercise: (ex: Exercise) => void;
+  makeDB: () => void;
 }
 
 export const useWorkoutState = create<WorkoutState>((set, get) => ({
@@ -106,8 +108,21 @@ export const useWorkoutState = create<WorkoutState>((set, get) => ({
       exerciseList: [],
     });
 
+    for(const w of state.exerciseList) {
+      let muscle_group = "";
+      for(const ex of defaultExercises) {
+        if(w.Exercise_Name == ex.Exercise_Name) {
+          muscle_group = ex.Muscle_Group;
+        }
+      }
+      const ex : Exercise = { Exercise_Name: w.Exercise_Name, Muscle_Group: muscle_group as Muscle_Group, Comment: null }
+      db.saveExercise(ex)
+      .then(() => { })
+      .catch((e) => console.log("error: " + e));
+    }
+
     db.saveWorkout(newWorkout)
-      .then(() => db.getCalendarView(date))
+      .then(() => {db.getCalendarView(date)})
       .catch((e) => console.log("error: " + e))
   },
 
@@ -146,6 +161,11 @@ export const useWorkoutState = create<WorkoutState>((set, get) => ({
 
     addAvailableExercise: (ex: Exercise) => {
       set((state) => ({ availableExercises: [...state.availableExercises, ex] }));
+    },
+
+    makeDB: async () => {
+      await db.Init();
+      await db.getExerciseList;
     },
   
   updateElapsedTime: (time: number) => set({ elapsedTime: time })
