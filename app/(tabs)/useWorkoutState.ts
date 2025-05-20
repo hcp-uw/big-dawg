@@ -3,6 +3,7 @@ import {json_db} from '../db/json_db' // Adjusted path to match the correct loca
 import {DB, Workout, Set} from '../db/Types'
 
 const db: DB = new json_db();
+const getTodayDateStr = () => new Date().toDateString();
 
 interface WorkoutState {
   isWorkoutActive: boolean;
@@ -13,7 +14,10 @@ interface WorkoutState {
   goalCompletion: number; // value between 0 and 1
   percentMargin: number;
   exerciseList: Array<Set>;
+  completedWorkouts: Array<Workout>;
+  lastUpdatedDate: string;
 
+  refreshDailyState: () => void;
   setIsWorkoutActive: (active: boolean) => void;
   startWorkout: () => void;
   pauseWorkout: () => void;
@@ -34,7 +38,9 @@ export const useWorkoutState = create<WorkoutState>((set, get) => ({
   goalCompletion: 0,
   percentMargin: 70,
 
-  exerciseList: [ {Exercise_Name: "test", Weight: 4, Reps: 4, Comment: null}, {Exercise_Name: "test2", Weight: 4, Reps: 4, Comment: "hellooo"} ],
+  exerciseList: [],
+  completedWorkouts: [],
+  lastUpdatedDate: getTodayDateStr(),
   // {Exercise_Name: "test", Weight: 4, Reps: 4, Comment: null}, {Exercise_Name: "test2", Weight: 4, Reps: 4, Comment: "hellooo"}
   setIsWorkoutActive: (active: boolean) => set({ isWorkoutActive: active }),
   
@@ -61,6 +67,7 @@ export const useWorkoutState = create<WorkoutState>((set, get) => ({
   
   endWorkout: () => { 
     const state = get();
+    get().refreshDailyState();
     const durationInMinutes = Math.floor(state.elapsedTime / 60);
 
     const newTotal = state.totalWorkoutMinutes + durationInMinutes;
@@ -73,16 +80,6 @@ export const useWorkoutState = create<WorkoutState>((set, get) => ({
       newPercentMargin = 80;
     }
 
-    set({
-      isWorkoutActive: false,
-      workoutStartTime: 0,
-      elapsedTime: 0,
-      isPaused: false,
-      totalWorkoutMinutes: newTotal,
-      goalCompletion: newGoalCompletion,
-      percentMargin: newPercentMargin,
-    });
-
     const date = new Date();
 
     const newWorkout: Workout = {
@@ -93,7 +90,21 @@ export const useWorkoutState = create<WorkoutState>((set, get) => ({
       WorkoutComment: null,
     }
 
-    db.saveWorkout(newWorkout);
+    set({
+      isWorkoutActive: false,
+      workoutStartTime: 0,
+      elapsedTime: 0,
+      isPaused: false,
+      totalWorkoutMinutes: newTotal,
+      goalCompletion: newGoalCompletion,
+      percentMargin: newPercentMargin,
+      completedWorkouts: [...state.completedWorkouts, newWorkout],
+      exerciseList: [],
+    });
+
+    db.saveWorkout(newWorkout)
+      .then(() => db.getCalendarView(date))
+      .catch((e) => console.log("error: " + e))
   },
 
   addExercise: (ex: Set) => {
@@ -111,6 +122,18 @@ export const useWorkoutState = create<WorkoutState>((set, get) => ({
         i === index ? updatedSet : set
       ),
     })),
+
+    refreshDailyState: () => {
+      const state = get();
+      const today = getTodayDateStr();
+    
+      if (state.lastUpdatedDate !== today) {
+        set({
+          completedWorkouts: [],
+          lastUpdatedDate: today,
+        });
+      }
+    },
   
   updateElapsedTime: (time: number) => set({ elapsedTime: time })
 }));
