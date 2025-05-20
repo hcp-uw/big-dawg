@@ -13,6 +13,7 @@ const R = CIRCLE_LENGTH / (1.6 * Math.PI);
 export default function Index() {
 
   const router = useRouter();
+  db.Init();
 
   const isWorkoutActive = useWorkoutState((state) => state.isWorkoutActive);
   const isPaused = useWorkoutState((state) => state.isPaused);

@@ -1,19 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Text, View, TextInput, FlatList, StyleSheet, Pressable, } from "react-native";
 import colors from "@/src/styles/themes/colors";
 import { styles } from "@/src/styles/globalStyles";
 import { useRouter } from "expo-router";
+import { defaultExercises } from "../../db/PresetExercises"
+// import { DB, Exercise_List } from "../../db/Types";
+// import {json_db} from '../../db/json_db';
 
 export default function SearchScreen() {
+  const exerciseNames: string[] = [];
   const [query, setQuery] = useState("");
   const [filteredExercises, setFilteredExercises] =
-    useState<string[]>(exercises);
+    useState<string[]>(exerciseNames);
   const [filteredWorkouts, setFilteredWorkouts] = useState<string[]>(workouts);
   const router = useRouter();
+  for(const exercise of defaultExercises) {
+    exerciseNames.push(exercise.Exercise_Name);
+  }
+
 
   const handleSearch = (text: string) => {
     setQuery(text);
-    const filteredExercises = exercises.filter((item) =>
+    const filteredExercises = exerciseNames.filter((item) =>
       item.toLowerCase().includes(text.toLowerCase())
     );
     const filteredWorkouts = workouts.filter((item) =>
