@@ -16,6 +16,7 @@ interface WorkoutState {
   exerciseList: Array<Set>;
   completedWorkouts: Array<Workout>;
   lastUpdatedDate: string;
+  availableExercises: Array<Set>;
 
   refreshDailyState: () => void;
   setIsWorkoutActive: (active: boolean) => void;
@@ -27,6 +28,7 @@ interface WorkoutState {
   updateElapsedTime: (time: number) => void;
   removeExercise: (index: number) => void;
   updateExercise: (index: number, updatedSet: Set) => void;
+  addAvailableExercise: (ex: Set) => void;
 }
 
 export const useWorkoutState = create<WorkoutState>((set, get) => ({
@@ -40,6 +42,7 @@ export const useWorkoutState = create<WorkoutState>((set, get) => ({
 
   exerciseList: [],
   completedWorkouts: [],
+  availableExercises: [],
   lastUpdatedDate: getTodayDateStr(),
   // {Exercise_Name: "test", Weight: 4, Reps: 4, Comment: null}, {Exercise_Name: "test2", Weight: 4, Reps: 4, Comment: "hellooo"}
   setIsWorkoutActive: (active: boolean) => set({ isWorkoutActive: active }),
@@ -133,6 +136,15 @@ export const useWorkoutState = create<WorkoutState>((set, get) => ({
           lastUpdatedDate: today,
         });
       }
+    },
+
+    getAvailableExercises: () => {
+      const state = get();
+      return state.availableExercises;
+    },
+
+    addAvailableExercise: (ex: Set) => {
+      set((state) => ({ availableExercises: [...state.exerciseList, ex] }));
     },
   
   updateElapsedTime: (time: number) => set({ elapsedTime: time })
