@@ -28,19 +28,25 @@ export default function Index() {
   const updateElapsedTime = useWorkoutState((state) => state.updateElapsedTime);
   const removeExercise = useWorkoutState((state) => state.removeExercise);
   const updateExercise = useWorkoutState((state) => state.updateExercise);
+  const completedWorkouts = useWorkoutState((state) => state.completedWorkouts);
+  const refreshDailyState = useWorkoutState((state) => state.refreshDailyState);
 
   // Local state for displaying time
   const [displayTime, setDisplayTime] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  useEffect(() => {
+    refreshDailyState();
+  }, []);
+
   // Effect to handle timer updates
-useEffect(() => {
+  useEffect(() => { 
   // Clear any existing interval first
   if (intervalRef.current) {
     clearInterval(intervalRef.current);
     intervalRef.current = null;
   }
-  
+
   // If workout is active and not paused, start the timer
   if (isWorkoutActive && !isPaused && workoutStartTime) {
     // Initial time calculation
@@ -182,29 +188,27 @@ const seconds = displayTime % 60;
               }}
             />
           </View>
-          <View style={localStyles.noActiveWorkoutContainer}>
-            <Text style={localStyles.noWorkouts}>No active workouts!</Text>
-            <Text style={localStyles.noWorkouts}>Click the plus to get started.</Text>
-          </View>
+          {completedWorkouts.length > 0 ? (
+            <ScrollView style={{ marginTop: 20 }}>
+              <Text style={localStyles.title}>Completed Workouts Today:</Text>
+              {completedWorkouts.map((workout, index) => (
+                <View key={index} style={{ marginVertical: 10 }}>
+                  {workout.Sets.map((set, i) => (
+                    <Text key={i} style={localStyles.exerciseList}>
+                      <Text style={{ fontWeight: "600" }}>{set.Exercise_Name}</Text>: {set.Reps} reps @ {set.Weight} lbs
+                   </Text>
+                  ))}
+                </View>
+              ))}
+            </ScrollView>
+          ) : (
+            <View style={localStyles.noActiveWorkoutContainer}>
+              <Text style={localStyles.noWorkouts}>No completed workouts today!</Text>
+              <Text style={localStyles.noWorkouts}>Click the plus to get started.</Text>
+            </View>
+          )}
         </>
         )}
-        {/* commented out for now
-        <Pressable style={styles.button} onPress={() => router.push('./workouts/add_workout')}>
-          <Text style={styles.buttonText}>+ Choose workout preset</Text>
-        </Pressable>
-        
-        <Pressable style={styles.button} onPress={() => router.push('./search/new_exercise')}>
-          <Text style={styles.buttonText}>+ New exercise</Text>
-        </Pressable>
-        
-        <Pressable style={styles.button}>
-          <Text style={styles.buttonText}>+ New timer</Text>
-        </Pressable>
-
-        <Pressable style={styles.button} onPress={doProgressChange}>
-          <Text style={styles.buttonText}>TEMP DEMO BUTTON</Text>
-        </Pressable>
-        */}
       </View>
     </View>
   );
@@ -333,5 +337,9 @@ const localStyles = StyleSheet.create({
     fontSize: 16,
     paddingVertical: 4,
     paddingHorizontal: 0,
+  }, 
+  exerciseList : {
+    color: colors.WHITE,
+    fontSize: 18,
   }
 });
