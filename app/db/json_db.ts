@@ -21,7 +21,7 @@ export class json_db implements DB {
   async Init(): Promise<boolean> {
     if (await !checkFile(data_dir + "Exercise_List.json")) {
       for (let ex of defaultExercises) {
-        this.saveExercise(ex)
+        await this.saveExercise(ex)
       }
       return false;
     }
