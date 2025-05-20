@@ -213,7 +213,7 @@ const seconds = displayTime % 60;
           </View>
           {completedWorkouts.length > 0 ? (
             <ScrollView style={{ marginTop: 20 }}>
-              <Text style={localStyles.title}>Completed Workouts Today:</Text>
+              <Text style={localStyles.title}>Completed Exercises Today:</Text>
               {completedWorkouts.map((workout, index) => (
                 <View key={index} style={{ marginVertical: 10 }}>
                   {workout.Sets.map((set, i) => (
