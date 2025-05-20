@@ -1,11 +1,10 @@
-import { Text, View, StyleSheet, Pressable, TouchableOpacity, ScrollView } from 'react-native';
+import { Text, View, StyleSheet, Pressable, TouchableOpacity, ScrollView, Modal, TextInput } from 'react-native';
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'expo-router';
 import CircularProgress from 'react-native-circular-progress-indicator';
 import colors from '@/src/styles/themes/colors';
 import { useWorkoutState } from './useWorkoutState';
 import { styles } from '@/src/styles/globalStyles';
-import { db } from './useWorkoutState';
 
 const CIRCLE_LENGTH = 400;
 const R = CIRCLE_LENGTH / (1.6 * Math.PI);
@@ -13,7 +12,23 @@ const R = CIRCLE_LENGTH / (1.6 * Math.PI);
 export default function Index() {
 
   const router = useRouter();
-  db.Init();
+  
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [editIndex, setEditIndex] = useState<number | null>(null);
+  const [editWeight, setEditWeight] = useState('');
+  const [editReps, setEditReps] = useState('');
+  const [editComment, setEditComment] = useState('');
+
+  const inputStyle = {
+    height: 40,
+    borderColor: colors.WHITE,
+    borderWidth: 1,
+    borderRadius: 5,
+    marginBottom: 10,
+    paddingHorizontal: 10,
+    color: colors.WHITE,
+  };
 
   const isWorkoutActive = useWorkoutState((state) => state.isWorkoutActive);
   const isPaused = useWorkoutState((state) => state.isPaused);
@@ -30,6 +45,9 @@ export default function Index() {
   const updateExercise = useWorkoutState((state) => state.updateExercise);
   const completedWorkouts = useWorkoutState((state) => state.completedWorkouts);
   const refreshDailyState = useWorkoutState((state) => state.refreshDailyState);
+  const makeDB = useWorkoutState((state) => state.makeDB);
+
+  makeDB();
 
   // Local state for displaying time
   const [displayTime, setDisplayTime] = useState(0);
@@ -142,7 +160,12 @@ const seconds = displayTime % 60;
                         <Text style={localStyles.removeAndEditButton}>Remove</Text>
                       </Pressable>
 
-                      <Pressable onPress={() => { console.log("todo: update with new edited exercise"); }}>
+                      <Pressable onPress={() => { 
+                        setEditIndex(index);
+                        setEditWeight(exercise.Weight.toString());
+                        setEditComment(exercise.Comment ?? '');
+                        setModalVisible(true);
+                       }}>
                         <Text style={localStyles.removeAndEditButton}>Edit</Text>
                       </Pressable>
                     </View>
@@ -215,7 +238,68 @@ const seconds = displayTime % 60;
         </>
         )}
       </View>
+      <Modal
+        animationType="fade"
+        transparent
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={localStyles.modalOverlay}>
+          <View style={localStyles.modalContent}>
+            <Text style={{ fontSize: 22, fontWeight: 'bold', marginBottom: 10, color: colors.WHITE }}>Edit Exercise</Text>
+            <TextInput
+              placeholder="Reps"
+              keyboardType="numeric"
+              onChangeText={setEditReps}
+              style={inputStyle}
+            />
+            <TextInput
+              placeholder="Weight"
+              keyboardType="numeric"
+              onChangeText={setEditWeight}
+              style={inputStyle}
+            />
+            <TextInput
+              placeholder="Comment (optional)"
+              onChangeText={setEditComment}
+              style={inputStyle}
+            />
+
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
+              <TouchableOpacity
+                onPress={() => {
+                  setModalVisible(false);
+                  setEditIndex(null);
+                }}
+                style={styles.button}
+              >
+                <Text style={styles.buttonText}>Cancel</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => {
+                  if (editIndex !== null) {
+                    updateExercise(editIndex, {
+                      Exercise_Name: currWorkout[editIndex].Exercise_Name,
+                      Weight: parseFloat(editWeight),
+                      Reps: parseInt(editReps),
+                      Comment: editComment || null
+                    });
+                  }
+                  setModalVisible(false);
+                  setEditIndex(null);
+                }}
+                style={styles.button}
+              >
+                <Text style={styles.buttonText}>Save</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
+
+    
   );
 }
 
@@ -352,5 +436,32 @@ const localStyles = StyleSheet.create({
     padding: 12,
     borderRadius: 15,
     marginBottom: 10,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContent: {
+    width: "80%",
+    backgroundColor: colors.BLACK,
+    borderRadius: 15,
+    padding: 20,
+  },
+  modalButton: {
+    backgroundColor: colors.BLACK,
+    borderColor: colors.WHITE,
+    borderRadius: 15,
+    borderWidth: 2,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    marginVertical: 8,
+    width: "90%",
+    alignItems: "center",
+  },
+  modalButtonText: {
+    color: colors.WHITE,
+    fontSize: 18,
   },
 });
