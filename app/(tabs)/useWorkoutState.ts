@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import {json_db} from '../db/json_db' // Adjusted path to match the correct location
-import {DB, Workout, Set} from '../db/Types'
+import {DB, Workout, Set, Exercise} from '../db/Types'
 
 export const db: DB = new json_db();
 const getTodayDateStr = () => new Date().toDateString();
@@ -16,7 +16,7 @@ interface WorkoutState {
   exerciseList: Array<Set>;
   completedWorkouts: Array<Workout>;
   lastUpdatedDate: string;
-  availableExercises: Array<Set>;
+  availableExercises: Array<Exercise>;
 
   refreshDailyState: () => void;
   setIsWorkoutActive: (active: boolean) => void;
@@ -28,7 +28,8 @@ interface WorkoutState {
   updateElapsedTime: (time: number) => void;
   removeExercise: (index: number) => void;
   updateExercise: (index: number, updatedSet: Set) => void;
-  addAvailableExercise: (ex: Set) => void;
+  getAvailableExercises: () => Array<Exercise>;
+  addAvailableExercise: (ex: Exercise) => void;
 }
 
 export const useWorkoutState = create<WorkoutState>((set, get) => ({
@@ -143,8 +144,8 @@ export const useWorkoutState = create<WorkoutState>((set, get) => ({
       return state.availableExercises;
     },
 
-    addAvailableExercise: (ex: Set) => {
-      set((state) => ({ availableExercises: [...state.exerciseList, ex] }));
+    addAvailableExercise: (ex: Exercise) => {
+      set((state) => ({ availableExercises: [...state.availableExercises, ex] }));
     },
   
   updateElapsedTime: (time: number) => set({ elapsedTime: time })
