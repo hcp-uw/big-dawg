@@ -1,3 +1,4 @@
+import React from 'react';
 import { Tabs } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { View, Text, StyleSheet, Pressable, Modal } from "react-native";
@@ -46,7 +47,6 @@ export default function TabLayout() {
   const startWorkout = useWorkoutState((state) => state.startWorkout);
 
   return (
-      console.log(JSON.stringify(segments)), 
       <>
         <Tabs
           screenOptions={{
@@ -143,7 +143,6 @@ export default function TabLayout() {
           <Ionicons name="add-outline" size={55} color={colors.WHITE}/>
         </Pressable>
       </View>
-
   
         {/* Dropdown Menu Modal */}
         <Modal visible={isModalVisible} transparent animationType="fade">

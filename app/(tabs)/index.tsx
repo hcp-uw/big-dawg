@@ -94,7 +94,7 @@ const seconds = displayTime % 60;
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={localStyles.addButton}
-                    onPress={() => router.push('/(tabs)/search')}
+                    onPress={() => router.push('/(tabs)/workouts/add_exercise/add_workout_exercise')}
                   >
                     <Text style={styles.buttonText}>Add Exercise</Text>
                   </TouchableOpacity>

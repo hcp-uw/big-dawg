@@ -1,8 +1,9 @@
 import { create } from 'zustand';
-import {json_db} from '../db/json_db' // Adjusted path to match the correct location
-import {DB, Workout, Set} from '../db/Types'
+import { json_db } from '../db/json_db';
+import { DB, Workout } from '../db/Types';
+import { Set } from '../types';
 
-const db: DB = new json_db();
+const db = new json_db();
 
 interface WorkoutState {
   isWorkoutActive: boolean;
@@ -34,8 +35,11 @@ export const useWorkoutState = create<WorkoutState>((set, get) => ({
   goalCompletion: 0,
   percentMargin: 70,
 
-  exerciseList: [ {Exercise_Name: "test", Weight: 4, Reps: 4, Comment: null}, {Exercise_Name: "test2", Weight: 4, Reps: 4, Comment: "hellooo"} ],
-  // {Exercise_Name: "test", Weight: 4, Reps: 4, Comment: null}, {Exercise_Name: "test2", Weight: 4, Reps: 4, Comment: "hellooo"}
+  exerciseList: [
+    { Exercise_Name: "test", Weight: 4, Reps: 4, Comment: null },
+    { Exercise_Name: "test2", Weight: 4, Reps: 4, Comment: "hellooo" }
+  ],
+
   setIsWorkoutActive: (active: boolean) => set({ isWorkoutActive: active }),
   
   startWorkout: () => set({

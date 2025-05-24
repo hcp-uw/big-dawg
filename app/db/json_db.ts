@@ -19,13 +19,16 @@ const wp_file: string = "WorkoutPresets.json"
 export class json_db implements DB {
 
   async Init(): Promise<boolean> {
-    if (await !checkFile(data_dir + "Exercise_List.json")) {
-      for (let ex of defaultExercises) {
-        this.saveExercise(ex)
+    const ex_list = await this.getExerciseList();
+    const hasExercises = Object.values(ex_list).some(arr => arr.length > 0);
+    
+    if (!hasExercises) {
+    for (let ex of defaultExercises) {
+        await this.saveExercise(ex);
       }
-      return false;
+      return false; // We had to reinitialize
     }
-    return true;
+    return true; // Exercises already existed
   }
 
   // workouts are saved
@@ -45,7 +48,12 @@ export class json_db implements DB {
     } else {
       content = new Array<Workout | null>(31).fill(null)
     }
-    await this.addToExerciseHist(w.Sets, w.Date)
+
+    // Add each set to exercise history
+    for (const set of w.Sets) {
+      await this.addToExerciseHist(set.Exercise_Name, set);
+    }
+
     content[w.Date.getDate() - 1] = w
     await FS.writeAsStringAsync(uri, JSON.stringify(content))
     return workout_exists
@@ -55,42 +63,31 @@ export class json_db implements DB {
   // Given a workout and a date adds/replaces history for each exercise in the array
   // saves all sets with valid exercise names and throws an InvalidExerciseException for
   // sets with invalid exercises in the format "InvalidEx1 InvalidEx2 InvalidEX3"
-  async addToExerciseHist(s: Set[], d: Date): Promise<void> {
-    let invalidExercises: string[] = []
-    if (s.length == 0) return
-    // zero out the time for the date
-    d.setHours(0, 0, 0, 0)
-    let grouped_sets: (Set[])[] = SetsByEx(s)
-    for (const g of grouped_sets) {
-      let ex: Exercise_Hist = { Exercise_Name: "Compiler Dummy", Hist: [] }
-      try {
-        ex = await this.getExerciseHistory(g[0].Exercise_Name)
+  async addToExerciseHist(exercise: string, set: Set): Promise<boolean> {
+    try {
+      const ex = await this.getExerciseHistory(exercise);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      // Remove any existing sets for today
+      ex.Hist = ex.Hist.filter(([_, date]) => date.getTime() !== today.getTime());
+      
+      // Add the new set
+      ex.Hist.push([set, today]);
+      
+      // Sort by date (newest first)
+      ex.Hist.sort((a, b) => b[1].getTime() - a[1].getTime());
+      
+      // Save to file
+      const ex_uri: string = data_dir + exercise + ".json";
+      await FS.writeAsStringAsync(ex_uri, JSON.stringify(ex));
+      return true;
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        throw new InvalidExerciseException(error.message.slice(18));
       }
-      catch (error) {
-        //console.log(error)
-        //if (error instanceof InvalidExerciseException) {
-        //throw new InvalidExerciseException("")
-        invalidExercises.push(error.message.slice(18))
-        continue
-        //}
-      }
-      // splice out the sets with the curr date
-      ex.Hist = ex.Hist.filter(([_, date]) => date.getTime() !== d.getTime());
-      // add the new sets
-      ex.Hist = [...(ex.Hist), ...(g.map(set => [set, d] as [Set, Date]))]
-      // sort array by date so newest is first
-      ex.Hist.sort((a, b) => b[1].getTime() - a[1].getTime())
-      // update the file contents
-      const ex_uri: string = data_dir + g[0].Exercise_Name + ".json"
-      FS.writeAsStringAsync(ex_uri, JSON.stringify(ex))
+      return false;
     }
-    if (invalidExercises.length == 0) return
-    // throw InvalidExercise with all invalid exercises
-    let err_str: string = ""
-    for (const s of invalidExercises) {
-      err_str = err_str + " " + s
-    }
-    throw new InvalidExerciseException(err_str)
   }
 
   async getWorkout(date: Date): Promise<Workout | null> {
@@ -256,69 +253,98 @@ export class json_db implements DB {
   }
 
   async getWorkoutPreset(name: string): Promise<WorkoutPreset | null> {
-    const uri: string = data_dir + wp_file
-    if (!(await checkFile(uri))) {
-      return null
+    const uri: string = data_dir + wp_file;
+    if (!(await checkFile(wp_file))) {
+      return null;
     }
-    let content: WorkoutPreset[] = JSON.parse(await FS.readAsStringAsync(uri))
-    return content.find(wp => wp.Name === name) ?? null;
-  }
-  async getWorkoutPresetList(): Promise<WorkoutPreset[]> {
-    const uri: string = data_dir + wp_file
-    if (!(await checkFile(uri))) {
-      FS.writeAsStringAsync(uri, JSON.stringify([]))
-      return []
-    }
-    let content: WorkoutPreset[] = JSON.parse(await FS.readAsStringAsync(uri), dateReviver)
-    return content
+    const presets: WorkoutPreset[] = JSON.parse(await FS.readAsStringAsync(uri));
+    return presets.find(p => p.Name === name) || null;
   }
 
+  async getWorkoutPresetList(): Promise<WorkoutPreset[]> {
+    const uri: string = data_dir + wp_file;
+    if (!(await checkFile(wp_file))) {
+      return [];
+    }
+    return JSON.parse(await FS.readAsStringAsync(uri));
+  }
 
   async saveWorkoutPreset(wp: WorkoutPreset): Promise<boolean> {
-    const uri: string = data_dir + wp_file
-    let exl: Exercise[] = Object.values(await this.getExerciseList()).flat();
-    for (let s of wp.Preset) {
-      if (!exl.some(ex => ex.Exercise_Name === s.Exercise_Name)) {
-        throw new InvalidExerciseException(s.Exercise_Name)
-      }
-    }
-    let content: WorkoutPreset[] = []
+    const uri: string = data_dir + wp_file;
+    let content: WorkoutPreset[] = [];
+    
     if (await checkFile(wp_file)) {
-      content = JSON.parse(await FS.readAsStringAsync(uri))
+      content = JSON.parse(await FS.readAsStringAsync(uri), dateReviver);
     }
-    let result: boolean = false
-    for (let i = 0; i < content.length; i++) {
-      if (content[i].Name === wp.Name) {
-        content.splice(i, 1);
-        result = true;
-        break;
-      }
+    
+    const existingIndex = content.findIndex(preset => preset.Name === wp.Name);
+    if (existingIndex !== -1) {
+      content[existingIndex] = wp;
+    } else {
+      content.push(wp);
     }
-    content.push(wp)
-    const updatedContent: string = JSON.stringify(content)
-    await FS.writeAsStringAsync(uri, updatedContent)
-    return result
+    
+    await FS.writeAsStringAsync(uri, JSON.stringify(content));
+    return true;
   }
 
   async deleteWorkoutPreset(name: string): Promise<boolean> {
-    const uri: string = data_dir + wp_file
+    const uri: string = data_dir + wp_file;
     if (!(await checkFile(wp_file))) {
-      return false
+      return false;
     }
-    let content: WorkoutPreset[] = JSON.parse(await FS.readAsStringAsync(uri))
-    let result: boolean = false
-    for (let i = 0; i < content.length; i++) {
-      if (content[i].Name === name) {
-        content.splice(i, 1);
-        result = true;
-        break;
+    
+    let content: WorkoutPreset[] = JSON.parse(await FS.readAsStringAsync(uri), dateReviver);
+    const initialLength = content.length;
+    content = content.filter(preset => preset.Name !== name);
+    
+    if (content.length !== initialLength) {
+      await FS.writeAsStringAsync(uri, JSON.stringify(content));
+      return true;
+    }
+    return false;
+  }
+
+  async saveExerciseHist(exercise: string, set: Set): Promise<boolean> {
+    try {
+      const ex = await this.getExerciseHistory(exercise);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      // Check if we already have a set for today
+      const hasSetToday = ex.Hist.some(([_, date]) => date.getTime() === today.getTime());
+      if (hasSetToday) {
+        return false;
       }
+      
+      // Add the new set
+      ex.Hist.push([set, today]);
+      
+      // Sort by date (newest first)
+      ex.Hist.sort((a, b) => b[1].getTime() - a[1].getTime());
+      
+      // Save to file
+      const ex_uri: string = data_dir + exercise + ".json";
+      await FS.writeAsStringAsync(ex_uri, JSON.stringify(ex));
+      return true;
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        throw new InvalidExerciseException(error.message.slice(18));
+      }
+      return false;
     }
-    if (result) {
-      const updatedContent: string = JSON.stringify(content)
-      await FS.writeAsStringAsync(uri, updatedContent)
+  }
+
+  async getExerciseHist(exercise: string): Promise<Set[]> {
+    try {
+      const ex = await this.getExerciseHistory(exercise);
+      return ex.Hist.map(([set, _]) => set);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        throw new InvalidExerciseException(error.message.slice(18));
     }
-    return result
+      return [];
+    }
   }
 
 }

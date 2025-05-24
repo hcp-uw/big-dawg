@@ -138,7 +138,7 @@ export type Exercise = {
     Exercise_Name: string
     Muscle_Group: Muscle_Group
     Comment: string | null
-    // Exercise_Type” : string 	//Not in MVP but may be useful in future
+    // Exercise_Type" : string 	//Not in MVP but may be useful in future
 }
 
 export type Exercise_List = {

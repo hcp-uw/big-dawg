@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Text,
   View,
@@ -7,78 +7,83 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import colors from "@/src/styles/themes/colors";
 import { useWorkoutState } from "../useWorkoutState";
+import { useWorkoutPresetState } from "../useWorkoutPresetState";
 import { styles } from "@/src/styles/globalStyles";
+import { WorkoutPreset, Set } from "@/app/db/Types";
 import BackButton from "@/components/back_button";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function EditWorkoutScreen() {
   const router = useRouter();
-
-  // Grab route params
-  const {
-    workoutId,
-    name,
-    days,
-    exercises: preExercises,
-    comment,
-  } = useLocalSearchParams();
-
-  // Memoize the parsed values to prevent new references on every render
-  const existingName = useMemo(() => {
-    return Array.isArray(name) ? name[0] : name ?? "";
-  }, [name]);
-
-  const existingDays = useMemo(() => {
-    return days ? JSON.parse(days as string) : [];
-  }, [days]);
-
-  const existingExercises = useMemo(() => {
-    return preExercises ? JSON.parse(preExercises as string) : [];
-  }, [preExercises]);
-
-  const existingComment = useMemo(() => {
-    return Array.isArray(comment) ? comment[0] : comment ?? "";
-  }, [comment]);
+  const { presetName } = useLocalSearchParams();
+  const { 
+    getPreset, 
+    savePreset, 
+    deletePreset, 
+    isLoading, 
+    error,
+    selectedExercises,
+    setSelectedExercises,
+    addSelectedExercisesToPreset 
+  } = useWorkoutPresetState();
+  const startWorkout = useWorkoutState((state) => state.startWorkout);
 
   // Local state for editing
   const [workoutName, setWorkoutName] = useState<string>("");
-  const [selectedDays, setSelectedDays] = useState<string[]>([]);
-  const [exercises, setExercises] = useState<
-    { Exercise_Name: string; Weight: number; Reps: number; Comment: string }[]
-  >([]);
+  const [exercises, setExercises] = useState<Set[]>([]);
   const [workoutComment, setWorkoutComment] = useState("");
 
-  const daysOfWeek = ["S", "M", "T", "W", "Th", "F", "Sa"];
-
-  const startWorkout = useWorkoutState((state) => state.startWorkout);
-
-  // On mount, pre-populate with existing data
+  // Load preset data on mount
   useEffect(() => {
-    setWorkoutName(existingName);
-    setSelectedDays(existingDays);
-    setExercises(existingExercises);
-    setWorkoutComment(existingComment);
-  }, [existingName, existingDays, existingExercises, existingComment]);
+    const loadPreset = async () => {
+      if (presetName) {
+        const preset = await getPreset(presetName as string);
+        if (preset) {
+          setWorkoutName(preset.Name);
+          setExercises(preset.Preset);
+          setWorkoutComment(preset.Comment || "");
+        }
+      }
+    };
+    loadPreset();
+  }, [presetName]);
 
-  // Toggle days for repetition
-  const toggleDay = (day: string) => {
-    setSelectedDays((prevDays) =>
-      prevDays.includes(day)
-        ? prevDays.filter((d) => d !== day)
-        : [...prevDays, day]
-    );
-  };
+  // Handle selected exercises
+  useEffect(() => {
+    if (selectedExercises) {
+      const updatedExercises = addSelectedExercisesToPreset({
+        Name: workoutName,
+        Comment: workoutComment || null,
+        Preset: exercises
+      }).Preset;
+      
+      setExercises(updatedExercises);
+      setSelectedExercises(null); // Clear the selection
+    }
+  }, [selectedExercises]);
+
+  // Show error if any
+  useEffect(() => {
+    if (error) {
+      Alert.alert("Error", error);
+    }
+  }, [error]);
 
   // Function to handle adding a new exercise from search
-  const addExercise = () => {
-    router.push("/search");
+  const handleAddExercise = () => {
+    router.push({
+      pathname: "/(tabs)/search",
+      params: { returnScreen: "edit" }
+    });
   };
 
   // Function to update the workout
-  const updateWorkout = () => {
+  const updateWorkout = async () => {
     if (!workoutName.trim()) {
       Alert.alert("Error", "Please enter a workout name.");
       return;
@@ -88,35 +93,80 @@ export default function EditWorkoutScreen() {
       return;
     }
 
-    const updatedWorkout = {
-      id: workoutId,
-      Date: new Date(),
-      TimeStarted: BigInt(Date.now()),
-      TimeEnded: BigInt(Date.now()), // Placeholder
-      Sets: exercises,
-      WorkoutComment: workoutComment,
-      Days: selectedDays,
-      WorkoutName: workoutName,
+    const updatedPreset: WorkoutPreset = {
+      Name: workoutName,
+      Comment: workoutComment || null,
+      Preset: exercises,
     };
 
-    console.log("Workout updated:", updatedWorkout);
-    Alert.alert("Success", "Workout updated successfully!", [
-      {
-        text: "OK",
-        onPress: () => router.replace("/(tabs)/workouts"),
-      },
-    ]);
+    const success = await savePreset(updatedPreset);
+    if (success) {
+      Alert.alert("Success", "Workout updated successfully!", [
+        {
+          text: "OK",
+          onPress: () => router.replace("/(tabs)/workouts"),
+        },
+      ]);
+    }
   };
+
+  // Function to delete the workout
+  const handleDelete = async () => {
+    Alert.alert(
+      "Delete Workout",
+      "Are you sure you want to delete this workout?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            if (presetName) {
+              const success = await deletePreset(presetName as string);
+              if (success) {
+                router.replace("/(tabs)/workouts");
+              }
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  // Function to remove an exercise
+  const removeExercise = (exerciseName: string) => {
+    const updatedExercises = exercises.filter(
+      (set) => set.Exercise_Name !== exerciseName
+    );
+    setExercises(updatedExercises);
+  };
+
+  if (isLoading) {
+    return (
+      <View style={[localStyles.container, localStyles.centered]}>
+        <ActivityIndicator size="large" color={colors.PURPLE} />
+      </View>
+    );
+  }
 
   return (
     <View style={localStyles.container}>
       <ScrollView contentContainerStyle={localStyles.scrollContainer}>
-        {/* Header Section with Back Button */}
+        {/* Back Button and Header */}
         <View style={localStyles.headerContainer}>
           <BackButton />
           <View style={localStyles.headerTextContainer}>
             <Text style={localStyles.header}>Edit Workout</Text>
           </View>
+          <TouchableOpacity
+            style={localStyles.deleteButton}
+            onPress={handleDelete}
+          >
+            <Ionicons name="trash-outline" size={32} color={colors.WHITE} />
+          </TouchableOpacity>
         </View>
 
         {/* Workout Name Input */}
@@ -128,45 +178,39 @@ export default function EditWorkoutScreen() {
           onChangeText={setWorkoutName}
         />
 
-        {/* Auto-repetition Days */}
-        {/* Commented out auto-repetition feature
-        <Text style={localStyles.subHeader}>Auto-repetition:</Text>
-        <View style={localStyles.daysContainer}>
-          {daysOfWeek.map((day) => (
-            <TouchableOpacity
-              key={day}
-              style={[
-                localStyles.dayButton,
-                selectedDays.includes(day) && localStyles.dayButtonSelected,
-              ]}
-              onPress={() => toggleDay(day)}
-            >
-              <Text style={localStyles.dayText}>{day}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-        */}
-
         {/* Add Exercise Section */}
         <Text style={localStyles.subHeader}>Exercises:</Text>
         <TouchableOpacity
           style={localStyles.addExerciseButton}
-          onPress={addExercise}
+          onPress={handleAddExercise}
         >
           <Text style={localStyles.addExerciseText}>+ Add Exercise</Text>
         </TouchableOpacity>
 
         {/* List of Exercises */}
-        {exercises.map((exercise, index) => (
-          <View key={index} style={localStyles.exerciseItem}>
-            <Text style={localStyles.exerciseText}>
-              {exercise.Exercise_Name}
-            </Text>
-            <Text style={localStyles.exerciseDetails}>
-              {exercise.Reps} reps - {exercise.Weight} lbs
-            </Text>
-          </View>
-        ))}
+        {Array.from(new Map(exercises.map(set => [set.Exercise_Name, set])).values()).map((exercise: Set, index: number) => {
+          const exerciseSets = exercises.filter(set => set.Exercise_Name === exercise.Exercise_Name);
+          return (
+            <View key={index} style={localStyles.exerciseItem}>
+              <View style={localStyles.exerciseHeader}>
+                <Text style={localStyles.exerciseText}>
+                  {exercise.Exercise_Name}
+                </Text>
+                <TouchableOpacity
+                  style={localStyles.deleteExerciseButton}
+                  onPress={() => removeExercise(exercise.Exercise_Name)}
+                >
+                  <Ionicons name="close-circle" size={24} color={colors.WHITE} />
+                </TouchableOpacity>
+              </View>
+              {exerciseSets.map((set, setIndex) => (
+                <Text key={setIndex} style={localStyles.exerciseDetails}>
+                  Set {setIndex + 1}: {set.Reps} reps @ {set.Weight} lbs
+                </Text>
+              ))}
+            </View>
+          );
+        })}
 
         {/* Workout Comment */}
         <Text style={localStyles.subHeader}>Workout Notes:</Text>
@@ -205,22 +249,27 @@ const localStyles = StyleSheet.create({
     backgroundColor: colors.BLACK,
     padding: 20,
   },
+  centered: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
   scrollContainer: {
     justifyContent: "flex-start",
     alignItems: "center",
     paddingBottom: 100,
   },
   headerContainer: {
+    width: "100%",
     flexDirection: "row",
     alignItems: "center",
-    width: "100%",
-    marginTop: 10,
-    marginBottom: 20,
+    marginTop: 8,
+    position: "relative",
+    justifyContent: "space-between",
   },
   headerTextContainer: {
-    flex: 1,
+    position: "absolute",
+    width: "100%",
     alignItems: "center",
-    marginRight: 50,
   },
   header: {
     fontSize: 24,
@@ -242,27 +291,6 @@ const localStyles = StyleSheet.create({
     padding: 10,
     color: colors.WHITE,
     marginBottom: 15,
-  },
-  daysContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 10,
-    marginBottom: 20,
-  },
-  dayButton: {
-    padding: 10,
-    borderRadius: 8,
-    backgroundColor: colors.BLACK,
-    borderWidth: 1,
-    borderColor: colors.WHITE,
-  },
-  dayButtonSelected: {
-    backgroundColor: colors.PURPLE,
-  },
-  dayText: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: colors.WHITE,
   },
   addExerciseButton: {
     backgroundColor: colors.BLACK,
@@ -307,6 +335,12 @@ const localStyles = StyleSheet.create({
     color: colors.WHITE,
     marginBottom: 15,
   },
+  deleteButton: {
+    backgroundColor: colors.BLACK,
+    padding: 10,
+    borderRadius: 20,
+    marginHorizontal: 5,
+  },
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -322,5 +356,14 @@ const localStyles = StyleSheet.create({
     alignItems: "center",
     flex: 1,
     marginHorizontal: 5,
+  },
+  exerciseHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 5,
+  },
+  deleteExerciseButton: {
+    padding: 5,
   },
 });

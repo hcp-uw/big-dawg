@@ -1,38 +1,65 @@
+import React, { useState, useRef } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, TextInput, KeyboardAvoidingView, Platform } from "react-native";
-import { styles } from "@/src/styles/globalStyles";
 import colors from "@/src/styles/themes/colors";
-import { useState, useRef } from "react";
+import { useWorkoutPresetState } from "../useWorkoutPresetState";
+import { Set } from "@/app/db/Types";
+import { styles } from "@/src/styles/globalStyles";
 import BackButton from "@/components/back_button";
-import { useWorkoutState } from "../useWorkoutState";
-import { Set } from "../../db/Types"; // Import the Set type
 
-const WorkoutInput = () => {
+export default function AddExerciseScreen() {
   const scrollViewRef = useRef<ScrollView>(null);
-  const { item } = useLocalSearchParams();
   const router = useRouter();
-  const { addExercise } = useWorkoutState();
+  const { item, returnScreen } = useLocalSearchParams();
+  const exerciseName = Array.isArray(item) ? item[0] : item as string;
+  const { setSelectedExercises } = useWorkoutPresetState();
+
   const [sets, setSets] = useState<Set[]>([
-    { Exercise_Name: item as string, Reps: 0, Weight: 0, Comment: "1-0" }, // Initial set
+    {
+      Exercise_Name: exerciseName,
+      Reps: 0,
+      Weight: 0,
+      Comment: "",
+    },
   ]);
 
   const handleInputChange = (text: string, index: number, field: keyof Set) => {
     const newSets = [...sets];
-    const numericValue = parseInt(text.replace(/[^0-9]/g, ""), 10) || 0; // Allow only numbers
+    const numericValue = parseInt(text.replace(/[^0-9]/g, ""), 10) || 0;
     if(field === "Reps") {
       newSets[index].Reps = numericValue;
     } else if(field === "Weight") {
       newSets[index].Weight = numericValue;
     }
-    setSets(newSets); // Update the state
+    setSets(newSets);
+  };
+
+  const handleCommentChange = (text: string, index: number) => {
+    const newSets = [...sets];
+    newSets[index].Comment = text;
+    setSets(newSets);
   };
 
   const addSet = () => {
     setSets([
       ...sets,
-      { Exercise_Name: `${sets.length + 1}`, Reps: 0, Weight: 0, Comment: `${sets.length + 1}-${Date.now()}` } as Set,
+      {
+        Exercise_Name: exerciseName,
+        Reps: 0,
+        Weight: 0,
+        Comment: "",
+      },
     ]);
-
     setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 100);
   };
 
@@ -42,10 +69,31 @@ const WorkoutInput = () => {
   };
 
   const saveSet = () => {
-    for(const set of sets) {
-      addExercise(set);
+    // Validate sets
+    const invalidSets = sets.filter(
+      (set) => set.Reps <= 0 || set.Weight <= 0
+    );
+    if (invalidSets.length > 0) {
+      Alert.alert(
+        "Invalid Sets",
+        "Please ensure all sets have valid reps and weight values."
+      );
+      return;
     }
-    router.back();
+
+    const setsWithCorrectName = sets.map(set => ({
+      ...set,
+      Exercise_Name: exerciseName
+    }));
+    
+    setSelectedExercises(setsWithCorrectName);
+    
+    // Navigate back to the appropriate screen
+    if (returnScreen === "edit") {
+      router.replace("/(tabs)/workouts/edit_workout");
+    } else {
+      router.replace("/(tabs)/workouts/add_workout");
+    }
   };
 
   return (
@@ -55,10 +103,10 @@ const WorkoutInput = () => {
     >
       <View style={styles.backContainer}>
         <BackButton />
-        <Text style={styles.headerText}>{item}</Text>
+        <Text style={styles.headerText}>{exerciseName}</Text>
         <TouchableOpacity
           style={[styles.button, { backgroundColor: colors.PURPLE, padding: 7 }]}
-          onPress={() => saveSet()}
+          onPress={saveSet}
         >
           <Text style={[styles.buttonText]}>Add Exercise</Text>
         </TouchableOpacity>
@@ -70,14 +118,14 @@ const WorkoutInput = () => {
         keyboardShouldPersistTaps="handled"
       >
         {sets.map((set, index) => (
-          <View key={set.Comment} style={styles.container}>
+          <View key={index} style={styles.container}>
             <Text style={styles.headerText}>Set {index + 1}</Text>
 
             <TextInput
               style={styles.input}
               placeholder="Reps..."
               placeholderTextColor={colors.WHITE}
-              value={set.Reps ? set.Reps.toString() : ""} // Convert Reps to string for display
+              value={set.Reps ? set.Reps.toString() : ""}
               keyboardType="numeric"
               returnKeyType="done"
               onChangeText={(text) => handleInputChange(text, index, "Reps")}
@@ -87,14 +135,28 @@ const WorkoutInput = () => {
               style={styles.input}
               placeholder="Weight..."
               placeholderTextColor={colors.WHITE}
-              value={set.Weight ? set.Weight.toString() : ""} // Convert Weight to string for display
+              value={set.Weight ? set.Weight.toString() : ""}
               keyboardType="numeric"
               returnKeyType="done"
               onChangeText={(text) => handleInputChange(text, index, "Weight")}
             />
 
+            <TextInput
+              style={styles.input}
+              placeholder="Comments..."
+              placeholderTextColor={colors.WHITE}
+              value={set.Comment ?? ""}
+              keyboardType="default"
+              returnKeyType="done"
+              multiline
+              onChangeText={(text) => handleCommentChange(text, index)}
+            />
+
             {sets.length > 1 && (
-              <TouchableOpacity style={[styles.button, { width: "96%" }]} onPress={() => removeSet(index)}>
+              <TouchableOpacity 
+                style={[styles.button, { width: "96%" }]} 
+                onPress={() => removeSet(index)}
+              >
                 <Text style={styles.buttonText}>Remove Set</Text>
               </TouchableOpacity>
             )}
@@ -110,9 +172,7 @@ const WorkoutInput = () => {
       </ScrollView>
     </KeyboardAvoidingView>
   );
-};
-
-export default WorkoutInput;
+}
 
 const localStyles = StyleSheet.create({
   container: {

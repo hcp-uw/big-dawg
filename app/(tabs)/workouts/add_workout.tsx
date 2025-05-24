@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Text,
   View,
@@ -7,40 +7,62 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { useRouter } from "expo-router";
 import colors from "@/src/styles/themes/colors";
+import { useWorkoutPresetState } from "../useWorkoutPresetState";
+import { WorkoutPreset, Set } from "@/app/db/Types";
 import BackButton from "@/components/back_button";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function AddWorkoutScreen() {
   const router = useRouter();
+  const { 
+    savePreset, 
+    isLoading, 
+    error,
+    selectedExercises,
+    setSelectedExercises,
+    addSelectedExercisesToPreset 
+  } = useWorkoutPresetState();
 
   // Workout Data
   const [workoutName, setWorkoutName] = useState("");
-  const [selectedDays, setSelectedDays] = useState<string[]>([]);
-  const [exercises, setExercises] = useState<
-    { Exercise_Name: string; Weight: number; Reps: number; Comment: string }[]
-  >([]);
+  const [exercises, setExercises] = useState<Set[]>([]);
   const [workoutComment, setWorkoutComment] = useState("");
 
-  const daysOfWeek = ["S", "M", "T", "W", "Th", "F", "Sa"];
+  // Show error if any
+  useEffect(() => {
+    if (error) {
+      Alert.alert("Error", error);
+    }
+  }, [error]);
 
-  // Toggle days for repetition
-  const toggleDay = (day: string) => {
-    setSelectedDays((prevDays) => {
-      return prevDays.includes(day)
-        ? prevDays.filter((d) => d !== day)
-        : [...prevDays, day];
+  // Handle selected exercises
+  useEffect(() => {
+    if (selectedExercises) {
+      const updatedExercises = addSelectedExercisesToPreset({
+        Name: workoutName,
+        Comment: workoutComment || null,
+        Preset: exercises
+      }).Preset;
+      
+      setExercises(updatedExercises);
+      setSelectedExercises(null); // Clear the selection
+    }
+  }, [selectedExercises]);
+
+  // Function to handle adding a new exercise from search
+  const handleAddExercise = () => {
+    router.push({
+      pathname: "/(tabs)/search",
+      params: { returnScreen: "add" }
     });
   };
 
-  // Function to handle adding a new exercise from search
-  const addExercise = () => {
-    router.push("/search");
-  };
-
   // Function to save workout
-  const saveWorkout = () => {
+  const saveWorkout = async () => {
     if (!workoutName.trim()) {
       Alert.alert("Error", "Please enter a workout name.");
       return;
@@ -51,23 +73,43 @@ export default function AddWorkoutScreen() {
       return;
     }
 
-    const newWorkout = {
-      Date: new Date(),
-      TimeStarted: BigInt(Date.now()),
-      TimeEnded: BigInt(Date.now()), // Placeholder
-      Sets: exercises,
-      WorkoutComment: workoutComment,
+    const newPreset: WorkoutPreset = {
+      Name: workoutName,
+      Comment: workoutComment || null,
+      Preset: exercises,
     };
 
-    console.log("Workout saved:", newWorkout);
-    Alert.alert("Success", "Workout saved successfully!");
-    router.back(); // Navigate back to the previous screen
+    const success = await savePreset(newPreset);
+    if (success) {
+      Alert.alert("Success", "Workout saved successfully!", [
+        {
+          text: "OK",
+          onPress: () => router.replace("/(tabs)/workouts"),
+        },
+      ]);
+    }
   };
+
+  // Function to remove an exercise
+  const removeExercise = (exerciseName: string) => {
+    const updatedExercises = exercises.filter(
+      (set) => set.Exercise_Name !== exerciseName
+    );
+    setExercises(updatedExercises);
+  };
+
+  if (isLoading) {
+    return (
+      <View style={[styles.container, localStyles.centered]}>
+        <ActivityIndicator size="large" color={colors.PURPLE} />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {/* Header Section with Back Button */}
+        {/* Back Button and Header */}
         <View style={styles.headerContainer}>
           <BackButton />
           <View style={styles.headerTextContainer}>
@@ -84,43 +126,37 @@ export default function AddWorkoutScreen() {
           onChangeText={setWorkoutName}
         />
 
-        {/* Auto-repetition Days */}
-        {/* Commented out auto-repetition feature
-        <Text style={styles.subHeader}>Auto-repetition:</Text>
-        <View style={styles.daysContainer}>
-          {daysOfWeek.map((day) => (
-            <TouchableOpacity
-              key={day}
-              style={[
-                styles.dayButton,
-                selectedDays.includes(day) && styles.dayButtonSelected,
-              ]}
-              onPress={() => toggleDay(day)}
-            >
-              <Text style={styles.dayText}>{day}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-        */}
-
         {/* Add Exercise Section */}
         <Text style={styles.subHeader}>Exercises:</Text>
         <TouchableOpacity
           style={styles.addExerciseButton}
-          onPress={addExercise}
+          onPress={handleAddExercise}
         >
           <Text style={styles.addExerciseText}>+ Add Exercise</Text>
         </TouchableOpacity>
 
         {/* List of Added Exercises */}
-        {exercises.map((exercise, index) => (
-          <View key={index} style={styles.exerciseItem}>
-            <Text style={styles.exerciseText}>{exercise.Exercise_Name}</Text>
-            <Text style={styles.exerciseDetails}>
-              {exercise.Reps} reps - {exercise.Weight} lbs
-            </Text>
-          </View>
-        ))}
+        {Array.from(new Map(exercises.map(set => [set.Exercise_Name, set])).values()).map((exercise, index) => {
+          const exerciseSets = exercises.filter(set => set.Exercise_Name === exercise.Exercise_Name);
+          return (
+            <View key={index} style={styles.exerciseItem}>
+              <View style={styles.exerciseHeader}>
+                <Text style={styles.exerciseText}>{exercise.Exercise_Name}</Text>
+                <TouchableOpacity
+                  style={styles.deleteExerciseButton}
+                  onPress={() => removeExercise(exercise.Exercise_Name)}
+                >
+                  <Ionicons name="close-circle" size={24} color={colors.WHITE} />
+                </TouchableOpacity>
+              </View>
+              {exerciseSets.map((set, setIndex) => (
+                <Text key={setIndex} style={styles.exerciseDetails}>
+                  Set {setIndex + 1}: {set.Reps} reps @ {set.Weight} lbs
+                </Text>
+              ))}
+            </View>
+          );
+        })}
 
         {/* Workout Comment */}
         <Text style={styles.subHeader}>Workout Notes:</Text>
@@ -144,6 +180,7 @@ export default function AddWorkoutScreen() {
   );
 }
 
+// Reuse your color styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -156,16 +193,16 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
   headerContainer: {
+    width: "100%",
     flexDirection: "row",
     alignItems: "center",
-    width: "100%",
-    marginTop: 10,
-    marginBottom: 20,
+    marginTop: 8,
+    position: "relative",
   },
   headerTextContainer: {
-    flex: 1,
+    position: "absolute",
+    width: "100%",
     alignItems: "center",
-    marginRight: 35,
   },
   header: {
     fontSize: 24,
@@ -187,27 +224,6 @@ const styles = StyleSheet.create({
     padding: 10,
     color: colors.WHITE,
     marginBottom: 15,
-  },
-  daysContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 10,
-    marginBottom: 20,
-  },
-  dayButton: {
-    padding: 10,
-    borderRadius: 8,
-    backgroundColor: colors.BLACK,
-    borderWidth: 1,
-    borderColor: colors.WHITE,
-  },
-  dayButtonSelected: {
-    backgroundColor: colors.PURPLE,
-  },
-  dayText: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: colors.WHITE,
   },
   addExerciseButton: {
     backgroundColor: colors.BLACK,
@@ -267,5 +283,21 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     color: colors.WHITE,
+  },
+  exerciseHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 5,
+  },
+  deleteExerciseButton: {
+    padding: 5,
+  },
+});
+
+const localStyles = StyleSheet.create({
+  centered: {
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

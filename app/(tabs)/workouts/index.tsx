@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Stack, useRouter } from "expo-router";
 import {
   View,
@@ -7,65 +7,50 @@ import {
   TouchableOpacity,
   FlatList,
   StyleSheet,
+  ActivityIndicator,
+  Alert,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import colors from "@/src/styles/themes/colors";
 import { styles } from "@/src/styles/globalStyles";
+import { useWorkoutPresetState } from "../useWorkoutPresetState";
+import { WorkoutPreset } from "@/app/db/Types";
 
-export default function WorkoutPreset() {
-  const insets = useSafeAreaInsets(); // Get safe area insets
+export default function WorkoutPresetList() {
+  const insets = useSafeAreaInsets();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Hard-coded workout presets
-  const [presets] = useState([
-    { id: "1", name: "Arm Day 1" },
-    { id: "2", name: "Leg Day 1" },
-    { id: "3", name: "Cardio Burn" },
-    { id: "4", name: "Full Body Strength" },
-    { id: "5", name: "Core Crusher" },
-    { id: "6", name: "Back & Biceps" },
-  ]);
+  const { presets, isLoading, error, fetchPresets } = useWorkoutPresetState();
 
-  // ------------------------------
-  // FILTER LOGIC REMOVED FOR NOW:
-  // ------------------------------
-  // const [filters, setFilters] = useState(["muscle", "equipment"]);
-  // const [newFilter, setNewFilter] = useState("");
-  // const [isAddingFilter, setIsAddingFilter] = useState(false);
+  // Fetch presets on mount
+  useEffect(() => {
+    fetchPresets();
+  }, []);
 
-  // const addFilter = () => {
-  //   if (newFilter.trim() !== "" && !filters.includes(newFilter)) {
-  //     setFilters([...filters, newFilter.trim()]);
-  //     setNewFilter("");
-  //     setIsAddingFilter(false);
-  //   }
-  // };
+  // Show error if any
+  useEffect(() => {
+    if (error) {
+      Alert.alert("Error", error);
+    }
+  }, [error]);
 
-  // const removeFilter = (filter: string) => {
-  //   setFilters(filters.filter((f) => f !== filter));
-  //   if (filters.length === 0) {
-  //     setIsAddingFilter(false);
-  //   }
-  // };
-  // ------------------------------
-
-  // Filter workouts based on the search query
-  const filteredPresets = presets.filter((workout) =>
-    workout.name.toLowerCase().includes(searchQuery.toLowerCase())
+  // Filter presets based on search query
+  const filteredPresets = presets.filter((preset) =>
+    preset.Name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
     <View style={localStyles.container}>
       <FlatList
-        data={filteredPresets} // Use filtered list
-        keyExtractor={(item) => item.id}
+        data={filteredPresets}
+        keyExtractor={(item) => item.Name}
         keyboardShouldPersistTaps="handled"
         ListHeaderComponent={
           <>
             {/* Title */}
             <Text style={localStyles.title}>Select a workout plan:</Text>
-            {/* Search Bar & Filters */}
+            {/* Search Bar */}
             <View style={localStyles.searchContainer}>
               <TextInput
                 style={localStyles.searchInput}
@@ -74,91 +59,36 @@ export default function WorkoutPreset() {
                 value={searchQuery}
                 onChangeText={setSearchQuery}
               />
-        {/*
-                // ----------------------------------------
-                // FILTER UI COMMENTED OUT:
-                // ----------------------------------------
-              <View style={localStyles.filters}>
-                {filters.map((filter) => (
-                  <TouchableOpacity
-                    key={filter}
-                    style={localStyles.filter}
-                    onPress={() => removeFilter(filter)}
-                  >
-                    <Text style={localStyles.backButtonText}>{filter} ✕</Text>
-                  </TouchableOpacity>
-                ))}
-                <TouchableOpacity
-                  onPress={() => setIsAddingFilter(true)}
-                  style={localStyles.addFilterButton}
-                >
-                  <Text style={localStyles.addFilterText}>+</Text>
-                </TouchableOpacity>
-              </View>
-
-              {isAddingFilter && (
-                <View style={localStyles.addFilterContainer}>
-                  <TextInput
-                    style={localStyles.filterInput}
-                    placeholder="Add filter"
-                    placeholderTextColor="#aaa"
-                    value={newFilter}
-                    onChangeText={setNewFilter}
-                  />
-                  <TouchableOpacity
-                    onPress={addFilter}
-                    style={localStyles.addFilterButton}
-                  >
-                    <Text style={localStyles.addFilterText}>✔</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => setIsAddingFilter(false)}
-                    style={localStyles.cancelFilterButton}
-                  >
-                    <Text style={localStyles.cancelFilterText}>✕</Text>
-                  </TouchableOpacity>
-                </View>
-              )} 
-        */}
             </View>
           </>
         }
         renderItem={({ item }) => (
           <TouchableOpacity
             style={localStyles.presetItem}
-            // Pass the preset's data as route params
             onPress={() => {
               router.push({
                 pathname: "./workouts/edit_workout",
                 params: {
-                  workoutId: item.id,
-                  name: item.name,
-                  // For days, exercises, etc., you could pass JSON
-                  days: JSON.stringify(["M", "W"]),
-                  exercises: JSON.stringify([
-                    {
-                      Exercise_Name: "Push Up",
-                      Weight: 0,
-                      Reps: 10,
-                      Comment: "",
-                    },
-                  ]),
-                  comment: "My existing notes here",
+                  presetName: item.Name,
                 },
               });
             }}
           >
-            <Text style={localStyles.presetText}>{item.name}</Text>
+            <Text style={localStyles.presetText}>{item.Name}</Text>
           </TouchableOpacity>
         )}
         ListEmptyComponent={
-          searchQuery ? (
+          isLoading ? (
+            <ActivityIndicator size="large" color={colors.PURPLE} />
+          ) : searchQuery ? (
             <Text style={localStyles.noResultsText}>No workouts found.</Text>
-          ) : null
+          ) : (
+            <Text style={localStyles.noResultsText}>No workout presets yet.</Text>
+          )
         }
       />
 
-      {/* Create New Workout Button (positioned above bottom tab) */}
+      {/* Create New Workout Button */}
       <TouchableOpacity
         style={[localStyles.createButton, { bottom: insets.bottom + 60 }]}
         onPress={() => router.push({ pathname: "./workouts/add_workout" })}
@@ -167,7 +97,7 @@ export default function WorkoutPreset() {
       </TouchableOpacity>
     </View>
   );
-};
+}
 
 const localStyles = StyleSheet.create({
   container: {
@@ -175,89 +105,22 @@ const localStyles = StyleSheet.create({
     backgroundColor: colors.BLACK,
     padding: 20,
   },
-  backButton: {
-    marginTop: 8,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    backgroundColor: colors.BLACK,
-    borderRadius: 8,
-    alignSelf: "flex-start",
-  },
-  backButtonText: {
-    color: colors.WHITE,
-    fontSize: 24,
-  },
   title: {
-    color: colors.WHITE,
-    fontSize: 16,
+    fontSize: 24,
     fontWeight: "bold",
-    marginTop: 15,
+    color: colors.WHITE,
+    marginBottom: 20,
   },
   searchContainer: {
-    marginTop: 12,
+    marginBottom: 20,
   },
   searchInput: {
     backgroundColor: colors.BLACK,
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: colors.WHITE,
-    paddingVertical: 8,
-    paddingHorizontal: 10,
-    borderRadius: 8,
-    fontSize: 13,
-  },
-  /* Filters (currently unused, left here for future re-enable) */
-  filters: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    marginTop: 10,
-    alignItems: "center",
-  },
-  filter: {
-    backgroundColor: colors.BLACK,
-    borderWidth: 2,
-    borderColor: colors.WHITE,
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderRadius: 6,
-    marginRight: 6,
+    borderRadius: 10,
+    padding: 10,
     color: colors.WHITE,
-    fontSize: 12,
-    fontWeight: "bold",
-  },
-  addFilterContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 10,
-  },
-  filterInput: {
-    backgroundColor: colors.WHITE,
-    paddingVertical: 6,
-    paddingHorizontal: 8,
-    borderRadius: 6,
-    fontSize: 12,
-    flex: 1,
-  },
-  addFilterButton: {
-    marginLeft: 8,
-    backgroundColor: colors.PURPLE,
-    padding: 8,
-    borderRadius: 6,
-  },
-  addFilterText: {
-    color: colors.WHITE,
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  cancelFilterButton: {
-    marginLeft: 8,
-    backgroundColor: "red",
-    padding: 8,
-    borderRadius: 6,
-  },
-  cancelFilterText: {
-    color: colors.WHITE,
-    fontSize: 16,
-    fontWeight: "bold",
   },
   presetItem: {
     marginTop: 10,
